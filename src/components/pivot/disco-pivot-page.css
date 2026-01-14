@@ -1,0 +1,87 @@
+:host {
+  background: var(--disco-bg, #000);
+  color: var(--disco-fg, #fff);
+  font-family: var(--disco-font, 'Segoe UI', sans-serif);
+  overflow: hidden;
+  display: block;
+}
+
+.pivot-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 18px 20px 0;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.header-strip {
+  display: flex;
+  gap: 25px;
+  padding: 10px 20px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.header-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.header-item {
+  font-size: 45px;
+  font-weight: 100;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  will-change: opacity, transform;
+}
+
+.content-viewport {
+  display: flex;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.content-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.ghost {
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  margin-right: 100%;
+}
+
+@keyframes discoPageIn {
+  from {
+    transform: rotateY(-20deg) translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: rotateY(0) translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes discoPageOut {
+  from {
+    transform: rotateY(0) translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: rotateY(15deg) translateX(-100px);
+    opacity: 0;
+  }
+}

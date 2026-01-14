@@ -1,0 +1,29 @@
+{
+  "name": "discoui",
+  "version": "1.0.0",
+  "description": "Custom elements with vanilla JS, Shadow DOM, and SCSS",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack serve --config webpack.config.js --mode development",
+    "build": "webpack --config webpack.config.js --mode production",
+    "start": "npm run dev",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "web-components",
+    "shadow-dom",
+    "scss",
+    "webpack"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.5",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.3"
+  }
+}
