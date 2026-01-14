@@ -6,13 +6,6 @@
 
 </div>
 
-## Features
-- Pivot: infinite/teleporting horizontal pages with synced headers
-- Frame: page navigation with enter/exit animations
-- Splash: accent-tinted launch screen with optional logo
-- Theme-ready: uses CSS custom properties for bg/fg/accent/font
-- Zero framework: plain Web Components + CSS
-
 ## Quick Start
 ```bash
 npm install
@@ -47,8 +40,6 @@ Change colors and fonts via CSS variables (set on `:root` or any ancestor):
 
 ## Project Structure
 - `src/components/` — web components (frame, page base, splash, pivot)
-- `src/components/pivot/` — pivot page + items
-- `src/examples/disco-pivot.html` — demo app loaded in the viewer iframe
 - `src/index.html` — viewer shell with controls (theme/accent/font/scale)
 - `webpack.config.js` — bundling/dev-server config
 
