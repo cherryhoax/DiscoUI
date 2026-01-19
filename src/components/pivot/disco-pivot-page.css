@@ -1,9 +1,9 @@
 :host {
   background-color: var(--disco-bg);
   color: var(--disco-fg);
-  font-family: var(--disco-font, 'Segoe UI', sans-serif);
   overflow: hidden;
   display: block;
+  height: 100%;
 }
 
 .pivot-root {
@@ -24,7 +24,7 @@
   display: flex;
   gap: 25px;
   padding: 10px 20px 20px;
-  overflow-x: auto;
+  overflow: hidden;
   scrollbar-width: none;
 }
 
@@ -36,7 +36,6 @@
   font-size: 45px;
   font-weight: 100;
   white-space: nowrap;
-  cursor: pointer;
   transition: transform 0.2s ease;
   will-change: opacity, transform;
 }

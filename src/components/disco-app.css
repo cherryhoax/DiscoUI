@@ -3,9 +3,17 @@
 	transition: --disco-theme 250ms ease-in-out;
 	--disco-fg: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
 	--disco-accent: attr(disco-accent type(<color>), #d80073);
-	--disco-font: attr(disco-font type(<family-name>), 'Segoe UI', sans-serif);
+	--disco-font: attr(disco-font raw-string, 'Open Sans', sans-serif);
 	--disco-theme: 0;
+	font-family: var(--disco-font, 'Open Sans', sans-serif);
+}
 
+* {
+	user-select: none;
+	-webkit-user-select: none;
+	user-drag: none;
+	-webkit-user-drag: none;
+	cursor: default !important;
 }
 
 @property --disco-theme {

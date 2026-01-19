@@ -6,6 +6,8 @@ disco-frame {
   top: 0;
   width: 100vw;
   height: 100vh;
+  font-family: var(--disco-font);
+
 }
 
 disco-frame[disco-launched] {

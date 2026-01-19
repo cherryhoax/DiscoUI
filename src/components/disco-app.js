@@ -1,4 +1,6 @@
 import appStyles from './disco-app.css';
+import openSansRegular from '@fontsource/open-sans/400.css';
+import openSansItalic from '@fontsource/open-sans/400-italic.css';
 import './disco-frame.js';
 import './disco-splash.js';
 /** @typedef {import('./disco-splash.d.ts').DiscoSplashElement} DiscoSplashElement */
@@ -27,7 +29,19 @@ const injectThemeStyles = (() => {
   };
 })();
 
+const injectFontStyles = (() => {
+  let injected = false;
+  return () => {
+    if (injected) return;
+    const style = document.createElement('style');
+    style.textContent = `${openSansRegular}\n${openSansItalic}`;
+    document.head.appendChild(style);
+    injected = true;
+  };
+})();
+
 injectThemeStyles();
+injectFontStyles();
 
 // App-level orchestrator for Disco UI themes and boot flow.
 class DiscoApp {
@@ -62,6 +76,7 @@ class DiscoApp {
     /** @type {DiscoSplashElement | null} */
     this.splash = null;
     injectThemeStyles();
+    injectFontStyles();
     this.initTheme();
   }
 

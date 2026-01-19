@@ -2,24 +2,48 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: {
-    main: './src/index.js',
-    discoPivotApp: './src/examples/disco-pivot-app/index.js'
-  },
+  entry: './src/index.js',
   output: {
-    filename: '[name].js',
+    filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
-    clean: true
+    clean: true,
+    library: {
+      type: 'module'
+    }
+  },
+  experiments: {
+    outputModule: true
   },
   devtool: 'source-map',
   devServer: {
-    static: path.resolve(__dirname, 'dist'),
+    static: [
+      {
+        directory: path.resolve(__dirname, 'dist'),
+        publicPath: '/dist'
+      },
+      {
+        directory: path.resolve(__dirname, 'examples'),
+        publicPath: '/examples'
+      }
+    ],
+    devMiddleware: {
+      publicPath: '/dist'
+    },
     port: 3000,
-    open: true,
+    open: {
+      target: ['/examples/index.html']
+    },
     hot: true
   },
   module: {
     rules: [
+      {
+        test: /\.(woff2?|ttf|eot|otf)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/[name][ext]'
+        }
+      },
       {
         test: /\.css$/i,
         use: [
@@ -34,17 +58,7 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-      chunks: ['main']
-    }),
-    new HtmlWebpackPlugin({
-      filename: 'examples/disco-pivot-app/index.html',
-      template: './src/examples/disco-pivot-app/index.html',
-      chunks: ['discoPivotApp']
-    })
-  ],
+  plugins: [],
   resolve: {
     extensions: ['.js']
   }

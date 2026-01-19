@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
+    "module": "System",
     "moduleResolution": "Bundler",
     "allowJs": true,
     "checkJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist/types",
-    "rootDir": "src",
+    "outFile": "dist/index.d.ts",
     "skipLibCheck": true
   },
-  "include": ["src/**/*.js", "src/**/*.d.ts"]
+  "files": ["src/index.js", "src/types/global.d.ts"]
 }
