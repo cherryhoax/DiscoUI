@@ -1,15 +1,11 @@
-body {
-	color: red;
-}
-
 :root {
 	--disco-bg: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
 	transition: --disco-theme 250ms ease-in-out;
 	--disco-fg: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
-	--disco-accent: attr(disco-accent color, #d80073);
-	--disco-font: attr(disco-font string, 'Segoe UI', sans-serif);
-	--disco-theme: 0;		
-	
+	--disco-accent: attr(disco-accent type(<color>), #d80073);
+	--disco-font: attr(disco-font type(<family-name>), 'Segoe UI', sans-serif);
+	--disco-theme: 0;
+
 }
 
 @property --disco-theme {

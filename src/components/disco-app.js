@@ -17,6 +17,15 @@ injectThemeStyles();
 
 // App-level orchestrator for Disco UI themes and boot flow.
 class DiscoApp {
+  static ready(callback) {
+    if (typeof callback !== 'function') return;
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => callback());
+    } else {
+      callback();
+    }
+  }
+
   constructor(config = {}) {
     const root = document.documentElement;
     const attrTheme = root.getAttribute('disco-theme');
@@ -27,6 +36,7 @@ class DiscoApp {
     this.theme = config.theme || attrTheme || 'dark';
     this.font = config.font || attrFont || null;
     this.icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
+    this.splashMode = config.splash || 'auto';
     this.splashState = { setup: false, ready: false };
     injectThemeStyles();
     this.initTheme();
@@ -47,12 +57,21 @@ class DiscoApp {
 
     // Add to DOM as siblings
     document.body.appendChild(this.rootFrame);
+    this.rootFrame.setAttribute('disco-launched', 'true');
     if (this.splash) {
       document.body.appendChild(this.splash);
+    }
+
+    if (this.splash && this.splashMode === 'auto') {
+      requestAnimationFrame(() => {
+        this.signalSetup();
+        this.signalReady();
+      });
     }
   }
 
   buildSplash() {
+    if (this.splashMode === 'none') return null;
     // If no icon and no accent, skip splash entirely.
     if (!this.icon && !this.accent) return null;
 

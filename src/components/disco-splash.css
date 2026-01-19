@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 999;
-  background: var(--disco-accent);
+  background: var(--disco-accent, #d80073);
   display: flex;
   flex-direction: column;
   align-items: center;

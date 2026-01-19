@@ -2,9 +2,12 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    discoPivotApp: './src/examples/disco-pivot-app/index.js'
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true
   },
@@ -33,11 +36,13 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
+      chunks: ['main']
     }),
     new HtmlWebpackPlugin({
-      filename: 'examples/disco-pivot.html',
-      template: './src/examples/disco-pivot.html'
+      filename: 'examples/disco-pivot-app/index.html',
+      template: './src/examples/disco-pivot-app/index.html',
+      chunks: ['discoPivotApp']
     })
   ],
   resolve: {

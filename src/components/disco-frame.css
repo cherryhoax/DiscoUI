@@ -1,8 +1,13 @@
 disco-frame {
   position: fixed;
   display: flex;
+  visibility: hidden;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
+}
+
+disco-frame[disco-launched] {
+  visibility: visible;
 }

@@ -1,6 +1,15 @@
-import './components/disco-app.js';
-import './components/disco-frame.js';
-import './components/disco-splash.js';
-import './components/pivot/index.js';
+import DiscoApp from './components/disco-app.js';
+import DiscoFrame from './components/disco-frame.js';
+import DiscoSplash from './components/disco-splash.js';
+import DiscoPage from './components/disco-page.js';
+import DiscoUIElement from './components/disco-ui-element.js';
+import DiscoPivot from './components/pivot/disco-pivot.js';
 
-// Entry file ready for your custom elements.
+export {
+  DiscoApp,
+  DiscoFrame,
+  DiscoSplash,
+  DiscoPage,
+  DiscoUIElement,
+  DiscoPivot
+};
