@@ -1,16 +1,24 @@
 import baseStyles from './disco-ui-element.css';
 
+/**
+ * Base class for Disco UI custom elements.
+ */
 class DiscoUIElement extends HTMLElement {
   constructor() {
     super();
     this.loadStyle(baseStyles);
   }
 
+  /**
+   * @param {string} styleText
+   * @param {Document['head'] | ShadowRoot} [target]
+   */
   loadStyle(styleText, target = document.head) {
     if (!styleText || !target) return;
 
     if (target === document.head) {
-      const cache = DiscoUIElement._styleCache || (DiscoUIElement._styleCache = new Set());
+      const ctor = /** @type {typeof DiscoUIElement & { _styleCache?: Set<string> }} */ (DiscoUIElement);
+      const cache = ctor._styleCache || (ctor._styleCache = new Set());
       if (cache.has(styleText)) return;
       const style = document.createElement('style');
       style.textContent = styleText;
@@ -19,16 +27,23 @@ class DiscoUIElement extends HTMLElement {
       return;
     }
 
-    const shadowCache = DiscoUIElement._shadowStyleCache || (DiscoUIElement._shadowStyleCache = new WeakMap());
-    const existing = shadowCache.get(target) || new Set();
+    const ctor = /** @type {typeof DiscoUIElement & { _shadowStyleCache?: WeakMap<ShadowRoot, Set<string>> }} */ (
+      DiscoUIElement
+    );
+    const shadowCache = ctor._shadowStyleCache || (ctor._shadowStyleCache = new WeakMap());
+    const shadowTarget = /** @type {ShadowRoot} */ (target);
+    const existing = shadowCache.get(shadowTarget) || new Set();
     if (existing.has(styleText)) return;
     const style = document.createElement('style');
     style.textContent = styleText;
     target.appendChild(style);
     existing.add(styleText);
-    shadowCache.set(target, existing);
+    shadowCache.set(shadowTarget, existing);
   }
 
+  /**
+   * Enable pointer tilt interaction on the element.
+   */
   enableTilt() {
     const downHandler = (e) => {
       const rect = this.getBoundingClientRect();

@@ -8,9 +8,15 @@ class DiscoFrame extends DiscoUIElement {
     this.history = [];
   }
 
+  /**
+   * @param {HTMLElement | null | undefined} page
+   * @returns {Promise<void>}
+   */
   async navigate(page) {
     if (!page) return;
-    const current = this.history[this.history.length - 1] || null;
+    const current = /** @type {import('./disco-page.js').default | null} */ (
+      this.history[this.history.length - 1] || null
+    );
     const exitDuration = current?.animationOutDuration ?? 0;
 
     if (current) {
@@ -25,15 +31,19 @@ class DiscoFrame extends DiscoUIElement {
     this.appendChild(page);
     this.history.push(page);
 
-    if (typeof page.animateIn === 'function') {
-      await page.animateIn();
+    const typedPage = /** @type {import('./disco-page.js').default} */ (page);
+    if (typeof typedPage.animateIn === 'function') {
+      await typedPage.animateIn();
     }
   }
 
+  /**
+   * @returns {Promise<void>}
+   */
   async goBack() {
     if (this.history.length <= 1) return;
 
-    const current = this.history.pop();
+    const current = /** @type {import('./disco-page.js').default | undefined} */ (this.history.pop());
     const exitDuration = current?.animationOutDuration ?? 0;
 
     if (current) {
@@ -44,7 +54,9 @@ class DiscoFrame extends DiscoUIElement {
       }
     }
 
-    const previous = this.history[this.history.length - 1];
+    const previous = /** @type {import('./disco-page.js').default | undefined} */ (
+      this.history[this.history.length - 1]
+    );
     this.innerHTML = '';
     if (previous) {
       this.appendChild(previous);

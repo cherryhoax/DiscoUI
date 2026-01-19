@@ -2,6 +2,9 @@ import DiscoUIElement from '../disco-ui-element.js';
 import itemCss from './disco-pivot-item.css';
 
 class DiscoPivotItem extends DiscoUIElement {
+  /**
+   * @constructor
+   */
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });

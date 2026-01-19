@@ -2,6 +2,19 @@ import appStyles from './disco-app.css';
 import './disco-frame.js';
 import './disco-splash.js';
 
+/**
+ * @typedef {'none' | 'auto' | 'manual'} SplashMode
+ */
+
+/**
+ * @typedef {Object} DiscoAppConfig
+ * @property {string} [accent]
+ * @property {'dark' | 'light' | 'auto'} [theme]
+ * @property {string | null} [font]
+ * @property {string | HTMLElement | null} [icon]
+ * @property {SplashMode} [splash]
+ */
+
 const injectThemeStyles = (() => {
   let injected = false;
   return () => {
@@ -17,6 +30,10 @@ injectThemeStyles();
 
 // App-level orchestrator for Disco UI themes and boot flow.
 class DiscoApp {
+  /**
+   * Run a callback once the DOM is ready.
+   * @param {() => void} callback
+   */
   static ready(callback) {
     if (typeof callback !== 'function') return;
     if (document.readyState === 'loading') {
@@ -26,6 +43,9 @@ class DiscoApp {
     }
   }
 
+  /**
+   * @param {DiscoAppConfig} [config]
+   */
   constructor(config = {}) {
     const root = document.documentElement;
     const attrTheme = root.getAttribute('disco-theme');
@@ -38,6 +58,8 @@ class DiscoApp {
     this.icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
     this.splashMode = config.splash || 'auto';
     this.splashState = { setup: false, ready: false };
+    /** @type {DiscoSplashElement | null} */
+    this.splash = null;
     injectThemeStyles();
     this.initTheme();
   }
@@ -51,6 +73,9 @@ class DiscoApp {
     }
   }
 
+  /**
+   * @param {HTMLElement} frame
+   */
   launch(frame) {
     this.rootFrame = frame;
     this.splash = this.buildSplash();
@@ -70,11 +95,15 @@ class DiscoApp {
     }
   }
 
+  /**
+   * @returns {HTMLElement | null}
+   */
   buildSplash() {
     if (this.splashMode === 'none') return null;
     // If no icon and no accent, skip splash entirely.
     if (!this.icon && !this.accent) return null;
 
+    /** @type {DiscoSplashElement} */
     const splash = document.createElement('disco-splash');
     if (typeof this.icon === 'string') {
       splash.setAttribute('logo', this.icon);

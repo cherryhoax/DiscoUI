@@ -2,6 +2,9 @@ import DiscoPage from '../disco-page.js';
 import pivotPageCss from './disco-pivot-page.css';
 
 class DiscoPivotPage extends DiscoPage {
+  /**
+   * @param {string} [appTitle]
+   */
   constructor(appTitle = 'DISCO APP') {
     super();
     this.appTitle = appTitle;
@@ -12,6 +15,9 @@ class DiscoPivotPage extends DiscoPage {
     this.render();
   }
 
+  /**
+   * @returns {void}
+   */
   connectedCallback() {
     this.renderHeaders();
     this.setupScrollSync();
@@ -19,6 +25,9 @@ class DiscoPivotPage extends DiscoPage {
     requestAnimationFrame(() => this.jumpToFirstPage());
   }
 
+  /**
+   * @returns {void}
+   */
   render() {
     if (!this.shadowRoot || !this._container) return;
     this._container.innerHTML = `
@@ -34,6 +43,9 @@ class DiscoPivotPage extends DiscoPage {
     `;
   }
 
+  /**
+   * @returns {void}
+   */
   renderHeaders() {
     const strip = this.shadowRoot?.getElementById('headerStrip');
     const viewport = this.shadowRoot?.getElementById('viewport');
@@ -63,7 +75,7 @@ class DiscoPivotPage extends DiscoPage {
     items.forEach((item, i) => {
       const h = document.createElement('div');
       h.className = 'header-item';
-      h.dataset.index = i;
+      h.dataset.index = `${i}`;
       h.dataset.real = 'true';
       h.textContent = item.getAttribute('header') || `item ${i + 1}`;
       h.style.opacity = i === 0 ? '1' : '0.5';
@@ -84,7 +96,7 @@ class DiscoPivotPage extends DiscoPage {
         items.forEach((item, i) => {
           const h = document.createElement('div');
           h.className = 'header-item';
-          h.dataset.index = i;
+          h.dataset.index = `${i}`;
           h.dataset.real = 'repeat';
           h.textContent = item.getAttribute('header') || `item ${i + 1}`;
           h.style.opacity = '0.5';
@@ -98,6 +110,9 @@ class DiscoPivotPage extends DiscoPage {
     });
   }
 
+  /**
+   * @returns {void}
+   */
   jumpToFirstPage() {
     const viewport = this.shadowRoot?.getElementById('viewport');
     if (!viewport) return;
@@ -108,6 +123,9 @@ class DiscoPivotPage extends DiscoPage {
     viewport.style.scrollBehavior = prevBehavior || 'smooth';
   }
 
+  /**
+   * @returns {void}
+   */
   setupScrollSync() {
     const viewport = this.shadowRoot?.getElementById('viewport');
     const strip = this.shadowRoot?.getElementById('headerStrip');
@@ -115,7 +133,7 @@ class DiscoPivotPage extends DiscoPage {
 
     const items = () => Array.from(this.querySelectorAll('disco-pivot-item'));
     const measureHeaders = () => {
-      const headersAll = Array.from(strip.children);
+      const headersAll = Array.from(strip.children).map((el) => /** @type {HTMLElement} */ (el));
       const styles = getComputedStyle(strip);
       const gapVal = parseFloat(styles.columnGap || styles.gap || '0') || 0;
       const realHeaders = headersAll.filter((h) => h.dataset.real === 'true');
@@ -131,8 +149,8 @@ class DiscoPivotPage extends DiscoPage {
       const totalWidth = baseOffset + (offsets[offsets.length - 1] || 1);
       return { offsets, totalWidth, gapVal, baseOffset };
     };
-    const getPageSpan = () => {
-      const width = viewport.clientWidth || 1;
+    const getPageSpan = (vp = viewport) => {
+      const width = vp.clientWidth || 1;
       const first = items()[0];
       const mr = first ? parseFloat(getComputedStyle(first).marginRight || '0') || 0 : 0;
       return width + mr;
@@ -142,7 +160,7 @@ class DiscoPivotPage extends DiscoPage {
     viewport.addEventListener('scroll', () => {
       let scrollX = viewport.scrollLeft;
       const pageSpan = getPageSpan();
-      const headers = Array.from(strip.children);
+      const headers = Array.from(strip.children).map((el) => /** @type {HTMLElement} */ (el));
       const count = items().length || 1;
       if (count === 0) return;
 

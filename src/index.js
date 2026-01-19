@@ -5,6 +5,9 @@ import DiscoPage from './components/disco-page.js';
 import DiscoUIElement from './components/disco-ui-element.js';
 import DiscoPivot from './components/pivot/disco-pivot.js';
 
+/**
+ * Public exports for DiscoUI.
+ */
 export {
   DiscoApp,
   DiscoFrame,

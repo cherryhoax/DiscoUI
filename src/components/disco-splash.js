@@ -11,30 +11,50 @@ class DiscoSplash extends DiscoUIElement {
     this.render();
   }
 
+  /**
+   * @returns {string[]}
+   */
   static get observedAttributes() {
     return ['logo'];
   }
 
-  attributeChangedCallback() {
+  /**
+   * @param {string} _name
+   * @param {string | null} _oldValue
+   * @param {string | null} _newValue
+   */
+  attributeChangedCallback(_name, _oldValue, _newValue) {
     this.render();
   }
 
+  /**
+   * @param {HTMLElement | null} node
+   */
   set logoNode(node) {
     this._logoNode = node;
     this.render();
   }
 
+  /**
+   * @returns {HTMLElement | null | undefined}
+   */
   get logoNode() {
     return this._logoNode;
   }
 
+  /**
+   * Dismiss splash with fade-out.
+   */
   dismiss() {
     if (!this.shadowRoot) return;
-    const host = this.shadowRoot.host;
+    const host = /** @type {HTMLElement} */ (this.shadowRoot.host);
     host.style.opacity = '0';
     setTimeout(() => host.remove(), 400);
   }
 
+  /**
+   * Render splash content.
+   */
   render() {
     if (!this.shadowRoot) return;
     if (!this._container) return;
