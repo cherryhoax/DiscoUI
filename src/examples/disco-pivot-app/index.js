@@ -1,4 +1,5 @@
 import { DiscoApp } from '../../index.js';
+/** @typedef {import('../../components/disco-frame.d.ts').DiscoFrameElement} DiscoFrameElement */
 
 const app = new DiscoApp({
     splash: 'none'

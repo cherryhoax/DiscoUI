@@ -1,6 +1,7 @@
 import appStyles from './disco-app.css';
 import './disco-frame.js';
 import './disco-splash.js';
+/** @typedef {import('./disco-splash.d.ts').DiscoSplashElement} DiscoSplashElement */
 
 /**
  * @typedef {'none' | 'auto' | 'manual'} SplashMode
@@ -96,7 +97,7 @@ class DiscoApp {
   }
 
   /**
-   * @returns {HTMLElement | null}
+   * @returns {DiscoSplashElement | null}
    */
   buildSplash() {
     if (this.splashMode === 'none') return null;
@@ -104,7 +105,9 @@ class DiscoApp {
     if (!this.icon && !this.accent) return null;
 
     /** @type {DiscoSplashElement} */
-    const splash = document.createElement('disco-splash');
+    const splash = /** @type {DiscoSplashElement} */ (
+      /** @type {HTMLElement} */ (document.createElement('disco-splash'))
+    );
     if (typeof this.icon === 'string') {
       splash.setAttribute('logo', this.icon);
     } else if (this.icon instanceof HTMLElement) {
