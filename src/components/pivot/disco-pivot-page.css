@@ -3,9 +3,12 @@
   color: var(--disco-fg);
   overflow: hidden;
   display: block;
-  height: 100%;
+  height: 100%; /* Ensure host is 100% height */
 }
 
+.pivot-shell {
+  height: 100%; /* Ensure pivot shell is 100% height */
+}
 .pivot-root {
   display: flex;
   flex-direction: column;
@@ -43,6 +46,7 @@
 .content-viewport {
   display: flex;
   flex: 1;
+  height: 100%; /* Ensure content viewport is 100% height */
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;

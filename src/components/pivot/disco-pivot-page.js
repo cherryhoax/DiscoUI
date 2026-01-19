@@ -11,6 +11,7 @@ class DiscoPivotPage extends DiscoPage {
     this.attachShadow({ mode: 'open' });
     this.loadStyle(pivotPageCss, this.shadowRoot);
     this._container = document.createElement('div');
+    this._container.className = 'pivot-shell';
     this.shadowRoot.appendChild(this._container);
     this.render();
   }
