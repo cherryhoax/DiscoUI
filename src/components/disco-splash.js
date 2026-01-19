@@ -5,6 +5,9 @@ class DiscoSplash extends DiscoUIElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.loadStyle(splashCss, this.shadowRoot);
+    this._container = document.createElement('div');
+    this.shadowRoot.appendChild(this._container);
     this.render();
   }
 
@@ -34,7 +37,8 @@ class DiscoSplash extends DiscoUIElement {
 
   render() {
     if (!this.shadowRoot) return;
-    this.shadowRoot.innerHTML = '';
+    if (!this._container) return;
+    this._container.innerHTML = '';
 
     const wrapper = document.createElement('div');
     wrapper.className = 'splash';
@@ -56,10 +60,7 @@ class DiscoSplash extends DiscoUIElement {
     dots.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
     wrapper.appendChild(dots);
 
-    const style = document.createElement('style');
-    style.textContent = splashCss;
-
-    this.shadowRoot.append(style, wrapper);
+    this._container.appendChild(wrapper);
   }
 }
 

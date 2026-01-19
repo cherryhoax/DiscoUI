@@ -1,6 +1,6 @@
 :host {
-  background: var(--disco-bg, #000);
-  color: var(--disco-fg, #fff);
+  background-color: var(--disco-bg);
+  color: var(--disco-fg);
   font-family: var(--disco-font, 'Segoe UI', sans-serif);
   overflow: hidden;
   display: block;

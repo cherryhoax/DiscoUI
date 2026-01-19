@@ -1,21 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import pageStyles from './disco-page.css';
 
-const ensurePageStyles = (() => {
-  let injected = false;
-  return () => {
-    if (injected) return;
-    const style = document.createElement('style');
-    style.textContent = pageStyles;
-    document.head.appendChild(style);
-    injected = true;
-  };
-})();
-
 class DiscoPage extends DiscoUIElement {
   constructor() {
     super();
-    ensurePageStyles();
+    this.loadStyle(pageStyles);
     // Standard WP 8.1 transition timings
     this.animationInDuration = 350;
     this.animationOutDuration = 250;

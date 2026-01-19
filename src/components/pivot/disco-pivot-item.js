@@ -1,12 +1,13 @@
+import DiscoUIElement from '../disco-ui-element.js';
 import itemCss from './disco-pivot-item.css';
 
-class DiscoPivotItem extends HTMLElement {
+class DiscoPivotItem extends DiscoUIElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }).innerHTML = `
-      <style>${itemCss}</style>
-      <slot></slot>
-    `;
+    this.attachShadow({ mode: 'open' });
+    this.loadStyle(itemCss, this.shadowRoot);
+    const slot = document.createElement('slot');
+    this.shadowRoot.appendChild(slot);
   }
 }
 

@@ -18,12 +18,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.global\.css$/i,
-        use: ['style-loader', 'css-loader']
-      },
-      {
         test: /\.css$/i,
-        exclude: /\.global\.css$/i,
         use: [
           {
             loader: 'css-loader',

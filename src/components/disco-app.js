@@ -1,23 +1,44 @@
-import './components/disco-frame.js';
-import './components/disco-splash.js';
+import appStyles from './disco-app.css';
+import './disco-frame.js';
+import './disco-splash.js';
+
+const injectThemeStyles = (() => {
+  let injected = false;
+  return () => {
+    if (injected) return;
+    const style = document.createElement('style');
+    style.textContent = appStyles;
+    document.head.appendChild(style);
+    injected = true;
+  };
+})();
+
+injectThemeStyles();
 
 // App-level orchestrator for Disco UI themes and boot flow.
 class DiscoApp {
   constructor(config = {}) {
-    this.accent = config.accent || '#D80073'; // Classic WP Magenta
-    this.theme = config.theme || 'dark';
+    const root = document.documentElement;
+    const attrTheme = root.getAttribute('disco-theme');
+    const attrAccent = root.getAttribute('disco-accent');
+    const attrFont = root.getAttribute('disco-font');
+
+    this.accent = config.accent || attrAccent || '#D80073'; // Classic WP Magenta
+    this.theme = config.theme || attrTheme || 'dark';
+    this.font = config.font || attrFont || null;
     this.icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
     this.splashState = { setup: false, ready: false };
+    injectThemeStyles();
     this.initTheme();
   }
 
   initTheme() {
     const root = document.documentElement;
-    root.setAttribute('data-disco-theme', this.theme);
-    root.style.setProperty('--disco-accent', this.accent);
-    // Default WP system colors
-    root.style.setProperty('--disco-bg', this.theme === 'dark' ? '#000' : '#fff');
-    root.style.setProperty('--disco-fg', this.theme === 'dark' ? '#fff' : '#000');
+    root.setAttribute('disco-theme', this.theme);
+    root.setAttribute('disco-accent', this.accent);
+    if (this.font) {
+      root.setAttribute('disco-font', this.font);
+    }
   }
 
   launch(frame) {

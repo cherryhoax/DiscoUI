@@ -4,8 +4,8 @@
   "description": "Custom elements with vanilla JS, Shadow DOM, and SCSS",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack serve --config webpack.config.js --mode development",
-    "build": "webpack --config webpack.config.js --mode production",
+    "dev": "npx webpack serve --config webpack.config.js --mode development",
+    "build": "npx webpack --config webpack.config.js --mode production",
     "start": "npm run dev",
     "test": "echo \"No tests specified\" && exit 0"
   },

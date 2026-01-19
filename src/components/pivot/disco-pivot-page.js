@@ -6,6 +6,9 @@ class DiscoPivotPage extends DiscoPage {
     super();
     this.appTitle = appTitle;
     this.attachShadow({ mode: 'open' });
+    this.loadStyle(pivotPageCss, this.shadowRoot);
+    this._container = document.createElement('div');
+    this.shadowRoot.appendChild(this._container);
     this.render();
   }
 
@@ -17,9 +20,8 @@ class DiscoPivotPage extends DiscoPage {
   }
 
   render() {
-    if (!this.shadowRoot) return;
-    this.shadowRoot.innerHTML = `
-      <style>${pivotPageCss}</style>
+    if (!this.shadowRoot || !this._container) return;
+    this._container.innerHTML = `
       <div class="pivot-root">
         <div class="app-title">${this.appTitle}</div>
         <div class="header-strip" id="headerStrip"></div>

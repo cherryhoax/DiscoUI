@@ -1,21 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import frameStyles from './disco-frame.css';
 
-const ensureFrameStyles = (() => {
-  let injected = false;
-  return () => {
-    if (injected) return;
-    const style = document.createElement('style');
-    style.textContent = frameStyles;
-    document.head.appendChild(style);
-    injected = true;
-  };
-})();
-
 class DiscoFrame extends DiscoUIElement {
   constructor() {
     super();
-    ensureFrameStyles();
+    this.loadStyle(frameStyles);
     this.history = [];
   }
 

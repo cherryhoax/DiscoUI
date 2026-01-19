@@ -1,20 +1,32 @@
 import baseStyles from './disco-ui-element.css';
 
-const ensureBaseStyles = (() => {
-  let injected = false;
-  return () => {
-    if (injected) return;
-    const style = document.createElement('style');
-    style.textContent = baseStyles;
-    document.head.appendChild(style);
-    injected = true;
-  };
-})();
-
 class DiscoUIElement extends HTMLElement {
   constructor() {
     super();
-    ensureBaseStyles();
+    this.loadStyle(baseStyles);
+  }
+
+  loadStyle(styleText, target = document.head) {
+    if (!styleText || !target) return;
+
+    if (target === document.head) {
+      const cache = DiscoUIElement._styleCache || (DiscoUIElement._styleCache = new Set());
+      if (cache.has(styleText)) return;
+      const style = document.createElement('style');
+      style.textContent = styleText;
+      document.head.appendChild(style);
+      cache.add(styleText);
+      return;
+    }
+
+    const shadowCache = DiscoUIElement._shadowStyleCache || (DiscoUIElement._shadowStyleCache = new WeakMap());
+    const existing = shadowCache.get(target) || new Set();
+    if (existing.has(styleText)) return;
+    const style = document.createElement('style');
+    style.textContent = styleText;
+    target.appendChild(style);
+    existing.add(styleText);
+    shadowCache.set(target, existing);
   }
 
   enableTilt() {
