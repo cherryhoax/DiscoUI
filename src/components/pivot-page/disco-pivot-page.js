@@ -20,8 +20,6 @@ class DiscoPivotPage extends DiscoPage {
     this._container.className = 'pivot-shell';
     this.shadowRoot.appendChild(this._container);
     this.render();
-    this.animationInDuration = 400;
-    this.animationOutDuration = 200;
   }
 
   /**
@@ -36,16 +34,19 @@ class DiscoPivotPage extends DiscoPage {
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(${window.innerWidth / 8}px) rotateY(60deg) translateX(${window.innerWidth / 5}px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+        },
+        {
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
         },
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(0px) rotateY(0deg) translateX(0px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
         }
       ],
       {
-        duration: this.animationInDuration,
+        duration: 300,
         easing: DiscoAnimations.easeOutQuart,
         spline: true,
         fill: 'forwards'
@@ -56,16 +57,16 @@ class DiscoPivotPage extends DiscoPage {
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(${-window.innerWidth / 2}px) rotateY(-90deg) translateX(0px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
         },
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(0px) rotateY(0deg) translateX(0px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
         }
       ],
       {
-        duration: this.animationInDuration,
+        duration: 300,
         easing: DiscoAnimations.easeOutQuart,
         spline: true,
         fill: 'forwards'
@@ -86,16 +87,16 @@ class DiscoPivotPage extends DiscoPage {
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(0px) rotateY(0deg) translateX(0px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
         },
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(${-window.innerWidth / 2}px) rotateY(-90deg) translateX(0px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
         }
       ],
       {
-        duration: this.animationOutDuration,
+        duration: 150,
         easing: DiscoAnimations.easeInQuad,
         fill: 'forwards',
         spline: true
@@ -106,16 +107,16 @@ class DiscoPivotPage extends DiscoPage {
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(0px) rotateY(0deg) translateX(0px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
         },
         {
           opacity: 1,
           transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective}) translateX(${window.innerWidth / 8}px) rotateY(60deg) translateX(${window.innerWidth / 5}px)`
+          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(90deg) translateX(${window.innerWidth / 5}px)`
         }
       ],
       {
-        duration: this.animationOutDuration,
+        duration: 150,
         easing: DiscoAnimations.easeInQuad,
         fill: 'forwards',
         spline: true

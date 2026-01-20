@@ -6,6 +6,25 @@ class DiscoFrame extends DiscoUIElement {
     super();
     this.loadStyle(frameStyles);
     this.history = [];
+    this.historyIndex = -1;
+    this._historyKey = this.getAttribute('history-key') || `disco-frame-${DiscoFrame._nextId++}`;
+    this._historyEnabled = !this.hasAttribute('disable-history');
+    this._onPopState = this._onPopState.bind(this);
+    this._historyListenerAttached = false;
+  }
+
+  connectedCallback() {
+    if (this._historyEnabled && !this._historyListenerAttached && typeof window !== 'undefined') {
+      window.addEventListener('popstate', this._onPopState);
+      this._historyListenerAttached = true;
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._historyListenerAttached && typeof window !== 'undefined') {
+      window.removeEventListener('popstate', this._onPopState);
+      this._historyListenerAttached = false;
+    }
   }
 
   /**
@@ -14,58 +33,84 @@ class DiscoFrame extends DiscoUIElement {
    */
   async navigate(page) {
     if (!page) return;
-    const current = /** @type {import('./disco-page.js').default | null} */ (
-      this.history[this.history.length - 1] || null
-    );
-    const exitDuration = current?.animationOutDuration ?? 0;
-
-    if (current) {
-      if (typeof current.animateOut === 'function') {
-        await current.animateOut({ direction: 'forward' });
-      } else if (exitDuration > 0) {
-        await new Promise((resolve) => setTimeout(resolve, exitDuration));
-      }
+    if (this.historyIndex < this.history.length - 1) {
+      this.history = this.history.slice(0, this.historyIndex + 1);
     }
 
-    this.innerHTML = '';
-    this.appendChild(page);
+    await this._transitionTo(page, { direction: 'forward' });
     this.history.push(page);
-
-    const typedPage = /** @type {import('./disco-page.js').default} */ (page);
-    if (typeof typedPage.animateIn === 'function') {
-      await typedPage.animateIn({ direction: 'forward' });
-    }
+    this.historyIndex = this.history.length - 1;
+    this._pushHistoryState();
   }
 
   /**
    * @returns {Promise<void>}
    */
   async goBack() {
-    if (this.history.length <= 1) return;
+    if (this.historyIndex <= 0) return;
+    if (this._historyEnabled && typeof window !== 'undefined') {
+      window.history.back();
+      return;
+    }
+    await this._navigateToIndex(this.historyIndex - 1, 'back', true);
+  }
 
-    const current = /** @type {import('./disco-page.js').default | undefined} */ (this.history.pop());
-    const exitDuration = current?.animationOutDuration ?? 0;
+  async _transitionTo(page, options) {
+    const current = /** @type {import('./disco-page.js').default | null} */ (
+      this.history[this.historyIndex] || null
+    );
 
     if (current) {
       if (typeof current.animateOut === 'function') {
-        await current.animateOut({ direction: 'back' });
-      } else if (exitDuration > 0) {
-        await new Promise((resolve) => setTimeout(resolve, exitDuration));
+        await current.animateOut(options);
+      } else {
+        current.remove();
       }
     }
 
-    const previous = /** @type {import('./disco-page.js').default | undefined} */ (
-      this.history[this.history.length - 1]
-    );
     this.innerHTML = '';
-    if (previous) {
-      this.appendChild(previous);
-      if (typeof previous.animateIn === 'function') {
-        await previous.animateIn({ direction: 'back' });
-      }
+    this.appendChild(page);
+
+    const typedPage = /** @type {import('./disco-page.js').default} */ (page);
+    if (typeof typedPage.animateIn === 'function') {
+      await typedPage.animateIn(options);
     }
   }
+
+  async _navigateToIndex(targetIndex, direction, fromHistory) {
+    const target = this.history[targetIndex];
+    if (!target) return;
+    await this._transitionTo(target, { direction });
+    this.historyIndex = targetIndex;
+    if (!fromHistory) {
+      this._pushHistoryState();
+    }
+  }
+
+  _pushHistoryState() {
+    if (!this._historyEnabled || typeof window === 'undefined') return;
+    try {
+      window.history.pushState(
+        { discoFrame: this._historyKey, index: this.historyIndex },
+        '',
+        window.location.href
+      );
+    } catch (error) {
+      // Ignore history API failures (e.g., cross-origin restrictions).
+    }
+  }
+
+  _onPopState(event) {
+    const state = event?.state;
+    if (!state || state.discoFrame !== this._historyKey) return;
+    const targetIndex = Number(state.index);
+    if (!Number.isFinite(targetIndex) || targetIndex < 0 || targetIndex >= this.history.length) return;
+    const direction = targetIndex < this.historyIndex ? 'back' : 'forward';
+    this._navigateToIndex(targetIndex, direction, true);
+  }
 }
+
+DiscoFrame._nextId = 1;
 
 customElements.define('disco-frame', DiscoFrame);
 

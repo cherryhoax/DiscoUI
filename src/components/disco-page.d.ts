@@ -1,8 +1,6 @@
 import type DiscoUIElement from './disco-ui-element.js';
 
 export default class DiscoPage extends DiscoUIElement {
-  animationInDuration: number;
-  animationOutDuration: number;
   animateIn(options?: DiscoPageAnimationOptions): Promise<void>;
   animateOut(options?: DiscoPageAnimationOptions): Promise<void>;
 }

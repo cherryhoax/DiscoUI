@@ -54,7 +54,7 @@ const DiscoAnimations = {
     easeInOutCirc: 'cubic-bezier(0.785, 0.135, 0.150, 0.860)',
     easeInOutBack: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)',
 
-    perspective: '1000px',
+    perspective: () => window.innerWidth * 4 + "px",
 
     /**
      * @param {number} p0
@@ -636,4 +636,9 @@ const DiscoAnimations = {
         return target.animate(frames, { ...rest, easing });
     }
 };
+const AnimationSet = {
+    Page:{
+        
+    }
+}
 export default DiscoAnimations;

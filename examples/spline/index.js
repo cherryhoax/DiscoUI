@@ -18,16 +18,16 @@ const getDefaultKeyframes = () => [
     {
         opacity: 1,
         transformOrigin: 'left center',
-        transform: `perspective(${DiscoAnimations.perspective}) rotateY(100deg) translateX(120px)`,
+        transform: `perspective(${DiscoAnimations.perspective()}) rotateY(100deg) translateX(120px)`,
         filter: 'blur(20px) brightness(0.8)'
     },
     {
-        transform: `perspective(${DiscoAnimations.perspective}) rotateY(0deg) translateX(60px)`,
+        transform: `perspective(${DiscoAnimations.perspective()}) rotateY(0deg) translateX(60px)`,
     },
     {
         opacity: 1,
         transformOrigin: 'left center',
-        transform: `perspective(${DiscoAnimations.perspective}) rotateY(0deg) translateX(0px)`,
+        transform: `perspective(${DiscoAnimations.perspective()}) rotateY(0deg) translateX(0px)`,
         filter: 'blur(0px) brightness(1)'
     }
 ];

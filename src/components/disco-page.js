@@ -6,9 +6,6 @@ class DiscoPage extends DiscoUIElement {
   constructor() {
     super();
     this.loadStyle(pageStyles);
-    // Standard WP 8.1 transition timings
-    this.animationInDuration = 350;
-    this.animationOutDuration = 250;
   }
 
   // Methods for the Frame to call
@@ -36,7 +33,7 @@ class DiscoPage extends DiscoUIElement {
       this,
       [{ opacity: 0 }, { opacity: 1 }],
       {
-        duration: this.animationInDuration,
+        duration: 300,
         easing: DiscoAnimations.easeOutQuart,
         fill: 'forwards'
       }
@@ -63,7 +60,7 @@ class DiscoPage extends DiscoUIElement {
       this,
       [{ opacity: 1 }, { opacity: 0 }],
       {
-        duration: this.animationOutDuration,
+        duration: 150,
         easing: DiscoAnimations.easeOutQuad,
         fill: 'forwards'
       }
