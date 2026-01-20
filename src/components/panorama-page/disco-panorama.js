@@ -79,6 +79,7 @@ class DiscoPanorama extends DiscoPage {
                 <div class="ghost ghost-right"></div>
             </div>
         `;
+        this._header = this._container.querySelector('.panorama-header')
     }
 
     setupInfiniteScroll() {
@@ -173,6 +174,8 @@ class DiscoPanorama extends DiscoPage {
         // Scroll Loop Logic
         viewport.addEventListener('scroll', () => {
             if (items.length <= 1 || isTeleporting) return;
+            const ghostLeft = this.shadowRoot.querySelector('.ghost-left');
+            const ghostRight = this.shadowRoot.querySelector('.ghost-right');
 
             const firstItem = items[0];
             const lastItem = items[items.length - 1];
@@ -189,7 +192,6 @@ class DiscoPanorama extends DiscoPage {
 
             // 1. Enter Left Ghost Zone
             if (scrollLeft < ghostLeftWidth) {
-                console.log("enter left ghost")
                 // Determine layout
                 const lastItem = items[items.length - 1];
 
@@ -202,7 +204,15 @@ class DiscoPanorama extends DiscoPage {
                 // Trigger when we've scrolled past the middle of the visual Last Item (Ghost Left)
                 // This ensures symmetry with the Right Zone trigger
                 if (scrollLeft <= ghostLeftWidth / 2) {
-                    console.log("teleport left ghost")
+                    this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
+                    this._header.classList.add('panorama-header-animate-left');
+                    this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
+                    this._background.classList.add('panorama-background-animate-left');
+                    clearTimeout(this._headerAnimationTimeout);
+                    this._headerAnimationTimeout = setTimeout(() => {
+                        this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
+                        this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
+                    }, 1000);
                     isTeleporting = true;
                     viewport.style.scrollBehavior = 'auto';
                     viewport.style.scrollSnapType = 'none';
@@ -241,6 +251,15 @@ class DiscoPanorama extends DiscoPage {
                 // We physically jump when the Viewport Left Edge hits the Ghost Right Start Edge.
                 // This corresponds to the user "landing" on the ghost page.
                 if (scrollLeft > lastItem.offsetLeft + lastItem.offsetWidth / 2) {
+                    this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
+                    this._header.classList.add('panorama-header-animate-right');
+                    this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
+                    this._background.classList.add('panorama-background-animate-right');
+                    clearTimeout(this._headerAnimationTimeout);
+                    this._headerAnimationTimeout = setTimeout(() => {
+                        this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
+                        this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
+                    }, 1000);
                     isTeleporting = true;
                     viewport.style.scrollBehavior = 'auto';
                     viewport.style.scrollSnapType = 'none';
@@ -259,10 +278,6 @@ class DiscoPanorama extends DiscoPage {
                     });
                 }
             }
-            // if scroll is between two pages and its passing half of the last real page 
-            if (scrollLeft > lastItem.offsetLeft + lastItem.offsetWidth / 2 || scrollLeft < firstItem.offsetLeft - firstItem.offsetWidth / 2) {
-                console.log("heyafas")
-            }
         }, { passive: true });
     }
 
@@ -280,13 +295,58 @@ class DiscoPanorama extends DiscoPage {
             const end = lastItem.offsetLeft;
             const totalScrollableDistance = end - start;
             const scrollLeft = viewport.scrollLeft - start;
-            const scrollPercent = scrollLeft / totalScrollableDistance;
+            var scrollPercent = scrollLeft / totalScrollableDistance;
+            var scrollFirst = viewport.scrollLeft / firstItem.offsetWidth;
+            scrollPercent = scrollPercent < 0 ? (1 - scrollFirst) * -1 : scrollPercent;
+            const ghostLeft = this.shadowRoot.querySelector('.ghost-left');
+            const ghostRight = this.shadowRoot.querySelector('.ghost-right');
+/*
+            if (viewport.scrollLeft < ghostLeft.offsetWidth) {
+                const ghostPercent = (viewport.scrollLeft - ghostLeft.offsetLeft) / ghostLeft.offsetWidth;
+                this._background.style.backgroundPositionX = `calc(${(1 - ghostPercent) * 100}vw)`;
+            } else if (viewport.scrollLeft > lastItem.offsetLeft) {
+                const ghostPercent = (viewport.scrollLeft - ghostRight.offsetLeft) / ghostRight.offsetWidth;
+                this._background.style.backgroundPositionX = `calc(${(1 - ghostPercent) * 100}vw)`;
+            } else {
+                this._background.style.backgroundPositionX = `0vw`;
+            }*/
 
-            this._background.style.backgroundPositionX = `${scrollPercent * 100}%, 50%`;
+            this._background.style.left = `${-Math.min(Math.max(scrollPercent * 100, 0), 100)}%`;
             //scroll header
-            this._container.querySelector('.panorama-header').style.transform = `translateX(${-scrollPercent * 200}px)`;
+            this._header.style.setProperty('--translate-x', `${-scrollPercent * 200}px`);
 
         }, { passive: true });
+    }
+}
+
+if (window.CSS && CSS.registerProperty) {
+    try {
+        CSS.registerProperty({
+            name: '--translate-x',
+            syntax: '<length>',
+            inherits: false,
+            initialValue: '0px'
+        });
+        CSS.registerProperty({
+            name: '--animate-offset',
+            syntax: '<length>',
+            inherits: false,
+            initialValue: '0px'
+        });
+        /* CSS.registerProperty({
+             name: '--bg-pos-x',
+             syntax: '<percentage>',
+             inherits: false,
+             initialValue: '0%'
+         });
+         CSS.registerProperty({
+             name: '--bg-animate-offset',
+             syntax: '<number>',
+             inherits: false,
+             initialValue: '0'
+         });*/
+    } catch (e) {
+        // Property already registered or error
     }
 }
 

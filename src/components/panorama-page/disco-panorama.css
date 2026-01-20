@@ -1,3 +1,6 @@
+/*import disco animations.css*/
+@import '../animations/disco-animations.css';
+
 :host {
     display: block;
     width: 100%;
@@ -14,13 +17,24 @@
     top: 0;
     left: 0;
     height: 100%;
-    width: 100%;
+    width: 200%;
     /* Wider than viewport for parallax */
     z-index: 0;
     background-size: cover;
-    background-position: 0%, 50%;
-    background-repeat: no-repeat;
+    background-repeat: repeat-x;
     pointer-events: none;
+
+    /*--bg-pos-x: 0%;
+    background-position: calc(var(--bg-pos-x) + var(--bg-animate-offset) * 1%) 50%;
+
+
+    &.panorama-background-animate-right {
+        animation: panorama-background-animate-right 1s ease forwards !important;
+    }
+
+    &.panorama-background-animate-left {
+        animation: panorama-background-animate-left 1s ease forwards !important;
+    }*/
 }
 
 .panorama-shell {
@@ -35,8 +49,85 @@
 .panorama-header {
     padding: 20px 24px 10px 24px;
     z-index: 2;
+    --translate-x: 0px;
+    transform: translateX(var(--translate-x)) translateX(var(--animate-offset));
+
+    &.panorama-header-animate-right {
+        animation: panorama-header-animate-right 1s ease forwards !important;
+    }
+
+    &.panorama-header-animate-left {
+        animation: panorama-header-animate-left 1s ease forwards !important;
+    }
 }
 
+@keyframes panorama-header-animate-left {
+    0% {
+        --animate-offset: 300px;
+        animation-timing-function: var(--disco-ease-in-quint);
+    }
+
+    20% {
+        --animate-offset: 700px;
+        animation-timing-function: var(--disco-ease-in-quint);
+    }
+
+    20.00001% {
+        --animate-offset: -400px;
+        animation-timing-function: var(--disco-ease-out-quint);
+    }
+
+    100% {
+        --animate-offset: 0px;
+        animation-timing-function: var(--disco-ease-out-quint);
+    }
+}
+
+@keyframes panorama-header-animate-right {
+    0% {
+        --animate-offset: -300px;
+        animation-timing-function: var(--disco-ease-in-quint);
+    }
+
+    20% {
+        --animate-offset: -700px;
+        animation-timing-function: var(--disco-ease-in-quint);
+    }
+
+    20.00001% {
+        --animate-offset: 400px;
+        animation-timing-function: var(--disco-ease-out-quint);
+    }
+
+    100% {
+        --animate-offset: 0px;
+        animation-timing-function: var(--disco-ease-out-quint);
+    }
+}
+/*
+@keyframes panorama-background-animate-left {
+    0% {
+        --bg-animate-offset: 50;
+        animation-timing-function: var(--disco-ease-out-quart);
+    }
+
+    100% {
+        --bg-animate-offset: 0;
+        animation-timing-function: var(--disco-ease-out-quart);
+    }
+}
+
+@keyframes panorama-background-animate-right {
+    0% {
+        --bg-animate-offset: -50;
+        animation-timing-function: var(--disco-ease-out-quart);
+    }
+    100% {
+        --bg-animate-offset: 0;
+        animation-timing-function: var(--disco-ease-out-quart);
+    }
+}
+*/
 .panorama-title {
     font-size: 72px;
     font-weight: lighter;
@@ -66,22 +157,22 @@
 }
 
 /* ghosts are spacers */
-.ghost {
-    flex-shrink: 0;
-    height: 100%;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    display: flex;
-}
+    .ghost {
+        flex-shrink: 0;
+        height: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        display: flex;
+    }
 
-/* .panorama-content removed; styles merged into viewport */
+    /* .panorama-content removed; styles merged into viewport */
 
-::slotted(disco-panorama-section),
-.ghost disco-panorama-section {
-    max-width: calc(100% - 74px);
-    min-width: 400px;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    flex-shrink: 0;
-    padding-left: 24px;
-}
+    ::slotted(disco-panorama-section),
+    .ghost disco-panorama-section {
+        max-width: calc(100% - 74px);
+        min-width: 400px;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        flex-shrink: 0;
+        padding-left: 24px;
+    }

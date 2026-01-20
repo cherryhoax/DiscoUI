@@ -1,5 +1,11 @@
-import './disco-animations.css';
+import animationsCss from './disco-animations.css';
 import bspline from 'b-spline';
+
+if (typeof document !== 'undefined') {
+    const style = document.createElement('style');
+    style.textContent = animationsCss;
+    document.head.appendChild(style);
+}
 
 /**
  * @typedef {Object} DiscoSplineOptions
