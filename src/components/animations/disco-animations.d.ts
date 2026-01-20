@@ -18,6 +18,19 @@ export type DiscoAnimateOptions = KeyframeAnimationOptions & {
   spline?: boolean | DiscoSplineOptions;
 };
 
+export interface DiscoPageAnimationOptions {
+  direction?: 'forward' | 'back';
+}
+
+export interface PageAnimations {
+  in(target: Element, options?: DiscoPageAnimationOptions): Promise<void>;
+  out(target: Element, options?: DiscoPageAnimationOptions): Promise<void>;
+}
+
+export interface AnimationSet {
+  page: PageAnimations;
+}
+
 declare const DiscoAnimations: {
   linear: string;
   ease: string;
@@ -68,6 +81,7 @@ declare const DiscoAnimations: {
   linearKeyframes: (keyframes: DiscoKeyframe[], options?: DiscoKeyframeOptions) => DiscoKeyframe[];
   inferSplineOptions: (keyframes: DiscoKeyframe[], base?: DiscoSplineOptions) => DiscoSplineOptions;
   animate: (target: Element, keyframes: DiscoKeyframe[] | Keyframe[], options?: DiscoAnimateOptions) => Animation;
+  animationSet: AnimationSet;
 };
 
 export default DiscoAnimations;

@@ -27,52 +27,7 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {Promise<void>}
    */
   async animateInFn(options = { direction: 'forward' }) {
-
-    const animation = options.direction === 'forward' ? DiscoAnimations.animate(
-      this,
-      [
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
-        },
-        {
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
-        },
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
-        }
-      ],
-      {
-        duration: 300,
-        easing: DiscoAnimations.easeOutQuart,
-        spline: true,
-        fill: 'forwards'
-      }
-    ) : DiscoAnimations.animate(
-      this,
-      [
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
-        },
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
-        }
-      ],
-      {
-        duration: 300,
-        easing: DiscoAnimations.easeOutQuart,
-        spline: true,
-        fill: 'forwards'
-      }
-    );
-    await animation.finished;
+    await DiscoAnimations.animationSet.page.in(this, options);
   }
 
   /**
@@ -80,49 +35,7 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {Promise<void>}
    */
   async animateOutFn(options = { direction: 'forward' }) {
-    console.log("disco pivot page out")
-    const animation = options.direction === 'forward' ? DiscoAnimations.animate(
-      this,
-      [
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
-        },
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
-        }
-      ],
-      {
-        duration: 150,
-        easing: DiscoAnimations.easeInQuad,
-        fill: 'forwards',
-        spline: true
-      }
-    ) : DiscoAnimations.animate(
-      this,
-      [
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
-        },
-        {
-          opacity: 1,
-          transformOrigin: 'left center',
-          transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(90deg) translateX(${window.innerWidth / 5}px)`
-        }
-      ],
-      {
-        duration: 150,
-        easing: DiscoAnimations.easeInQuad,
-        fill: 'forwards',
-        spline: true
-      }
-    );
-    await animation.finished;
+    await DiscoAnimations.animationSet.page.out(this, options);
   }
 
   /**

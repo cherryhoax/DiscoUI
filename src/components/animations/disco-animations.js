@@ -23,6 +23,114 @@ import bspline from 'b-spline';
  * @typedef {KeyframeAnimationOptions & { spline?: boolean | DiscoSplineOptions }} DiscoAnimateOptions
  */
 
+const animationSet = {
+    page: {
+        /**
+         * @param {Element} target
+         * @param {DiscoPageAnimationOptions} [options]
+         * @returns {Promise<void>}
+         */
+        in: async (target, options = { direction: 'forward' }) => {
+            const animation = options.direction === 'forward' ? DiscoAnimations.animate(
+                target,
+                [
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                    },
+                    {
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                    }
+                ],
+                {
+                    duration: 300,
+                    easing: DiscoAnimations.easeOutQuart,
+                    spline: true,
+                    fill: 'forwards'
+                }
+            ) : DiscoAnimations.animate(
+                target,
+                [
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                    }
+                ],
+                {
+                    duration: 300,
+                    easing: DiscoAnimations.easeOutQuart,
+                    spline: true,
+                    fill: 'forwards'
+                }
+            );
+            await animation.finished;
+        },
+
+        /**
+         * @param {Element} target
+         * @param {DiscoPageAnimationOptions} [options]
+         * @returns {Promise<void>}
+         */
+        out: async (target, options = { direction: 'forward' }) => {
+            const animation = options.direction === 'forward' ? DiscoAnimations.animate(
+                target,
+                [
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
+                    }
+                ],
+                {
+                    duration: 150,
+                    easing: DiscoAnimations.easeInQuad,
+                    fill: 'forwards',
+                    spline: true
+                }
+            ) : DiscoAnimations.animate(
+                target,
+                [
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(90deg) translateX(${window.innerWidth / 5}px)`
+                    }
+                ],
+                {
+                    duration: 150,
+                    easing: DiscoAnimations.easeInQuad,
+                    fill: 'forwards',
+                    spline: true
+                }
+            );
+            await animation.finished;
+        }
+
+    }
+}
+
 const DiscoAnimations = {
     linear: 'cubic-bezier(0.250, 0.250, 0.750, 0.750)',
     ease: 'cubic-bezier(0.250, 0.100, 0.250, 1.000)',
@@ -634,11 +742,7 @@ const DiscoAnimations = {
         const frames = splineOptions ? DiscoAnimations.splineKeyframes(keyframes, splineOptions) : keyframes;
         const easing = rest.easing;
         return target.animate(frames, { ...rest, easing });
-    }
+    },
+    animationSet
 };
-const AnimationSet = {
-    Page:{
-        
-    }
-}
 export default DiscoAnimations;
