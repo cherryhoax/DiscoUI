@@ -1,0 +1,87 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    background-color: var(--disco-bg, #000);
+    color: var(--disco-fg, #fff);
+}
+
+.panorama-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    /* Wider than viewport for parallax */
+    z-index: 0;
+    background-size: cover;
+    background-position: 0%, 50%;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.panorama-shell {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.panorama-header {
+    padding: 20px 24px 10px 24px;
+    z-index: 2;
+}
+
+.panorama-title {
+    font-size: 72px;
+    font-weight: lighter;
+    line-height: 1;
+    margin: 0;
+    white-space: nowrap;
+    text-transform: lowercase;
+    opacity: 0.9;
+}
+
+.panorama-viewport {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: row;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.panorama-viewport::-webkit-scrollbar {
+    display: none;
+}
+
+/* ghosts are spacers */
+.ghost {
+    flex-shrink: 0;
+    height: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+}
+
+/* .panorama-content removed; styles merged into viewport */
+
+::slotted(disco-panorama-section),
+.ghost disco-panorama-section {
+    max-width: calc(100% - 74px);
+    min-width: 400px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    flex-shrink: 0;
+    padding-left: 24px;
+}

@@ -1,0 +1,25 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-family: 'Segoe UI Semibold', 'Segoe UI', system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: lowercase;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.section-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

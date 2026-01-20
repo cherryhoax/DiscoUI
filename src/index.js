@@ -6,6 +6,7 @@ export { default as DiscoUIElement } from './components/disco-ui-element.js';
 export { default as DiscoPivot } from './components/pivot-page/index.js';
 export { default as DiscoAnimations } from './components/animations/disco-animations.js';
 export { default as DiscoList } from './components/list-view/index.js';
+export { default as DiscoPanorama } from './components/panorama-page/index.js';
 
 /**
  * Public exports for DiscoUI.
