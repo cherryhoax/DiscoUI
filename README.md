@@ -2,7 +2,6 @@
 	<img src="assets/dui.svg" alt="DiscoUI logo" width="120" />
 	<h1>DiscoUI</h1>
 	<p>Custom Elements for a Metro-inspired mobile shell: pivot navigation, frame/page transitions, and a splash screen—built with vanilla JS, Shadow DOM, and CSS.</p>
-    <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/cherryhoax/DiscoUI/total?style=for-the-badge&label=Total%20Downloads">
 
 </div>
 
@@ -13,7 +12,7 @@ npm run dev
 # open http://localhost:3000 (auto-opens by default)
 ```
 
-The viewer loads `src/index.html`, which hosts the app inside an iframe. The demo pivot app lives at `src/examples/disco-pivot.html`.
+The viewer loads `examples/index.html` by default.
 
 ## Usage
 Import the bundle and drop the components:
@@ -28,19 +27,17 @@ Import the bundle and drop the components:
 ```
 
 ### Theming
-Change colors and fonts via CSS variables (set on `:root` or any ancestor):
-```css
-:root {
-	--disco-bg: #000;
-	--disco-fg: #fff;
-	--disco-accent: #d80073;
-	--disco-font: 'Segoe UI', sans-serif;
-}
+Set the theme and accent color via attributes on the `<html>` tag:
+```html
+<html disco-theme="auto" disco-accent="#d80073" disco-font="Times New Roman">
+```
+```html
+<html disco-theme="dark" disco-accent="green">
 ```
 
 ## Project Structure
-- `src/components/` — web components (frame, page base, splash, pivot)
-- `src/index.html` — viewer shell with controls (theme/accent/font/scale)
+- `src/components/` — web components (frame, page base, splash, pivot, panorama, list view)
+- `examples/` — demo apps and viewer shell
 - `webpack.config.js` — bundling/dev-server config
 
 ## Development
@@ -53,12 +50,12 @@ Change colors and fonts via CSS variables (set on `:root` or any ancestor):
 - [x] Disco Page
 - [x] Disco Splash
 - [x] Disco Pivot
-- [ ] Disco List View
+- [x] Disco List View
 - [ ] Disco Button
 - [ ] Disco Dropdown & Combo Box
 - [ ] Disco Slider
 - [ ] Disco Checkbox
-- [ ] Disco Panorama
+- [x] Disco Panorama
 - [ ] Disco Text Box
 - [ ] Disco Rich Text Block
 - [ ] Disco Toggle Switch
@@ -76,3 +73,9 @@ Change colors and fonts via CSS variables (set on `:root` or any ancestor):
 
 ## License
 This project is licensed under the [MIT License](./LICENSE).
+
+## Contact
+
+For any inquiries or feedback, feel free to reach out!
+
+<a href="https://www.buymeacoffee.com/cherryhoax" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
