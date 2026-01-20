@@ -5,7 +5,12 @@
 	--disco-accent: attr(disco-accent type(<color>), #d80073);
 	--disco-font: attr(disco-font raw-string, 'Open Sans', sans-serif);
 	--disco-theme: 0;
+	--disco-perspective: 1000px;
+	--disco-page-in-ease: var(--disco-ease-out-quart, ease-out);
+	--disco-page-out-ease: var(--disco-ease-out-quad, ease-in);
 	font-family: var(--disco-font, 'Open Sans', sans-serif);
+	background-color: var(--disco-bg);
+	color: var(--disco-fg);
 }
 
 * {

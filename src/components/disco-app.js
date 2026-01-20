@@ -51,10 +51,17 @@ class DiscoApp {
    */
   static ready(callback) {
     if (typeof callback !== 'function') return;
+    const run = () => {
+      if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+        document.fonts.ready.then(() => callback());
+      } else {
+        callback();
+      }
+    };
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => callback());
+      document.addEventListener('DOMContentLoaded', run);
     } else {
-      callback();
+      run();
     }
   }
 

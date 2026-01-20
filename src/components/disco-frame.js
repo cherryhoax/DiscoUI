@@ -21,7 +21,7 @@ class DiscoFrame extends DiscoUIElement {
 
     if (current) {
       if (typeof current.animateOut === 'function') {
-        await current.animateOut();
+        await current.animateOut({ direction: 'forward' });
       } else if (exitDuration > 0) {
         await new Promise((resolve) => setTimeout(resolve, exitDuration));
       }
@@ -33,7 +33,7 @@ class DiscoFrame extends DiscoUIElement {
 
     const typedPage = /** @type {import('./disco-page.js').default} */ (page);
     if (typeof typedPage.animateIn === 'function') {
-      await typedPage.animateIn();
+      await typedPage.animateIn({ direction: 'forward' });
     }
   }
 
@@ -48,7 +48,7 @@ class DiscoFrame extends DiscoUIElement {
 
     if (current) {
       if (typeof current.animateOut === 'function') {
-        await current.animateOut();
+        await current.animateOut({ direction: 'back' });
       } else if (exitDuration > 0) {
         await new Promise((resolve) => setTimeout(resolve, exitDuration));
       }
@@ -61,7 +61,7 @@ class DiscoFrame extends DiscoUIElement {
     if (previous) {
       this.appendChild(previous);
       if (typeof previous.animateIn === 'function') {
-        await previous.animateIn();
+        await previous.animateIn({ direction: 'back' });
       }
     }
   }

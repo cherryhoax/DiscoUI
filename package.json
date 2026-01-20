@@ -21,7 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fontsource/open-sans": "^5.2.7"
+    "@fontsource/open-sans": "^5.2.7",
+    "b-spline": "^2.0.2"
   },
   "devDependencies": {
     "css-loader": "^7.1.2",

@@ -3,12 +3,15 @@
   color: var(--disco-fg);
   overflow: hidden;
   display: block;
-  height: 100%; /* Ensure host is 100% height */
+  height: 100%;
+  /* Ensure host is 100% height */
 }
 
 .pivot-shell {
-  height: 100%; /* Ensure pivot shell is 100% height */
+  height: 100%;
+  /* Ensure pivot shell is 100% height */
 }
+
 .pivot-root {
   display: flex;
   flex-direction: column;
@@ -31,6 +34,7 @@
   scrollbar-width: none;
 }
 
+
 .header-strip::-webkit-scrollbar {
   display: none;
 }
@@ -46,7 +50,8 @@
 .content-viewport {
   display: flex;
   flex: 1;
-  height: 100%; /* Ensure content viewport is 100% height */
+  height: 100%;
+  /* Ensure content viewport is 100% height */
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -65,26 +70,4 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
   margin-right: 100%;
-}
-
-@keyframes discoPageIn {
-  from {
-    transform: rotateY(-20deg) translateX(100px);
-    opacity: 0;
-  }
-  to {
-    transform: rotateY(0) translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes discoPageOut {
-  from {
-    transform: rotateY(0) translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: rotateY(15deg) translateX(-100px);
-    opacity: 0;
-  }
 }
