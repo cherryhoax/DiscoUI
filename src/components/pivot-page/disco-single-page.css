@@ -1,0 +1,57 @@
+:host {
+    background-color: var(--disco-bg);
+    color: var(--disco-fg);
+    overflow: hidden;
+    display: block;
+    height: 100%;
+}
+
+.single-shell {
+    height: 100%;
+}
+
+.single-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.app-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    padding: 18px 20px 0;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+
+.header-strip {
+    display: flex;
+    gap: 25px;
+    padding: 10px 20px 20px;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+.header-strip::-webkit-scrollbar {
+    display: none;
+}
+
+.header-item {
+    font-size: 45px;
+    font-weight: 100;
+    white-space: nowrap;
+    text-transform: lowercase;
+}
+
+.content-viewport {
+    display: block;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.content-viewport::-webkit-scrollbar {
+    display: none;
+}

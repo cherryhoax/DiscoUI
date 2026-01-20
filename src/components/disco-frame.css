@@ -1,6 +1,7 @@
 disco-frame {
   position: fixed;
   display: flex;
+  flex-direction: column;
   visibility: hidden;
   left: 0;
   top: 0;
@@ -8,6 +9,7 @@ disco-frame {
   height: 100vh;
   font-family: var(--disco-font);
   background-color: var(--disco-bg);
+
 }
 
 disco-frame[disco-launched] {

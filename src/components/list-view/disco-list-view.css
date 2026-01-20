@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+.list {
+  display: block;
+}
+
+::slotted(disco-list-item) {
+  display: block;
+}

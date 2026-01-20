@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.item {
+  display: block;
+  padding: 12px 0px;
+}
+
+.item ::slotted(div.setting-title) {
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.item ::slotted(div.setting-description) {
+  font-size: 18px;
+  opacity: 0.5;
+  line-height: 1.2;
+}

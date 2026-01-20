@@ -45,6 +45,7 @@
   white-space: nowrap;
   transition: transform 0.2s ease;
   will-change: opacity, transform;
+  text-transform: lowercase;
 }
 
 .content-viewport {
