@@ -11,13 +11,8 @@ const launchDemo = async () => {
     const frame = document.getElementById('demoFrame');
     const page = document.getElementById('demoPanorama');
 
-    console.log('Launching Panorama Demo...');
     app.launch(frame);
-
-    // Initial navigation to ensure page is active and (optionally) animated
-    if (page) {
-        await frame.navigate(page);
-    }
+    await frame.navigate(page);
 };
 
 DiscoApp.ready(launchDemo);

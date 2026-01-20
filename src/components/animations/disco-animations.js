@@ -131,6 +131,43 @@ const animationSet = {
     }
 }
 
+const cubicBezierAt = (t, x1, y1, x2, y2) => {
+    const clamp = (value) => Math.max(0, Math.min(1, value));
+    const clamped = clamp(t);
+    const cx = 3 * x1;
+    const bx = 3 * (x2 - x1) - cx;
+    const ax = 1 - cx - bx;
+    const cy = 3 * y1;
+    const by = 3 * (y2 - y1) - cy;
+    const ay = 1 - cy - by;
+    const sampleX = (tValue) => ((ax * tValue + bx) * tValue + cx) * tValue;
+    const sampleY = (tValue) => ((ay * tValue + by) * tValue + cy) * tValue;
+    const sampleDerivativeX = (tValue) => (3 * ax * tValue + 2 * bx) * tValue + cx;
+
+    let u = clamped;
+    for (let i = 0; i < 8; i += 1) {
+        const x = sampleX(u) - clamped;
+        const d = sampleDerivativeX(u);
+        if (Math.abs(x) < 1e-6 || d === 0) break;
+        u -= x / d;
+    }
+
+    let low = 0;
+    let high = 1;
+    for (let i = 0; i < 12; i += 1) {
+        const x = sampleX(u);
+        if (Math.abs(x - clamped) < 1e-6) break;
+        if (x < clamped) {
+            low = u;
+        } else {
+            high = u;
+        }
+        u = (low + high) / 2;
+    }
+
+    return sampleY(u);
+};
+
 const DiscoAnimations = {
     linear: 'cubic-bezier(0.250, 0.250, 0.750, 0.750)',
     ease: 'cubic-bezier(0.250, 0.100, 0.250, 1.000)',
@@ -161,7 +198,37 @@ const DiscoAnimations = {
     easeInOutExpo: 'cubic-bezier(1.000, 0.000, 0.000, 1.000)',
     easeInOutCirc: 'cubic-bezier(0.785, 0.135, 0.150, 0.860)',
     easeInOutBack: 'cubic-bezier(0.680, -0.550, 0.265, 1.550)',
-
+    calculate: {
+        linear: (t) => cubicBezierAt(t, 0.25, 0.25, 0.75, 0.75),
+        ease: (t) => cubicBezierAt(t, 0.25, 0.1, 0.25, 1),
+        easeIn: (t) => cubicBezierAt(t, 0.42, 0, 1, 1),
+        easeOut: (t) => cubicBezierAt(t, 0, 0, 0.58, 1),
+        easeInOut: (t) => cubicBezierAt(t, 0.42, 0, 0.58, 1),
+        easeInQuad: (t) => cubicBezierAt(t, 0.55, 0.085, 0.68, 0.53),
+        easeInCubic: (t) => cubicBezierAt(t, 0.55, 0.055, 0.675, 0.19),
+        easeInQuart: (t) => cubicBezierAt(t, 0.895, 0.03, 0.685, 0.22),
+        easeInQuint: (t) => cubicBezierAt(t, 0.755, 0.05, 0.855, 0.06),
+        easeInSine: (t) => cubicBezierAt(t, 0.47, 0, 0.745, 0.715),
+        easeInExpo: (t) => cubicBezierAt(t, 0.95, 0.05, 0.795, 0.035),
+        easeInCirc: (t) => cubicBezierAt(t, 0.6, 0.04, 0.98, 0.335),
+        easeInBack: (t) => cubicBezierAt(t, 0.6, -0.28, 0.735, 0.045),
+        easeOutQuad: (t) => cubicBezierAt(t, 0.25, 0.46, 0.45, 0.94),
+        easeOutCubic: (t) => cubicBezierAt(t, 0.215, 0.61, 0.355, 1),
+        easeOutQuart: (t) => cubicBezierAt(t, 0.165, 0.84, 0.44, 1),
+        easeOutQuint: (t) => cubicBezierAt(t, 0.23, 1, 0.32, 1),
+        easeOutSine: (t) => cubicBezierAt(t, 0.39, 0.575, 0.565, 1),
+        easeOutExpo: (t) => cubicBezierAt(t, 0.19, 1, 0.22, 1),
+        easeOutCirc: (t) => cubicBezierAt(t, 0.075, 0.82, 0.165, 1),
+        easeOutBack: (t) => cubicBezierAt(t, 0.175, 0.885, 0.32, 1.275),
+        easeInOutQuad: (t) => cubicBezierAt(t, 0.455, 0.03, 0.515, 0.955),
+        easeInOutCubic: (t) => cubicBezierAt(t, 0.645, 0.045, 0.355, 1),
+        easeInOutQuart: (t) => cubicBezierAt(t, 0.77, 0, 0.175, 1),
+        easeInOutQuint: (t) => cubicBezierAt(t, 0.86, 0, 0.07, 1),
+        easeInOutSine: (t) => cubicBezierAt(t, 0.445, 0.05, 0.55, 0.95),
+        easeInOutExpo: (t) => cubicBezierAt(t, 1, 0, 0, 1),
+        easeInOutCirc: (t) => cubicBezierAt(t, 0.785, 0.135, 0.15, 0.86),
+        easeInOutBack: (t) => cubicBezierAt(t, 0.68, -0.55, 0.265, 1.55)
+    },
     perspective: () => window.innerWidth * 4 + "px",
 
     /**

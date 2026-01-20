@@ -86,16 +86,16 @@ class DiscoPanorama extends DiscoPage {
         const slot = this.shadowRoot.querySelector('slot');
         const ghostLeft = this.shadowRoot.querySelector('.ghost-left');
         const ghostRight = this.shadowRoot.querySelector('.ghost-right');
-        
+
         if (!viewport || !slot || !ghostLeft || !ghostRight) return;
 
         let items = [];
         let isTeleporting = false;
 
         const updateLayout = () => {
-             // Re-query assigned elements
+            // Re-query assigned elements
             items = slot.assignedElements().filter(el => el.tagName.toLowerCase().includes('panorama-section'));
-            
+
             ghostLeft.innerHTML = '';
             ghostRight.innerHTML = '';
 
@@ -110,44 +110,53 @@ class DiscoPanorama extends DiscoPage {
             ghostRight.style.width = '';
 
             const viewportWidth = viewport.clientWidth || window.innerWidth;
-            const margin = 48; // Sync with CSS
+            const margin = 0; // Removed extra margin calculation as per user report of gaps
 
-            // Fill Ghost Right (clones of [0, 1, ...])
-            let currentRightWidth = 0;
-            let i = 0;
-            while (currentRightWidth < viewportWidth + 400 && i < items.length * 2) { 
-                // Loop i modulo length to fill space if needed
-                const item = items[i % items.length];
-                const clone = item.cloneNode(true);
-                clone.removeAttribute('id'); 
-                ghostRight.appendChild(clone);
-                // include margin in layout calc
-                currentRightWidth += ((item.offsetWidth || 400) + margin); 
-                i++;
+            // Calculate Real Content Width/Check
+            const totalItemWidth = items.reduce((acc, item) => acc + item.offsetWidth, 0);
+
+            // If content is smaller than viewport, infinite loop is impossible without cloning.
+            // We disable the ghosts to prevent visual glitches.
+            if (totalItemWidth <= viewportWidth) {
+                ghostLeft.style.width = '24px'; // padding
+                ghostRight.style.width = '24px';
+                return;
             }
 
-            // Fill Ghost Left (clones of [last, last-1, ...])
-            let currentLeftWidth = 0;
-            let j = items.length - 1;
-            while (currentLeftWidth < viewportWidth + 400 && j >= -items.length) {
-                // handle negative j wrap
-                const index = (j + items.length * 10) % items.length;
-                const item = items[index];
-                const clone = item.cloneNode(true);
-                clone.removeAttribute('id');
-                ghostLeft.insertBefore(clone, ghostLeft.firstChild);
-                currentLeftWidth += ((item.offsetWidth || 400) + margin); 
-                j--;
-            }
+            const firstItem = items[0];
+            const lastItem = items[items.length - 1];
+            ghostLeft.style.width = `${lastItem.offsetWidth}px`;
+            // Ensure ghostRight is wide enough to let us align its start with the viewport left edge
+            // This prevents "jumps" when the first item is narrower than the screen
+            ghostRight.style.width = `${Math.max(firstItem.offsetWidth, viewportWidth)}px`;
 
             // Initial Scroll Position: Jump from 0 to Start of Real Content
-            requestAnimationFrame(() => {
-                if (viewport.scrollLeft < 10) {
-                     // We want to start at the first Real Item.
-                     // The first real item starts exactly after GhostLeft.
-                     viewport.scrollLeft = ghostLeft.offsetWidth;
+            const ensureInitialScroll = (tries = 0) => {
+                if (tries > 6 || items.length === 0) return;
+
+                // Recalculate if layout changed
+                const currentTotal = items.reduce((acc, item) => acc + item.offsetWidth, 0);
+                if (currentTotal <= viewport.clientWidth) return;
+
+                const firstItem = items[0];
+                const targetLeft = firstItem.offsetLeft;
+                // Wait until layout settles and target is measurable
+                if (targetLeft <= 0 || viewport.scrollWidth === 0) {
+                    requestAnimationFrame(() => ensureInitialScroll(tries + 1));
+                    return;
                 }
-            });
+                // Only reset if we are near 0 (default) or clearly misaligned
+                if (viewport.scrollLeft < 10) {
+                    viewport.style.scrollBehavior = 'auto';
+                    viewport.style.scrollSnapType = 'none';
+                    viewport.scrollLeft = targetLeft;
+                    requestAnimationFrame(() => {
+                        viewport.style.scrollBehavior = '';
+                        viewport.style.scrollSnapType = '';
+                    });
+                }
+            };
+            requestAnimationFrame(() => ensureInitialScroll());
         };
 
         // Handle Slot Changes
@@ -160,65 +169,51 @@ class DiscoPanorama extends DiscoPage {
         });
 
         requestAnimationFrame(updateLayout);
-        
+
         // Scroll Loop Logic
         viewport.addEventListener('scroll', () => {
             if (items.length <= 1 || isTeleporting) return;
-            
+
+            const firstItem = items[0];
+            const lastItem = items[items.length - 1];
+
             const scrollLeft = viewport.scrollLeft;
             const ghostLeftWidth = ghostLeft.offsetWidth;
-            const ghostRightWidth = ghostRight.offsetWidth;
+            const ghostRightWidth = firstItem.offsetWidth + 96
             const totalScrollWidth = viewport.scrollWidth;
-            
+
+            // Clean up visual transforms when not needed
+            // (We'll re-apply them if we are in a zone)
+            items[0].style.transform = '';
+            items[items.length - 1].style.transform = '';
+
             // 1. Enter Left Ghost Zone
             if (scrollLeft < ghostLeftWidth) {
-                // Offset calculation:
-                // distance from Right Edge of GhostLeft = ghostLeftWidth - scrollLeft
-                const distFromEnd = ghostLeftWidth - scrollLeft;
-                
-                // Real Content End is at (ghostLeftWidth + realContentWidth)
-                // or simpler: The Real Last Item ends at (lastItem.offsetLeft + lastItem.offsetWidth).
-                // But we have multiple items.
-                // It is safest to map "End of GhostLeft" to "Start of Real Content".
-                // Wait.
-                // End of GhostLeft == Start of Real Content.
-                // Visually: ... [LastClone] | [RealFirst] ...
-                // If we scroll LEFT into GhostLeft, we are seeing [LastClone].
-                // We should match [RealLast].
-                // RealLast is at `items[last].offsetLeft`.
-                // RealLast Ends at `items[last].offsetLeft + width`.
-                // So (End of GhostLeft) visually matches (End of RealLast).
-                // Wait. No.
-                // GhostLeft Ends with LastClone.
-                // Start of RealContent begins with FirstItem.
-                // Loop Point: [Last] -> [First].
-                // So GhostLeft End IS visually [LastClone].
-                // Real Content End IS visually [LastItem].
-                // The LOOP connection is correct.
-                
-                // Map Point: ghostLeftWidth (End of GhostLeft) <-> (End of Real Content) roughly?
-                // Visual Match: The pixels immediately to the LEFT of ghostLeftWidth are [LastClone].
-                // The pixels immediately to the LEFT of RightGhostStart are [LastItem].
-                
-                // Correct logic:
-                // We are `distFromEnd` pixels into the GhostLeft (from right side).
-                // We want to be `distFromEnd` pixels into the RealContent (from right side).
-                
-                const realContentEnd = totalScrollWidth - ghostRightWidth; 
-                // This is the start of GhostRight. Which visually is after LastItem.
-                // So Total Real Content ends at `realContentEnd`.
-                
-                // Target Scroll: realContentEnd - distFromEnd
-                const targetScroll = realContentEnd - distFromEnd;
-                
-                // Only teleport if significant change to avoid jitter at boundary
-                if (Math.abs(scrollLeft - targetScroll) > 5) {
+                console.log("enter left ghost")
+                // Determine layout
+                const lastItem = items[items.length - 1];
+
+                // Visual Transform: Move Last Item to occupy Ghost Left
+                // Goal: lastItem left edge should be at 0
+                // Current: lastItem.offsetLeft
+                lastItem.style.transform = `translateX(-${lastItem.offsetLeft}px)`;
+
+                // Teleport Logic
+                // Trigger when we've scrolled past the middle of the visual Last Item (Ghost Left)
+                // This ensures symmetry with the Right Zone trigger
+                if (scrollLeft <= ghostLeftWidth / 2) {
+                    console.log("teleport left ghost")
                     isTeleporting = true;
                     viewport.style.scrollBehavior = 'auto';
                     viewport.style.scrollSnapType = 'none';
-                    
-                    viewport.scrollLeft = targetScroll;
-                    
+
+                    // Jump to "Middle" of Real Last Item
+                    // Map visual position in Ghost Left directly to Real Last Item
+                    viewport.scrollLeft = lastItem.offsetLeft + scrollLeft;
+
+                    // Reset transform immediately so it doesn't look doubled
+                    lastItem.style.transform = '';
+
                     requestAnimationFrame(() => {
                         viewport.style.scrollBehavior = '';
                         viewport.style.scrollSnapType = '';
@@ -228,50 +223,73 @@ class DiscoPanorama extends DiscoPage {
             }
 
             // 2. Enter Right Ghost Zone
-            const startOfGhostRight = totalScrollWidth - ghostRightWidth;
-            
-            if (scrollLeft > startOfGhostRight) {
-                 // distance into GhostRight
-                 const distIntoGhost = scrollLeft - startOfGhostRight;
-                 
-                 // GhostRight starts with FirstClone.
-                 // RealContent starts with FirstItem.
-                 // Start of Real Content = ghostLeftWidth.
-                 
-                 const realContentStart = ghostLeftWidth;
-                 const targetScroll = realContentStart + distIntoGhost;
-                 
-                 if (Math.abs(scrollLeft - targetScroll) > 5) {
+            // Correctly identify the physical start of the Right Ghost element
+            // This is safer than calculating from totalWidth which might include margin quirks
+            const startOfGhostRight = ghostRight.offsetLeft;
+            const clientWidth = viewport.clientWidth;
+
+            if (scrollLeft + clientWidth > startOfGhostRight) {
+                const firstItem = items[0];
+
+                // Visual Transform: Move First Item to occupy Ghost Right
+                // Goal: Move item from its current visual position (offsetLeft) to the ghost's position.
+                // Transform = Dest - Source
+                const offset = startOfGhostRight - firstItem.offsetLeft;
+                firstItem.style.transform = `translateX(${offset}px)`;
+
+                // Teleport Logic
+                // We physically jump when the Viewport Left Edge hits the Ghost Right Start Edge.
+                // This corresponds to the user "landing" on the ghost page.
+                if (scrollLeft > lastItem.offsetLeft + lastItem.offsetWidth / 2) {
                     isTeleporting = true;
                     viewport.style.scrollBehavior = 'auto';
                     viewport.style.scrollSnapType = 'none';
-                    
-                    viewport.scrollLeft = targetScroll;
-                    
+
+                    // Jump to Start of Real Content (firstItem)
+                    // Maintain any sub-pixel overshoot (e.g. momentum scolling past the exact point)
+                    const delta = scrollLeft - startOfGhostRight;
+                    viewport.scrollLeft = firstItem.offsetLeft + delta;
+
+                    firstItem.style.transform = '';
+
                     requestAnimationFrame(() => {
                         viewport.style.scrollBehavior = '';
                         viewport.style.scrollSnapType = '';
                         isTeleporting = false;
                     });
-                 }
+                }
             }
-
+            // if scroll is between two pages and its passing half of the last real page 
+            if (scrollLeft > lastItem.offsetLeft + lastItem.offsetWidth / 2 || scrollLeft < firstItem.offsetLeft - firstItem.offsetWidth / 2) {
+                console.log("heyafas")
+            }
         }, { passive: true });
     }
 
     setupParallax() {
         const viewport = this.shadowRoot.getElementById('viewport');
         if (!viewport) return;
-
+        const slot = this.shadowRoot.querySelector('slot');
         viewport.addEventListener('scroll', () => {
-            this._background.style.backgroundPositionX = `${viewport.scrollLeft / (viewport.scrollWidth - viewport.clientWidth) * 100}%, 50%`;
+            const items = slot?.assignedElements().filter(el => el.tagName.toLowerCase().includes('panorama-section')) || [];
+            if (items.length === 0) return;
+            const firstItem = items[0];
+            const lastItem = items[items.length - 1];
+
+            const start = firstItem.offsetLeft;
+            const end = lastItem.offsetLeft;
+            const totalScrollableDistance = end - start;
+            const scrollLeft = viewport.scrollLeft - start;
+            const scrollPercent = scrollLeft / totalScrollableDistance;
+
+            this._background.style.backgroundPositionX = `${scrollPercent * 100}%, 50%`;
             //scroll header
-            this._container.querySelector('.panorama-header').style.transform = `translateX(-${(viewport.scrollLeft / (viewport.scrollWidth - viewport.clientWidth)) * 200}px)`;
+            this._container.querySelector('.panorama-header').style.transform = `translateX(${-scrollPercent * 200}px)`;
 
         }, { passive: true });
     }
 }
 
-customElements.define('disco-panorama', DiscoPanorama);
+customElements.define('disco-panorama-page', DiscoPanorama);
 
 export default DiscoPanorama;
