@@ -1,4 +1,10 @@
-import { DiscoApp } from '../dist/index.js';
+let DiscoAppModule;
+try {
+  DiscoAppModule = await import('../dist/index.js');
+} catch {
+  DiscoAppModule = await import('./dist/index.js');
+}
+const { DiscoApp } = DiscoAppModule;
 
 const launchDemo = async () => {
   const app = new DiscoApp({
