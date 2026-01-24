@@ -1,7 +1,7 @@
 let DiscoAppModule;
 try {
-  console.log('Trying to load from ./dist/index.js');
-  DiscoAppModule = await import('dist/index.js');
+  console.log('Trying to load from ./DiscoUI/dist/index.js');
+  DiscoAppModule = await import('./DiscoUI/dist/index.js');
 } catch {
   console.log('Falling back to ../dist/index.js');
   DiscoAppModule = await import('../dist/index.js');
