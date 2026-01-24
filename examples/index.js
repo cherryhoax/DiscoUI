@@ -22,6 +22,7 @@ const launchDemo = async () => {
   const homePage = document.getElementById('componentsHome');
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');
+  const progressPage = document.getElementById('componentsProgress');
   const buttonPage = document.getElementById('componentsButton');
 
   const list = homePage.querySelector('#componentsList');
@@ -29,6 +30,7 @@ const launchDemo = async () => {
     list.items = [
       { id: 'pivot', Title: 'Pivot', Description: 'tabbed navigation view' },
       { id: 'hub', Title: 'Hub', Description: 'hub-style layout' },
+      { id: 'progress', Title: 'Progress Bar', Description: 'progress bar examples' },
       { id: 'button', Title: 'Button', Description: 'metro-style button' }
     ];
 
@@ -41,6 +43,9 @@ const launchDemo = async () => {
       if (id === 'hub') {
         frame.navigate(hubPage);
       }
+      if (id === 'progress') {
+        frame.navigate(progressPage);
+      }
       if (id === 'button') {
         frame.navigate(buttonPage);
       }
@@ -50,6 +55,24 @@ const launchDemo = async () => {
   const button = document.getElementById('homeButton');
   if (button) {
     button.addEventListener('click', () => frame.navigate(homePage));
+  }
+
+  // Progress controls
+  const inc = document.getElementById('incProgress');
+  const toggle = document.getElementById('toggleIndeterminate');
+  const det = document.getElementById('progressDeterminate');
+  if (inc && det) {
+    inc.addEventListener('click', () => {
+      const current = Number(det.getAttribute('value') || 0);
+      const max = Number(det.getAttribute('max') || 100);
+      det.setAttribute('value', String(Math.min(max, current + 10)));
+    });
+  }
+  if (toggle && det) {
+    toggle.addEventListener('click', () => {
+      if (det.hasAttribute('indeterminate')) det.removeAttribute('indeterminate');
+      else det.setAttribute('indeterminate', '');
+    });
   }
 
   app.launch(frame);

@@ -63,6 +63,16 @@
                 </disco-list-view>
             </disco-hub-section>
         </disco-hub-page>
+        <disco-single-page id="componentsProgress" app-title="DISCO UI" header="progress-bar">
+            <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+                <disco-progress-bar id="progressDeterminate" value="25" max="100"></disco-progress-bar>
+                <div style="display:flex; gap:8px;">
+                    <disco-button id="incProgress">Advance</disco-button>
+                    <disco-button id="toggleIndeterminate">Toggle Indeterminate</disco-button>
+                </div>
+                <disco-progress-bar id="progressIndeterminate" indeterminate></disco-progress-bar>
+            </div>
+        </disco-single-page>
         <disco-single-page id="componentsButton" app-title="DISCO UI" header="button">
             <disco-button id="homeButton">Navigate</disco-button>
         </disco-single-page>

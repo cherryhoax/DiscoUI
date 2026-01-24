@@ -1,9 +1,6 @@
 import DiscoUIElement from './disco-ui-element.js';
 import buttonStyles from './disco-button.css';
 
-/**
- * Metro-inspired button component.
- */
 class DiscoButton extends DiscoUIElement {
   /**
    * @constructor
