@@ -1,12 +1,12 @@
 import DiscoPage from '../disco-page.js';
-import panoramaCss from './disco-panorama.css';
+import hubCss from './disco-hub.css';
 import DiscoAnimations from '../animations/disco-animations.js';
 
 /**
- * A Windows Phone 8.1 / Hub style Panorama page.
+ * A Windows Phone 8.1 / Hub style Hub page.
  * Features a large title, background with parallax, and horizontal scrolling sections.
  */
-class DiscoPanorama extends DiscoPage {
+class DiscoHub extends DiscoPage {
     /**
      * @param {string} [header]
      */
@@ -14,14 +14,14 @@ class DiscoPanorama extends DiscoPage {
         super();
         this.header = header;
         this.attachShadow({ mode: 'open' });
-        this.loadStyle(panoramaCss, this.shadowRoot);
+        this.loadStyle(hubCss, this.shadowRoot);
 
         this._container = document.createElement('div');
-        this._container.className = 'panorama-shell';
+        this._container.className = 'hub-shell';
         this.shadowRoot.appendChild(this._container);
 
         this._background = document.createElement('div');
-        this._background.className = 'panorama-background';
+        this._background.className = 'hub-background';
         this.shadowRoot.insertBefore(this._background, this._container);
 
         this.render();
@@ -70,16 +70,16 @@ class DiscoPanorama extends DiscoPage {
     render() {
         if (!this.shadowRoot || !this._container) return;
         this._container.innerHTML = `
-            <div class="panorama-header">
-                <h1 class="panorama-title">${this.header}</h1>
+            <div class="hub-header">
+                <h1 class="hub-title">${this.header}</h1>
             </div>
-            <div class="panorama-viewport" id="viewport">
+            <div class="hub-viewport" id="viewport">
                 <div class="ghost ghost-left"></div>
                 <slot></slot>
                 <div class="ghost ghost-right"></div>
             </div>
         `;
-        this._header = this._container.querySelector('.panorama-header')
+        this._header = this._container.querySelector('.hub-header')
     }
 
     setupInfiniteScroll() {
@@ -95,7 +95,7 @@ class DiscoPanorama extends DiscoPage {
 
         const updateLayout = () => {
             // Re-query assigned elements
-            items = slot.assignedElements().filter(el => el.tagName.toLowerCase().includes('panorama-section'));
+            items = slot.assignedElements().filter(el => el.tagName.toLowerCase().includes('hub-section'));
 
             ghostLeft.innerHTML = '';
             ghostRight.innerHTML = '';
@@ -204,14 +204,14 @@ class DiscoPanorama extends DiscoPage {
                 // Trigger when we've scrolled past the middle of the visual Last Item (Ghost Left)
                 // This ensures symmetry with the Right Zone trigger
                 if (scrollLeft <= ghostLeftWidth / 2) {
-                    this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
-                    this._header.classList.add('panorama-header-animate-left');
-                    this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
-                    this._background.classList.add('panorama-background-animate-left');
+                    this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
+                    this._header.classList.add('hub-header-animate-left');
+                    this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
+                    this._background.classList.add('hub-background-animate-left');
                     clearTimeout(this._headerAnimationTimeout);
                     this._headerAnimationTimeout = setTimeout(() => {
-                        this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
-                        this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
+                        this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
+                        this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
                     }, 1000);
                     isTeleporting = true;
                     viewport.style.scrollBehavior = 'auto';
@@ -251,14 +251,14 @@ class DiscoPanorama extends DiscoPage {
                 // We physically jump when the Viewport Left Edge hits the Ghost Right Start Edge.
                 // This corresponds to the user "landing" on the ghost page.
                 if (scrollLeft > lastItem.offsetLeft + lastItem.offsetWidth / 2) {
-                    this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
-                    this._header.classList.add('panorama-header-animate-right');
-                    this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
-                    this._background.classList.add('panorama-background-animate-right');
+                    this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
+                    this._header.classList.add('hub-header-animate-right');
+                    this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
+                    this._background.classList.add('hub-background-animate-right');
                     clearTimeout(this._headerAnimationTimeout);
                     this._headerAnimationTimeout = setTimeout(() => {
-                        this._header.classList.remove('panorama-header-animate-right', 'panorama-header-animate-left');
-                        this._background.classList.remove('panorama-background-animate-right', 'panorama-background-animate-left');
+                        this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
+                        this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
                     }, 1000);
                     isTeleporting = true;
                     viewport.style.scrollBehavior = 'auto';
@@ -286,7 +286,7 @@ class DiscoPanorama extends DiscoPage {
         if (!viewport) return;
         const slot = this.shadowRoot.querySelector('slot');
         viewport.addEventListener('scroll', () => {
-            const items = slot?.assignedElements().filter(el => el.tagName.toLowerCase().includes('panorama-section')) || [];
+            const items = slot?.assignedElements().filter(el => el.tagName.toLowerCase().includes('hub-section')) || [];
             if (items.length === 0) return;
             const firstItem = items[0];
             const lastItem = items[items.length - 1];
@@ -350,6 +350,6 @@ if (window.CSS && CSS.registerProperty) {
     }
 }
 
-customElements.define('disco-panorama-page', DiscoPanorama);
+customElements.define('disco-hub-page', DiscoHub);
 
-export default DiscoPanorama;
+export default DiscoHub;

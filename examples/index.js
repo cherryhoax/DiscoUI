@@ -21,14 +21,14 @@ const launchDemo = async () => {
 
   const homePage = document.getElementById('componentsHome');
   const pivotPage = document.getElementById('componentsPivot');
-  const panoramaPage = document.getElementById('componentsPanorama');
+  const hubPage = document.getElementById('componentsHub');
   const buttonPage = document.getElementById('componentsButton');
 
   const list = homePage.querySelector('#componentsList');
   if (list) {
     list.items = [
       { id: 'pivot', Title: 'Pivot', Description: 'tabbed navigation view' },
-      { id: 'panorama', Title: 'Panorama', Description: 'hub-style layout' },
+      { id: 'hub', Title: 'Hub', Description: 'hub-style layout' },
       { id: 'button', Title: 'Button', Description: 'metro-style button' }
     ];
 
@@ -38,8 +38,8 @@ const launchDemo = async () => {
       if (id === 'pivot') {
         frame.navigate(pivotPage);
       }
-      if (id === 'panorama') {
-        frame.navigate(panoramaPage);
+      if (id === 'hub') {
+        frame.navigate(hubPage);
       }
       if (id === 'button') {
         frame.navigate(buttonPage);

@@ -36,7 +36,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 ```
 
 ## Project Structure
-- `src/components/` — web components (frame, page base, splash, pivot, panorama, list view)
+- `src/components/` — web components (frame, page base, splash, pivot, hub, list view)
 - `examples/` — demo apps and viewer shell
 - `webpack.config.js` — bundling/dev-server config
 
@@ -45,28 +45,38 @@ Set the theme and accent color via attributes on the `<html>` tag:
 - `npm run build` — production bundle
 
 ## Road Map
-- [x] Disco App
-- [x] Disco Frame
-- [x] Disco Page
-- [x] Disco Splash
-- [x] Disco Pivot
-- [x] Disco List View
-- [ ] Disco Button
-- [ ] Disco Dropdown & Combo Box
-- [ ] Disco Slider
-- [ ] Disco Checkbox
-- [x] Disco Panorama
-- [ ] Disco Text Box
-- [ ] Disco Rich Text Block
-- [ ] Disco Toggle Switch
-- [ ] Disco App Bar
-- [ ] Disco Command Button
-- [ ] Disco Context Menu
-- [ ] Disco Dialog
-- [ ] Disco Toast
-- [ ] Disco Progress Bar
-- [ ] Disco Alert
-- [ ] Disco Long List Selector
+| | Control | Description | Class | Tag |
+|---|---|---|---:|---|
+| ✅ | Disco App | App entry/runner (launch, ready, splash control) | DiscoApp | N/A |
+| | Disco App Bar | Bottom app bar / command area | DiscoAppBar | disco-app-bar |
+| ✅ | Disco Button | Button control | DiscoButton | disco-button |
+| | Disco Checkbox | Checkbox input | DiscoCheckbox | disco-checkbox |
+| | Disco Combobox | Combo box input | DiscoCombobox | disco-combobox |
+| | Disco Context Menu | Contextual menu / right-click menu | DiscoContextMenu | disco-context-menu |
+| | Disco Date Picker | Date picker input | DiscoDatePicker | disco-date-picker |
+| | Disco Flip View | Displays a collection of items one at a time | DiscoFlipView | disco-flip-view |
+| | Disco Flyout | Displays a non-modal popup | DiscoFlyout | disco-flyout |
+| ✅ | Disco Frame | Top-level frame handling navigation, theme, and transitions | DiscoFrame | disco-frame |
+| ✅ | Disco Hub | Panoramic layout with parallax header | DiscoHub | disco-hub |
+| | Disco Hyperlink | Displays a hyperlink inline | DiscoHyperlink | disco-hyperlink |
+| | Disco Hyperlink Button | Button that displays a hyperlink | DiscoHyperlinkButton | disco-hyperlink-button |
+| | Disco Image | Displays an image | DiscoImage | disco-image |
+| ✅ | Disco List View | Virtualized list for long lists | DiscoListView / DiscoListItem | disco-list-view / disco-list-item |
+| | Disco Long List Selector | Multi-item selector for very long lists | DiscoLongListSelector | disco-long-list-selector |
+| | Disco Media Element | Audio/video playback | DiscoMediaElement | disco-media-element |
+| | Disco Password Box | Password input | DiscoPasswordBox | disco-password-box |
+| ✅ | Disco Page | Base page component for content and transitions (used by variants) | DiscoPage | disco-page |
+| ✅ | Disco Pivot | Pivot navigation (pivot page and pivot items) | DiscoPivot / DiscoPivotPage | disco-pivot-page / disco-pivot-item |
+| | Disco Progress Bar | Indeterminate/determinate progress indicator | DiscoProgressBar | disco-progress-bar |
+| | Disco Progress Ring | Circular indeterminate/determinate progress indicator | DiscoProgressRing | disco-progress-ring |
+| | Disco Radio Button | Radio button input | DiscoRadioButton | disco-radio-button |
+| | Disco Slider | Slider input control | DiscoSlider | disco-slider |
+| ✅ | Disco Splash | Optional splash screen (modes: none, auto, manual) | DiscoSplash | disco-splash |
+| | Disco Text Box | Single-line text input | DiscoTextBox | disco-text-box |
+| | Disco Time Picker | Time picker input | DiscoTimePicker | disco-time-picker |
+| | Disco Toggle Button | On/off toggle button | DiscoToggleButton | disco-toggle-button |
+| | Disco Toggle Switch | On/off toggle control | DiscoToggleSwitch | disco-toggle-switch |
+
 ...maybe more to come! (feel free to open issues/PRs for them)
 
 

@@ -1,10 +1,10 @@
 import DiscoUIElement from '../disco-ui-element.js';
-import sectionCss from './disco-panorama-section.css';
+import sectionCss from './disco-hub-section.css';
 
 /**
- * A section within a DiscoPanorama.
+ * A section within a DiscoHub.
  */
-class DiscoPanoramaSection extends DiscoUIElement {
+class DiscoHubSection extends DiscoUIElement {
     /**
      * @param {string} [header]
      */
@@ -55,6 +55,6 @@ class DiscoPanoramaSection extends DiscoUIElement {
     }
 }
 
-customElements.define('disco-panorama-section', DiscoPanoramaSection);
+customElements.define('disco-hub-section', DiscoHubSection);
 
-export default DiscoPanoramaSection;
+export default DiscoHubSection;

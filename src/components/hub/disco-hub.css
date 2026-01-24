@@ -12,7 +12,7 @@
     color: var(--disco-fg, #fff);
 }
 
-.panorama-background {
+.hub-background {
     position: absolute;
     top: 0;
     left: 0;
@@ -28,16 +28,16 @@
     background-position: calc(var(--bg-pos-x) + var(--bg-animate-offset) * 1%) 50%;
 
 
-    &.panorama-background-animate-right {
-        animation: panorama-background-animate-right 1s ease forwards !important;
+    &.hub-background-animate-right {
+        animation: hub-background-animate-right 1s ease forwards !important;
     }
 
-    &.panorama-background-animate-left {
-        animation: panorama-background-animate-left 1s ease forwards !important;
+    &.hub-background-animate-left {
+        animation: hub-background-animate-left 1s ease forwards !important;
     }*/
 }
 
-.panorama-shell {
+.hub-shell {
     position: relative;
     z-index: 1;
     width: 100%;
@@ -46,22 +46,22 @@
     flex-direction: column;
 }
 
-.panorama-header {
+.hub-header {
     padding: 20px 24px 10px 24px;
     z-index: 2;
     --translate-x: 0px;
     transform: translateX(var(--translate-x)) translateX(var(--animate-offset));
 
-    &.panorama-header-animate-right {
-        animation: panorama-header-animate-right 1s ease forwards !important;
+    &.hub-header-animate-right {
+        animation: hub-header-animate-right 1s ease forwards !important;
     }
 
-    &.panorama-header-animate-left {
-        animation: panorama-header-animate-left 1s ease forwards !important;
+    &.hub-header-animate-left {
+        animation: hub-header-animate-left 1s ease forwards !important;
     }
 }
 
-@keyframes panorama-header-animate-left {
+@keyframes hub-header-animate-left {
     0% {
         --animate-offset: 300px;
         animation-timing-function: var(--disco-ease-in-quint);
@@ -83,7 +83,7 @@
     }
 }
 
-@keyframes panorama-header-animate-right {
+@keyframes hub-header-animate-right {
     0% {
         --animate-offset: -300px;
         animation-timing-function: var(--disco-ease-in-quint);
@@ -105,7 +105,7 @@
     }
 }
 /*
-@keyframes panorama-background-animate-left {
+@keyframes hub-background-animate-left {
     0% {
         --bg-animate-offset: 50;
         animation-timing-function: var(--disco-ease-out-quart);
@@ -117,7 +117,7 @@
     }
 }
 
-@keyframes panorama-background-animate-right {
+@keyframes hub-background-animate-right {
     0% {
         --bg-animate-offset: -50;
         animation-timing-function: var(--disco-ease-out-quart);
@@ -128,7 +128,7 @@
     }
 }
 */
-.panorama-title {
+.hub-title {
     font-size: 72px;
     font-weight: lighter;
     line-height: 1;
@@ -138,7 +138,7 @@
     opacity: 0.9;
 }
 
-.panorama-viewport {
+.hub-viewport {
     flex: 1;
     overflow-x: auto;
     overflow-y: hidden;
@@ -152,7 +152,7 @@
     padding-right: 0;
 }
 
-.panorama-viewport::-webkit-scrollbar {
+.hub-viewport::-webkit-scrollbar {
     display: none;
 }
 
@@ -165,10 +165,10 @@
         display: flex;
     }
 
-    /* .panorama-content removed; styles merged into viewport */
+    /* .hub-content removed; styles merged into viewport */
 
-    ::slotted(disco-panorama-section),
-    .ghost disco-panorama-section {
+    ::slotted(disco-hub-section),
+    .ghost disco-hub-section {
         max-width: calc(100% - 74px);
         min-width: 400px;
         scroll-snap-align: start;
