@@ -1,8 +1,10 @@
 let DiscoAppModule;
 try {
-  DiscoAppModule = await import('../dist/index.js');
+  console.log('Trying to load from ./dist/index.js');
+  DiscoAppModule = await import('dist/index.js');
 } catch {
-  DiscoAppModule = await import('./dist/index.js');
+  console.log('Falling back to ../dist/index.js');
+  DiscoAppModule = await import('../dist/index.js');
 }
 const { DiscoApp } = DiscoAppModule;
 
@@ -17,10 +19,10 @@ const launchDemo = async () => {
   const frame = document.getElementById('componentsFrame');
   if (!frame) return;
 
-    const homePage = document.getElementById('componentsHome');
-    const pivotPage = document.getElementById('componentsPivot');
-    const panoramaPage = document.getElementById('componentsPanorama');
-    const buttonPage = document.getElementById('componentsButton');
+  const homePage = document.getElementById('componentsHome');
+  const pivotPage = document.getElementById('componentsPivot');
+  const panoramaPage = document.getElementById('componentsPanorama');
+  const buttonPage = document.getElementById('componentsButton');
 
   const list = homePage.querySelector('#componentsList');
   if (list) {
@@ -45,10 +47,10 @@ const launchDemo = async () => {
     });
   }
 
-    const button = document.getElementById('homeButton');
-    if (button) {
-      button.addEventListener('click', () => frame.navigate(homePage));
-    }
+  const button = document.getElementById('homeButton');
+  if (button) {
+    button.addEventListener('click', () => frame.navigate(homePage));
+  }
 
   app.launch(frame);
   await frame.navigate(homePage);
