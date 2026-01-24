@@ -10,8 +10,14 @@ disco-frame {
   font-family: var(--disco-font);
   background-color: var(--disco-bg);
 
-}
+  &[disco-launched] {
+    visibility: visible;
+  }
 
-disco-frame[disco-launched] {
-  visibility: visible;
+  * {
+    user-select: none;
+    user-drag: none;
+    -webkit-user-drag: none;
+    -webkit-user-drag: none;
+  }
 }

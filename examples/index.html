@@ -1,16 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" disco-theme="dark" disco-accent="#D80073">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Examples</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disco Components</title>
+    <style>
+        #pageStore {
+            display: none;
+        }
+    </style>
+    <script type="module" src="./index.js"></script>
 </head>
+
 <body>
-  <h1>Examples</h1>
-  <ul>
-    <li><a href="./disco-pivot-app/index.html" target="_blank">Disco Pivot App</a></li>
-    <li><a href="./disco-settings-app/index.html" target="_blank">Disco Settings App</a></li>
-    <li><a href="./spline/index.html" target="_blank">Disco Spline Visualizer</a></li>
-  </ul>
+    <disco-frame id="componentsFrame">
+        <disco-single-page id="componentsHome" app-title="DISCO UI" header="components">
+            <disco-list-view id="componentsList" selection-mode="none" item-click-enabled>
+                <template disco-list-template>
+                    <div class="setting-title" data-bind="Title"></div>
+                    <div class="setting-description" data-bind="Description"></div>
+                </template>
+            </disco-list-view>
+        </disco-single-page>
+        <disco-pivot-page id="componentsPivot" app-title="DISCO UI">
+            <disco-pivot-item header="Overview">
+                <div class="setting-title">Pivot</div>
+                <div class="setting-description">Swipe between tabs</div>
+            </disco-pivot-item>
+            <disco-pivot-item header="List">
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">First item</div>
+                        <div class="setting-description">simple list content</div>
+                    </disco-list-item>
+                    <disco-list-item>
+                        <div class="setting-title">Second item</div>
+                        <div class="setting-description">more content</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-pivot-item>
+        </disco-pivot-page>
+        <disco-panorama-page id="componentsPanorama" header="panorama">
+            <disco-panorama-section header="featured">
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">Hero</div>
+                        <div class="setting-description">panorama section content</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-panorama-section>
+            <disco-panorama-section header="updates">
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">Update 1</div>
+                        <div class="setting-description">latest changes</div>
+                    </disco-list-item>
+                    <disco-list-item>
+                        <div class="setting-title">Update 2</div>
+                        <div class="setting-description">more changes</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-panorama-section>
+        </disco-panorama-page>
+        <disco-single-page id="componentsButton" app-title="DISCO UI" header="button">
+            <disco-button id="homeButton">Navigate</disco-button>
+        </disco-single-page>
+    </disco-frame>
 </body>
+
 </html>
