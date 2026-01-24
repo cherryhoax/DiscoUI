@@ -67,7 +67,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | | Disco Password Box | Password input | DiscoPasswordBox | disco-password-box |
 | ✅ | Disco Page | Base page component for content and transitions (used by variants) | DiscoPage | disco-page |
 | ✅ | Disco Pivot | Pivot navigation (pivot page and pivot items) | DiscoPivot / DiscoPivotPage | disco-pivot-page / disco-pivot-item |
-| | Disco Progress Bar | Indeterminate/determinate progress indicator | DiscoProgressBar | disco-progress-bar |
+| ✅ | Disco Progress Bar | Indeterminate/determinate progress indicator | DiscoProgressBar | disco-progress-bar |
 | | Disco Progress Ring | Circular indeterminate/determinate progress indicator | DiscoProgressRing | disco-progress-ring |
 | | Disco Radio Button | Radio button input | DiscoRadioButton | disco-radio-button |
 | | Disco Slider | Slider input control | DiscoSlider | disco-slider |
