@@ -9,7 +9,8 @@ class DiscoListItem extends DiscoUIElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.loadStyle(listItemStyles, this.shadowRoot);
-
+    this.enableTilt();
+    
     const container = document.createElement('div');
     container.className = 'item';
     const slot = document.createElement('slot');

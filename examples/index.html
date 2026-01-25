@@ -62,8 +62,13 @@
                     </disco-list-item>
                 </disco-list-view>
             </disco-hub-section>
-        </disco-hub-page>
-        <disco-single-page id="componentsProgress" app-title="DISCO UI" header="progress-bar">
+        </disco-hub-page>        <disco-single-page id="componentsCheckbox" app-title="DISCO UI" header="checkbox">
+            <div style="padding: 20px; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+                <disco-checkbox id="cbDefault">Key press</disco-checkbox>
+                <disco-checkbox id="cbChecked" checked>Lock and unlock</disco-checkbox>
+                <disco-checkbox id="cbDisabled" disabled>Disabled</disco-checkbox>
+            </div>
+        </disco-single-page>        <disco-single-page id="componentsProgress" app-title="DISCO UI" header="progress-bar">
             <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
                 <disco-progress-bar id="progressDeterminate" value="25" max="100"></disco-progress-bar>
                 <div style="display:flex; gap:8px;">

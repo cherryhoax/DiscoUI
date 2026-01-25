@@ -4,6 +4,11 @@
     overflow: hidden;
     display: block;
     height: 100%;
+
+  * {
+    transform-style: preserve-3d;
+    perspective: var(--disco-perspective);
+  }
 }
 
 .single-shell {
@@ -50,6 +55,7 @@
     overflow-x: hidden;
     padding: 0 20px;
     box-sizing: border-box;
+    transform-style: preserve-3d;
 }
 
 .content-viewport::-webkit-scrollbar {

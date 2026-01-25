@@ -1,3 +1,5 @@
+@import url(disco-ui-element.css);
+
 disco-frame {
   position: fixed;
   display: flex;
@@ -9,6 +11,8 @@ disco-frame {
   height: 100vh;
   font-family: var(--disco-font);
   background-color: var(--disco-bg);
+  perspective: var(--disco-perspective);
+  perspective-origin: center;
 
   &[disco-launched] {
     visibility: visible;
@@ -19,5 +23,7 @@ disco-frame {
     user-drag: none;
     -webkit-user-drag: none;
     -webkit-user-drag: none;
+    transform-style: preserve-3d;
+    perspective: var(--disco-perspective);
   }
 }

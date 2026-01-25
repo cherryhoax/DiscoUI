@@ -43,15 +43,15 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                        transform: `translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
                     },
                     {
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                        transform: `translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
                     },
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
                     }
                 ],
                 {
@@ -66,12 +66,12 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
+                        transform: `translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
                     },
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
                     }
                 ],
                 {
@@ -96,12 +96,12 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
                     },
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
+                        transform: `translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
                     }
                 ],
                 {
@@ -116,12 +116,12 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
                     },
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(90deg) translateX(${window.innerWidth / 5}px)`
+                        transform: `translateX(${window.innerWidth / 8}px) rotateY(90deg) translateX(${window.innerWidth / 5}px)`
                     }
                 ],
                 {

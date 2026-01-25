@@ -7,6 +7,7 @@ class DiscoUIElement extends HTMLElement {
   constructor() {
     super();
     this.loadStyle(baseStyles);
+    this.canClick = true;
   }
 
   /**
@@ -42,22 +43,94 @@ class DiscoUIElement extends HTMLElement {
   }
 
   /**
+   * @param {boolean} isPressed
+   */
+  setPressed(isPressed) {
+    if (isPressed) {
+      this.setAttribute('data-pressed', '');
+      this.canClick = true;
+    } else {
+      this.removeAttribute('data-pressed');
+    }
+  }
+
+  /**
    * Enable pointer tilt interaction on the element.
    */
-  enableTilt() {
+  enableTilt(options = {}) {
+    const { selector = null, tiltMultiplier = 4, margin = 20, pressDown = "-5px", keyPress = true } = options;
+    const target = (selector ? this.shadowRoot ? this.shadowRoot.querySelector(selector) : this.querySelector(selector) : null) || this;
+    target.setAttribute('data-tilt', '');
+    let keyPressActive = false;
+
     const downHandler = (e) => {
+      this.setPointerCapture(e.pointerId); // Parmağı/Mouse'u dışarı kaydırsan bile takibi bırakmaz
+      this.setPressed(true);
+
       const rect = this.getBoundingClientRect();
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-      this.style.transform = `perspective(1000px) rotateX(${-x * 12}deg) rotateY(${y * 12}deg) scale(0.97)`;
+      target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier}deg) rotateY(${y * tiltMultiplier}deg)`;
+
+      this.canClick = true;
     };
 
     const upHandler = () => {
-      this.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+      this.setPressed(false);
+
+      target.style.transform = ` translateZ(0px) rotateX(0deg) rotateY(0deg)`;
+    };
+
+    const keyDownHandler = (event) => {
+      if (!keyPress) return;
+      if (event.key !== ' ' && event.key !== 'Enter') return;
+      if (keyPressActive) return;
+      keyPressActive = true;
+      this.setPressed(true);
+      target.style.transform = `translateZ(${pressDown})`;
+    };
+
+    const keyUpHandler = (event) => {
+      if (!keyPress) return;
+      if (event.key !== ' ' && event.key !== 'Enter') return;
+      keyPressActive = false;
+      this.setPressed(false);
+      target.style.transform = `translateZ(0px)`;
     };
 
     this.addEventListener('pointerdown', downHandler);
-    window.addEventListener('pointerup', upHandler);
+    this.addEventListener('pointerup', upHandler);
+    this.addEventListener('keydown', keyDownHandler);
+    this.addEventListener('keyup', keyUpHandler);
+    this.addEventListener('pointercancel', () => setPressed(false));
+    this.addEventListener('pointermove', (e) => {
+      //update tilt
+      if (!this.hasPointerCapture(e.pointerId)) return;
+
+      const rect = this.getBoundingClientRect();
+      const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+      const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+      target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier}deg) rotateY(${y * tiltMultiplier}deg)`;
+
+
+      // detect if pointer is outside the element 10px margin
+      if (
+        e.clientX < rect.left - margin ||
+        e.clientX > rect.right + margin ||
+        e.clientY < rect.top - margin ||
+        e.clientY > rect.bottom + margin
+      ) {
+        upHandler();
+        this.canClick = false;
+      }
+    })
+    this.addEventListener('click', (e) => {
+      if (!this.canClick) {
+        console.info('Click cancelled due to pointer move outside element.');
+        e.stopImmediatePropagation();
+        e.preventDefault();
+      }
+    });
   }
 }
 

@@ -22,19 +22,21 @@ const launchDemo = async () => {
   const homePage = document.getElementById('componentsHome');
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');
+  const checkboxPage = document.getElementById('componentsCheckbox');
   const progressPage = document.getElementById('componentsProgress');
   const buttonPage = document.getElementById('componentsButton');
 
   const list = homePage.querySelector('#componentsList');
   if (list) {
     list.items = [
-      { id: 'pivot', Title: 'Pivot', Description: 'tabbed navigation view' },
-      { id: 'hub', Title: 'Hub', Description: 'hub-style layout' },
-      { id: 'progress', Title: 'Progress Bar', Description: 'progress bar examples' },
-      { id: 'button', Title: 'Button', Description: 'metro-style button' }
+      { id: 'pivot', Title: 'Pivot' },
+      { id: 'hub', Title: 'Hub' },
+      { id: 'progress', Title: 'Progress Bar' },
+      { id: 'checkbox', Title: 'Checkbox' },
+      { id: 'button', Title: 'Button' }
     ];
 
-    list.addEventListener('itemclick', (event) => {
+    list.addEventListener('itemselect', (event) => {
       const detail = event.detail;
       const id = detail?.data?.id;
       if (id === 'pivot') {
@@ -45,6 +47,9 @@ const launchDemo = async () => {
       }
       if (id === 'progress') {
         frame.navigate(progressPage);
+      }
+      if (id === 'checkbox') {
+        frame.navigate(checkboxPage);
       }
       if (id === 'button') {
         frame.navigate(buttonPage);

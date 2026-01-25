@@ -1,9 +1,17 @@
+@import url(../disco-ui-element.css);
+
 :host {
   display: block;
+
+  * {
+    transform-style: preserve-3d;
+    perspective: var(--disco-perspective);
+  }
 }
 
 .list {
   display: block;
+  transform-style: preserve-3d;
 }
 
 ::slotted(disco-list-item) {

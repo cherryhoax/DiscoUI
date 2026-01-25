@@ -30,6 +30,8 @@ class DiscoListView extends DiscoUIElement {
 
     this.setAttribute('role', 'list');
     this.addEventListener('click', (event) => this._handleClick(event));
+    this.addEventListener('keydown', (event) => this._handleKeydown(event));
+    this.addEventListener('keyup', (event) => this._handleKeyup(event));
   }
 
   /**
@@ -64,6 +66,7 @@ class DiscoListView extends DiscoUIElement {
       this.removeAttribute('item-click-enabled');
       this.removeAttribute('is-item-click-enabled');
     }
+    this._syncItemInteractivity();
   }
 
   /**
@@ -112,7 +115,59 @@ class DiscoListView extends DiscoUIElement {
       data
     });
 
+    this._dispatchItemSelect(listItem, detail);
+  }
+
+  /**
+   * @param {HTMLElement} listItem
+   * @param {DiscoListItemClickDetail} detail
+   */
+  _dispatchItemSelect(listItem, detail) {
+    listItem.dispatchEvent(new CustomEvent('itemselect', { detail, bubbles: true }));
+    this.dispatchEvent(new CustomEvent('itemselect', { detail, bubbles: true }));
     this.dispatchEvent(new CustomEvent('itemclick', { detail, bubbles: true }));
+  }
+
+  /**
+   * @param {KeyboardEvent} event
+   * @returns {void}
+   */
+  _handleKeydown(event) {
+    if (!this.itemClickEnabled) return;
+    const isActivateKey = event.key === 'Enter'
+      || event.key === ' '
+      || event.key === 'Spacebar'
+      || event.code === 'Space'
+      || event.code === 'Enter'
+      || event.code === 'NumpadEnter';
+    if (!isActivateKey) return;
+    event.preventDefault();
+    this._keyActivatePending = true;
+  }
+
+  /**
+   * @param {KeyboardEvent} event
+   * @returns {void}
+   */
+  _handleKeyup(event) {
+    if (!this.itemClickEnabled) return;
+    if (!this._keyActivatePending) return;
+    const isActivateKey = event.key === 'Enter'
+      || event.key === ' '
+      || event.key === 'Spacebar'
+      || event.code === 'Space'
+      || event.code === 'Enter'
+      || event.code === 'NumpadEnter';
+    if (!isActivateKey) return;
+    const path = event.composedPath();
+    const listItem = path.find((node) =>
+      node instanceof HTMLElement &&
+      (node.tagName === 'DISCO-LIST-ITEM' || node.hasAttribute('data-list-index'))
+    );
+    if (!(listItem instanceof HTMLElement)) return;
+    event.preventDefault();
+    this._keyActivatePending = false;
+    this._handleClick({ composedPath: () => [listItem] });
   }
 
   _getTemplate() {
@@ -123,10 +178,35 @@ class DiscoListView extends DiscoUIElement {
     return Array.from(this.querySelectorAll('disco-list-item'));
   }
 
+  _syncItemInteractivity() {
+    const enable = this.itemClickEnabled;
+    const staticItems = this._getStaticItems();
+    staticItems.forEach((item) => {
+      item.setAttribute('role', enable ? 'button' : 'listitem');
+      if (enable) {
+        item.tabIndex = 0;
+      } else {
+        item.removeAttribute('tabindex');
+      }
+    });
+    if (this._list) {
+      Array.from(this._list.children).forEach((child) => {
+        if (!(child instanceof HTMLElement)) return;
+        child.setAttribute('role', enable ? 'button' : 'listitem');
+        if (enable) {
+          child.tabIndex = 0;
+        } else {
+          child.removeAttribute('tabindex');
+        }
+      });
+    }
+  }
+
   _syncStaticVisibility() {
     const hasDynamic = this._items && this._items.length > 0;
     if (this._slot) this._slot.style.display = hasDynamic ? 'none' : '';
     if (this._list) this._list.style.display = hasDynamic ? '' : 'none';
+    this._syncItemInteractivity();
   }
 
   _renderDynamic() {
@@ -141,6 +221,10 @@ class DiscoListView extends DiscoUIElement {
     this._items.forEach((item, index) => {
       const listItem = new (customElements.get('disco-list-item'))();
       listItem.dataset.listIndex = `${index}`;
+      listItem.setAttribute('role', this.itemClickEnabled ? 'button' : 'listitem');
+      if (this.itemClickEnabled) {
+        listItem.tabIndex = 0;
+      }
       if (template) {
         const fragment = template.content.cloneNode(true);
         this._bindTemplate(fragment, item);

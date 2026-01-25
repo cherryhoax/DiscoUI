@@ -8,4 +8,9 @@
   padding: 0 20px;
   display: block;
   margin-right: 100%;
+
+  * {
+    transform-style: preserve-3d;
+    perspective: var(--disco-perspective);
+  }
 }
