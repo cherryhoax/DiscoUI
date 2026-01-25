@@ -58,7 +58,7 @@ class DiscoUIElement extends HTMLElement {
    * Enable pointer tilt interaction on the element.
    */
   enableTilt(options = {}) {
-    return
+    
     const { selector = null, tiltMultiplier = 4, margin = 20, pressDown = "-5px", keyPress = true } = options;
     const target =
       (selector
@@ -73,7 +73,7 @@ class DiscoUIElement extends HTMLElement {
 
     const downHandler = (e) => {
       this.canClick = true;
-      //this.setPointerCapture(e.pointerId); // Parmağı/Mouse'u dışarı kaydırsan bile takibi bırakmaz
+      this.setPointerCapture(e.pointerId); // Parmağı/Mouse'u dışarı kaydırsan bile takibi bırakmaz
       this.setPressed(target, true);
 
       const rect = this.getBoundingClientRect();
@@ -113,7 +113,7 @@ class DiscoUIElement extends HTMLElement {
     this.addEventListener('pointercancel', () => this.setPressed(target, false));
     this.addEventListener('pointermove', (e) => {
       //update tilt
-      //      if (!this.hasPointerCapture(e.pointerId)) return;
+      if (!this.hasPointerCapture(e.pointerId)) return;
 
       const rect = this.getBoundingClientRect();
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
