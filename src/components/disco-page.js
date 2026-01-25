@@ -1,5 +1,5 @@
 import DiscoUIElement from './disco-ui-element.js';
-import pageStyles from './disco-page.css';
+import pageStyles from './disco-page.scss';
 import DiscoAnimations from './animations/disco-animations.js';
 
 class DiscoPage extends DiscoUIElement {

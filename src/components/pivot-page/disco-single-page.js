@@ -1,5 +1,5 @@
 import DiscoPage from '../disco-page.js';
-import singlePageCss from './disco-single-page.css';
+import singlePageCss from './disco-single-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 
 /**

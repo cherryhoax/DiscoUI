@@ -1,5 +1,5 @@
 import DiscoUIElement from './disco-ui-element.js';
-import splashCss from './disco-splash.css';
+import splashCss from './disco-splash.scss';
 
 class DiscoSplash extends DiscoUIElement {
   constructor() {

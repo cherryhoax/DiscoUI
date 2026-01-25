@@ -1,5 +1,5 @@
 import DiscoPage from '../disco-page.js';
-import pivotPageCss from './disco-pivot-page.css';
+import pivotPageCss from './disco-pivot-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 
 class DiscoPivotPage extends DiscoPage {

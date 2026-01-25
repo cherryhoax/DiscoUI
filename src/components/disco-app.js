@@ -1,4 +1,4 @@
-import appStyles from './disco-app.css';
+import appStyles from './disco-app.scss';
 import openSansRegular from '@fontsource/open-sans/400.css';
 import openSansItalic from '@fontsource/open-sans/400-italic.css';
 import './disco-frame.js';

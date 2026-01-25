@@ -1,5 +1,5 @@
 import DiscoUIElement from '../disco-ui-element.js';
-import itemCss from './disco-pivot-item.css';
+import itemCss from './disco-pivot-item.scss';
 
 class DiscoPivotItem extends DiscoUIElement {
   /**

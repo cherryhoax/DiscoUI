@@ -1,5 +1,5 @@
 import DiscoUIElement from '../disco-ui-element.js';
-import listViewStyles from './disco-list-view.css';
+import listViewStyles from './disco-list-view.scss';
 import './disco-list-item.js';
 
 /**

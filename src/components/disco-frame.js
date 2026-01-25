@@ -1,5 +1,5 @@
 import DiscoUIElement from './disco-ui-element.js';
-import frameStyles from './disco-frame.css';
+import frameStyles from './disco-frame.scss';
 
 class DiscoFrame extends DiscoUIElement {
   constructor() {

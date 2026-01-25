@@ -1,5 +1,5 @@
 import DiscoUIElement from '../disco-ui-element.js';
-import sectionCss from './disco-hub-section.css';
+import sectionCss from './disco-hub-section.scss';
 
 /**
  * A section within a DiscoHub.

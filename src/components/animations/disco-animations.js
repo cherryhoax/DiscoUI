@@ -1,4 +1,4 @@
-import animationsCss from './disco-animations.css';
+import animationsCss from './disco-animations.scss';
 import bspline from 'b-spline';
 
 if (typeof document !== 'undefined') {

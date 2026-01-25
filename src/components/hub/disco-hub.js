@@ -1,5 +1,5 @@
 import DiscoPage from '../disco-page.js';
-import hubCss from './disco-hub.css';
+import hubCss from './disco-hub.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 
 /**

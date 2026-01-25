@@ -1,4 +1,4 @@
-import baseStyles from './disco-ui-element.css';
+import baseStyles from './disco-ui-element.scss';
 
 /**
  * Base class for Disco UI custom elements.
@@ -58,6 +58,7 @@ class DiscoUIElement extends HTMLElement {
    * Enable pointer tilt interaction on the element.
    */
   enableTilt(options = {}) {
+    return
     const { selector = null, tiltMultiplier = 4, margin = 20, pressDown = "-5px", keyPress = true } = options;
     const target =
       (selector

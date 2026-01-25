@@ -1,5 +1,5 @@
 import DiscoUIElement from './disco-ui-element.js';
-import progressBarStyles from './disco-progress-bar.css';
+import progressBarStyles from './disco-progress-bar.scss';
 
 class DiscoProgressBar extends DiscoUIElement {
   /**

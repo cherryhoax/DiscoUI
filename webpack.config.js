@@ -51,15 +51,31 @@ module.exports = {
             loader: 'css-loader',
             options: {
               esModule: false,
-              exportType: 'string'
+              exportType: 'string',
+              importLoaders: 1
             }
           }
+        ]
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: false,
+              exportType: 'string',
+              importLoaders: 2
+            }
+          },
+          'postcss-loader',
+          'sass-loader'
         ]
       }
     ]
   },
   plugins: [],
   resolve: {
-    extensions: ['.js']
+    extensions: ['.js', '.css', '.scss']
   }
 };

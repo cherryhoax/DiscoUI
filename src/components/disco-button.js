@@ -1,5 +1,5 @@
 import DiscoUIElement from './disco-ui-element.js';
-import buttonStyles from './disco-button.css';
+import buttonStyles from './disco-button.scss';
 
 class DiscoButton extends DiscoUIElement {
   /**
