@@ -2,6 +2,7 @@
 
 :host {
   display: block;
+  touch-action: pan-y;
 
   * {
     transform-style: preserve-3d;

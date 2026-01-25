@@ -9,7 +9,6 @@ class DiscoButton extends DiscoUIElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.loadStyle(buttonStyles, this.shadowRoot);
-    this.enableTilt();
 
     const button = document.createElement('button');
     button.className = 'button';
@@ -17,6 +16,8 @@ class DiscoButton extends DiscoUIElement {
     const slot = document.createElement('slot');
     button.appendChild(slot);
     this.shadowRoot.appendChild(button);
+
+    this.enableTilt({ selector: 'button' });
   }
 }
 

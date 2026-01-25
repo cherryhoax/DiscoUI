@@ -45,12 +45,12 @@ class DiscoUIElement extends HTMLElement {
   /**
    * @param {boolean} isPressed
    */
-  setPressed(isPressed) {
+  setPressed(target, isPressed) {
     if (isPressed) {
-      this.setAttribute('data-pressed', '');
+      target.setAttribute('data-pressed', '');
       this.canClick = true;
     } else {
-      this.removeAttribute('data-pressed');
+      target.removeAttribute('data-pressed');
     }
   }
 
@@ -59,24 +59,31 @@ class DiscoUIElement extends HTMLElement {
    */
   enableTilt(options = {}) {
     const { selector = null, tiltMultiplier = 4, margin = 20, pressDown = "-5px", keyPress = true } = options;
-    const target = (selector ? this.shadowRoot ? this.shadowRoot.querySelector(selector) : this.querySelector(selector) : null) || this;
+    const target =
+      (selector
+        ? (this.shadowRoot?.querySelector(selector) ?? this.querySelector(selector))
+        : null) || this;
+    if (selector && target === this) {
+      console.warn(`enableTilt: selector "${selector}" not found in shadowRoot or light DOM; falling back to host.`);
+    }
+    console.log("target:", target)
     target.setAttribute('data-tilt', '');
     let keyPressActive = false;
 
     const downHandler = (e) => {
-      this.setPointerCapture(e.pointerId); // Parmağı/Mouse'u dışarı kaydırsan bile takibi bırakmaz
-      this.setPressed(true);
+      this.canClick = true;
+      //this.setPointerCapture(e.pointerId); // Parmağı/Mouse'u dışarı kaydırsan bile takibi bırakmaz
+      this.setPressed(target, true);
 
       const rect = this.getBoundingClientRect();
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier}deg) rotateY(${y * tiltMultiplier}deg)`;
 
-      this.canClick = true;
     };
 
     const upHandler = () => {
-      this.setPressed(false);
+      this.setPressed(target, false);
 
       target.style.transform = ` translateZ(0px) rotateX(0deg) rotateY(0deg)`;
     };
@@ -86,7 +93,7 @@ class DiscoUIElement extends HTMLElement {
       if (event.key !== ' ' && event.key !== 'Enter') return;
       if (keyPressActive) return;
       keyPressActive = true;
-      this.setPressed(true);
+      this.setPressed(target, true);
       target.style.transform = `translateZ(${pressDown})`;
     };
 
@@ -94,7 +101,7 @@ class DiscoUIElement extends HTMLElement {
       if (!keyPress) return;
       if (event.key !== ' ' && event.key !== 'Enter') return;
       keyPressActive = false;
-      this.setPressed(false);
+      this.setPressed(target, false);
       target.style.transform = `translateZ(0px)`;
     };
 
@@ -102,10 +109,10 @@ class DiscoUIElement extends HTMLElement {
     this.addEventListener('pointerup', upHandler);
     this.addEventListener('keydown', keyDownHandler);
     this.addEventListener('keyup', keyUpHandler);
-    this.addEventListener('pointercancel', () => setPressed(false));
+    this.addEventListener('pointercancel', () => this.setPressed(target, false));
     this.addEventListener('pointermove', (e) => {
       //update tilt
-      if (!this.hasPointerCapture(e.pointerId)) return;
+      //      if (!this.hasPointerCapture(e.pointerId)) return;
 
       const rect = this.getBoundingClientRect();
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
