@@ -7,11 +7,11 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-
-  * {
-    transform-style: preserve-3d;
     perspective: var(--disco-perspective);
-  }
+
+    * {
+        transform-style: preserve-3d;
+    }
 }
 
 .single-shell {

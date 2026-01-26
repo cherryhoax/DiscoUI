@@ -3,14 +3,6 @@
 
 @include scroll.disco-scroll-view-base;
 
-:host {
-  touch-action: pan-y;
-
-  * {
-    transform-style: preserve-3d;
-    perspective: var(--disco-perspective);
-  }
-}
 
 .list {
   display: block;

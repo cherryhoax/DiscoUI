@@ -9,6 +9,11 @@
     contain: strict;
     user-select: none;
     -webkit-user-select: none;
+    perspective: var(--disco-perspective);
+
+    * {
+      transform-style: preserve-3d;
+    }
   }
 
   .scroll-content {
@@ -19,6 +24,7 @@
     min-width: 100%;
     min-height: 100%;
     will-change: transform;
+    transform-style: preserve-3d;
   }
 
   :host([direction='vertical']) .scroll-content {
@@ -31,3 +37,7 @@
 }
 
 @include disco-scroll-view-base;
+
+:host {
+  perspective: var(--disco-perspective);
+}

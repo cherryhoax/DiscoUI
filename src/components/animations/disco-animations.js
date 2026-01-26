@@ -151,7 +151,7 @@ const animationSet = {
                     run: () => animationSet.page.in(target, options)
                 }));
 
-            await DiscoAnimations.animateAll(animationItems);
+            await DiscoAnimations.animateAll(animationItems, true);
         },
 
         /**
@@ -832,7 +832,7 @@ const DiscoAnimations = {
      * @param {Array<{ target?: Element, delay?: number, run: () => Promise<unknown> | Animation | void }>} items
      * @returns {Promise<void>}
      */
-    animateAll: async (items) => {
+    animateAll: async (items, hideInitially = false) => {
         const list = Array.isArray(items) ? items : [];
         list.forEach((item) => {
             const target = item?.target;
@@ -840,7 +840,7 @@ const DiscoAnimations = {
             if (!animationVisibilityCache.has(target)) {
                 animationVisibilityCache.set(target, target.style.visibility);
             }
-            target.style.visibility = 'hidden';
+            if (hideInitially) target.style.visibility = 'hidden';
         });
 
         const results = list.map((item) => new Promise((resolve, reject) => {

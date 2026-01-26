@@ -87,7 +87,8 @@ declare const DiscoAnimations: {
   linearKeyframes: (keyframes: DiscoKeyframe[], options?: DiscoKeyframeOptions) => DiscoKeyframe[];
   inferSplineOptions: (keyframes: DiscoKeyframe[], base?: DiscoSplineOptions) => DiscoSplineOptions;
   animateAll: (
-    items: Array<{ target?: Element; delay?: number; run: () => Promise<unknown> | Animation | void }>
+    items: Array<{ target?: Element; delay?: number; run: () => Promise<unknown> | Animation | void }>,
+    hideInitially?: boolean
   ) => Promise<void>;
   animate: (target: Element, keyframes: DiscoKeyframe[] | Keyframe[], options?: DiscoAnimateOptions) => Animation;
   animationSet: AnimationSet;
