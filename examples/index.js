@@ -36,8 +36,7 @@ const launchDemo = async () => {
       { id: 'progress', Title: 'Progress Bar' },
       { id: 'checkbox', Title: 'Checkbox' },
       { id: 'button', Title: 'Button' },
-      { id: 'scrollview', Title: 'Scroll View' },
-      { id: 'stressscroll', Title: 'Scroll View Stress' }
+      { id: 'scrollview', Title: 'Scroll View' }
     ];
 
     list.addEventListener('itemselect', (event) => {

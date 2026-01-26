@@ -208,14 +208,11 @@ class DiscoScrollView extends DiscoUIElement {
             this._wrapper.style.transform = '';
             return;
         }
-        const minScale = 0.9;
+        const minScale = 0.92;
         const scaleX = 1 - (Math.min(this._maxOverscroll, Math.abs(x)) / this._maxOverscroll) * (1 - minScale);
         const scaleY = 1 - (Math.min(this._maxOverscroll, Math.abs(y)) / this._maxOverscroll) * (1 - minScale);
-        Object.assign(this._wrapper.style, {
-            "--webkit-transform-origin-x": x < 0 ? 'right' : 'left',
-            "--webkit-transform-origin-y": y < 0 ? 'bottom' : 'top',
-            transform: `translate3d(${x}px, ${y}px, 0) scale(${scaleX}, ${scaleY})`
-        });
+        this._wrapper.style.transformOrigin = `${x < 0 ? 'right' : 'left'} ${y < 0 ? 'bottom' : 'top'}`;
+        this._wrapper.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scaleX}, ${scaleY})`;
     }
 
     /**
