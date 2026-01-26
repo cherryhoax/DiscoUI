@@ -3,7 +3,7 @@ import styles from './disco-scroll-view.scss';
 
 class DiscoScrollView extends DiscoUIElement {
     static get observedAttributes() {
-        return ['scroll-snap-stop'];
+        return ['scroll-snap-stop', 'direction'];
     }
 
     /**
@@ -93,6 +93,18 @@ class DiscoScrollView extends DiscoUIElement {
         else this.removeAttribute('scroll-snap-stop');
     }
 
+    get direction() {
+        return this.getAttribute('direction') || 'both';
+    }
+
+    set direction(val) {
+        if (!val || val === 'both') {
+            this.removeAttribute('direction');
+            return;
+        }
+        this.setAttribute('direction', val);
+    }
+
     get maxScrollLeft() {
         return this.scrollWidth - this.clientWidth;
     }
@@ -139,8 +151,11 @@ class DiscoScrollView extends DiscoUIElement {
         const now = performance.now();
         const dt = now - this._lastTimestamp;
 
-        const dx = e.clientX - this._lastPos.x;
-        const dy = e.clientY - this._lastPos.y;
+        let dx = e.clientX - this._lastPos.x;
+        let dy = e.clientY - this._lastPos.y;
+        const direction = this.direction;
+        if (direction === 'horizontal') dy = 0;
+        if (direction === 'vertical') dx = 0;
 
         // Direct manipulation
         this._handleMove(dx, dy);
@@ -208,11 +223,14 @@ class DiscoScrollView extends DiscoUIElement {
             this._wrapper.style.transform = '';
             return;
         }
-        const minScale = 0.92;
+        const minScale = 0.9;
         const scaleX = 1 - (Math.min(this._maxOverscroll, Math.abs(x)) / this._maxOverscroll) * (1 - minScale);
         const scaleY = 1 - (Math.min(this._maxOverscroll, Math.abs(y)) / this._maxOverscroll) * (1 - minScale);
-        this._wrapper.style.transformOrigin = `${x < 0 ? 'right' : 'left'} ${y < 0 ? 'bottom' : 'top'}`;
-        this._wrapper.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scaleX}, ${scaleY})`;
+        Object.assign(this._wrapper.style, {
+            "--webkit-transform-origin-x": x < 0 ? 'right' : 'left',
+            "--webkit-transform-origin-y": y < 0 ? 'bottom' : 'top',
+            transform: `translate3d(${x}px, ${y}px, 0) scale(${scaleX}, ${scaleY})`
+        });
     }
 
     /**
@@ -325,8 +343,11 @@ class DiscoScrollView extends DiscoUIElement {
     _onWheel(e) {
         e.preventDefault();
         this._stopAnimation();
-        this.scrollLeft += e.deltaX;
-        this.scrollTop += e.deltaY;
+        const direction = this.direction;
+        const deltaX = direction === 'vertical' ? 0 : e.deltaX;
+        const deltaY = direction === 'horizontal' ? 0 : e.deltaY;
+        this.scrollLeft += deltaX;
+        this.scrollTop += deltaY;
         this._virtualX = this.scrollLeft;
         this._virtualY = this.scrollTop;
         this._overscrollX = 0;
@@ -340,13 +361,16 @@ class DiscoScrollView extends DiscoUIElement {
         // Natural destination
         // velocity is px/ms
         // velocity.y < 0 (drag up) => scroll down
-        const vX = this._velocity.x * 1000; // px/sec
-        const vY = this._velocity.y * 1000; // px/sec
+        const direction = this.direction;
+        const vX = (direction === 'vertical' ? 0 : this._velocity.x * 1000); // px/sec
+        const vY = (direction === 'horizontal' ? 0 : this._velocity.y * 1000); // px/sec
         this._momentumVX = vX;
         this._momentumVY = vY;
 
         let targetX = this.scrollLeft - (vX * (timeConstant / 1000));
         let targetY = this.scrollTop - (vY * (timeConstant / 1000));
+        if (direction === 'vertical') targetX = this.scrollLeft;
+        if (direction === 'horizontal') targetY = this.scrollTop;
 
         const candidates = this.getScrollSnapCandidates();
         if (candidates.length > 0) {

@@ -13,6 +13,16 @@
 .scroll-content {
   display: flow-root;
   box-sizing: border-box;
+  width: max-content;
+  height: max-content;
   min-width: 100%;
   min-height: 100%;
+}
+
+:host([direction='vertical']) .scroll-content {
+  width: 100%;
+}
+
+:host([direction='horizontal']) .scroll-content {
+  height: 100%;
 }

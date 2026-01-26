@@ -120,12 +120,21 @@
                     justify-content: center;
                     color: white;
                     scroll-snap-align: start;
+                    &:nth-child(1) {
+                        background: #d80073;
+                    }
+                    &:nth-child(2) {
+                        background: #0050ef;
+                    }
+                    &:nth-child(3) {
+                        background: #00c300;
+                    }
                 }
             </style>
             <div class="scroll-demo">
                 <div>
                     <p class="scroll-demo__caption">Dimensions: 200x200</p>
-                    <disco-scroll-view class="scroll-demo__frame">
+                    <disco-scroll-view class="scroll-demo__frame" direction="vertical">
                         <div class="scroll-demo__content">
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
                             labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
