@@ -1,5 +1,9 @@
+@use '../disco-ui-element.scss' as ui;
+@use '../disco-scroll-view.scss' as scroll;
+
+@include scroll.disco-scroll-view-base;
+
 :host {
-  display: block;
   touch-action: pan-y;
 
   * {
@@ -14,5 +18,6 @@
 }
 
 ::slotted(disco-list-item) {
+  @include ui.disco-tilt;
   display: block;
 }

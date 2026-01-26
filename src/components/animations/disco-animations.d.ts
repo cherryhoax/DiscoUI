@@ -27,8 +27,14 @@ export interface PageAnimations {
   out(target: Element, options?: DiscoPageAnimationOptions): Promise<void>;
 }
 
+export interface ListAnimations {
+  in(targets: Element[], options?: DiscoPageAnimationOptions): Promise<void>;
+  out(targets: Element[], options?: DiscoPageAnimationOptions): Promise<void>;
+}
+
 export interface AnimationSet {
   page: PageAnimations;
+  list: ListAnimations;
 }
 
 declare const DiscoAnimations: {
@@ -80,6 +86,9 @@ declare const DiscoAnimations: {
   splineKeyframes: (keyframes: DiscoKeyframe[], options?: DiscoKeyframeOptions) => DiscoKeyframe[];
   linearKeyframes: (keyframes: DiscoKeyframe[], options?: DiscoKeyframeOptions) => DiscoKeyframe[];
   inferSplineOptions: (keyframes: DiscoKeyframe[], base?: DiscoSplineOptions) => DiscoSplineOptions;
+  animateAll: (
+    items: Array<{ target?: Element; delay?: number; run: () => Promise<unknown> | Animation | void }>
+  ) => Promise<void>;
   animate: (target: Element, keyframes: DiscoKeyframe[] | Keyframe[], options?: DiscoAnimateOptions) => Animation;
   animationSet: AnimationSet;
 };

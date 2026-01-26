@@ -134,8 +134,47 @@ const animationSet = {
             await animation.finished;
         }
 
+    },
+    list: {
+        /**
+         * @param {Element[]} targets
+         * @param {DiscoPageAnimationOptions} [options]
+         * @returns {Promise<void>}
+         */
+        in: async (targets, options = { direction: 'forward' }) => {
+            const items = Array.isArray(targets) ? targets : [];
+            const animationItems = items
+                .filter((target) => target)
+                .map((target, index) => ({
+                    target,
+                    delay: index * 50,
+                    run: () => animationSet.page.in(target, options)
+                }));
+
+            await DiscoAnimations.animateAll(animationItems);
+        },
+
+        /**
+         * @param {Element[]} targets
+         * @param {DiscoPageAnimationOptions} [options]
+         * @returns {Promise<void>}
+         */
+        out: async (targets, options = { direction: 'forward' }) => {
+            const items = Array.isArray(targets) ? targets : [];
+            const animationItems = items
+                .filter((target) => target)
+                .map((target, index) => ({
+                    target,
+                    delay: index * 50,
+                    run: () => animationSet.page.out(target, options)
+                }));
+
+            await DiscoAnimations.animateAll(animationItems);
+        }
     }
 }
+
+const animationVisibilityCache = new WeakMap();
 
 const cubicBezierAt = (t, x1, y1, x2, y2) => {
     const clamp = (value) => Math.max(0, Math.min(1, value));
@@ -787,6 +826,57 @@ const DiscoAnimations = {
             stringProps: Array.from(stringProps),
             staticProps: Array.from(staticProps)
         };
+    },
+
+    /**
+     * @param {Array<{ target?: Element, delay?: number, run: () => Promise<unknown> | Animation | void }>} items
+     * @returns {Promise<void>}
+     */
+    animateAll: async (items) => {
+        const list = Array.isArray(items) ? items : [];
+        list.forEach((item) => {
+            const target = item?.target;
+            if (!(target instanceof Element)) return;
+            if (!animationVisibilityCache.has(target)) {
+                animationVisibilityCache.set(target, target.style.visibility);
+            }
+            target.style.visibility = 'hidden';
+        });
+
+        const results = list.map((item) => new Promise((resolve, reject) => {
+            const start = () => {
+                try {
+                    const target = item?.target;
+                    if (target instanceof Element) {
+                        const previous = animationVisibilityCache.get(target);
+                        if (previous != null) {
+                            target.style.visibility = previous;
+                        } else {
+                            target.style.visibility = '';
+                        }
+                    }
+                    const result = item?.run?.();
+                    if (result && typeof result === 'object' && typeof result.finished?.then === 'function') {
+                        result.finished.then(resolve, reject);
+                        return;
+                    }
+                    if (result && typeof result.then === 'function') {
+                        result.then(resolve, reject);
+                        return;
+                    }
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            const delay = Number(item?.delay) || 0;
+            if (delay > 0) {
+                window.setTimeout(start, delay);
+            } else {
+                start();
+            }
+        }));
+        await Promise.all(results);
     },
 
     /**

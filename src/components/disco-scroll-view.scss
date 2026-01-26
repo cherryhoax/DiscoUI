@@ -1,28 +1,33 @@
-:host {
-  display: block;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  touch-action: none;
-  contain: strict;
-  user-select: none;
-  -webkit-user-select: none;
+@mixin disco-scroll-view-base {
+  :host {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+    contain: strict;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .scroll-content {
+    display: flow-root;
+    box-sizing: border-box;
+    width: max-content;
+    height: max-content;
+    min-width: 100%;
+    min-height: 100%;
+    will-change: transform;
+  }
+
+  :host([direction='vertical']) .scroll-content {
+    width: 100%;
+  }
+
+  :host([direction='horizontal']) .scroll-content {
+    height: 100%;
+  }
 }
 
-.scroll-content {
-  display: flow-root;
-  box-sizing: border-box;
-  width: max-content;
-  height: max-content;
-  min-width: 100%;
-  min-height: 100%;
-}
-
-:host([direction='vertical']) .scroll-content {
-  width: 100%;
-}
-
-:host([direction='horizontal']) .scroll-content {
-  height: 100%;
-}
+@include disco-scroll-view-base;

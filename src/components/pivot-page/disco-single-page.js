@@ -46,7 +46,34 @@ class DiscoSinglePage extends DiscoPage {
     * @returns {Promise<void>}
     */
     async animateInFn(options = { direction: 'forward' }) {
-        await DiscoAnimations.animationSet.page.in(this, options);
+        const appTitle = this._container.querySelector('.app-title');
+        const headerStrip = this._container.querySelector('.header-strip');
+        const viewport = this._container.querySelector('.content-viewport');
+        const slot = viewport ? viewport.querySelector('slot') : null;
+        const viewportChildren = slot
+            ? slot.assignedElements({ flatten: true })
+            : Array.from(viewport ? viewport.children : []).filter((child) => child.tagName !== 'SLOT');
+
+        const animationItems = [
+            { target: appTitle, run: () => DiscoAnimations.animationSet.page.in(appTitle, options) },
+            { target: headerStrip, run: () => DiscoAnimations.animationSet.page.in(headerStrip, options) }
+        ];
+
+        viewportChildren.forEach((child) => {
+            if (!(child instanceof HTMLElement)) return;
+            if (child.tagName === 'DISCO-LIST-VIEW') {
+                const listRoot = child.shadowRoot;
+                const listItems = listRoot
+                    ? Array.from(listRoot.querySelectorAll('disco-list-item, disco-list-view-item, [data-list-index]'))
+                    : [];
+                animationItems.push({ target: child, run: () => DiscoAnimations.animationSet.list.in(listItems, options) });
+                return;
+            }
+            animationItems.push({ target: child, run: () => DiscoAnimations.animationSet.page.in(child, options) });
+        });
+
+        await DiscoAnimations.animateAll(animationItems);
+        console.log('Single page animate in complete');
     }
 
     /**
@@ -54,7 +81,6 @@ class DiscoSinglePage extends DiscoPage {
     * @returns {Promise<void>}
     */
     async animateOutFn(options = { direction: 'forward' }) {
-        await DiscoAnimations.animationSet.page.out(this, options);
     }
 
     /**
