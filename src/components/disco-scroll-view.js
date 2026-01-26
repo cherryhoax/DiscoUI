@@ -62,6 +62,8 @@ class DiscoScrollView extends DiscoUIElement {
         this._onWheel = this._onWheel.bind(this);
         this._update = this._update.bind(this);
 
+        this._capturePointer = true;
+
         // Setup events
         this.addEventListener('pointerdown', this._onPointerDown);
         this.addEventListener('wheel', this._onWheel, { passive: false });
@@ -117,6 +119,15 @@ class DiscoScrollView extends DiscoUIElement {
      * @param {PointerEvent} e
      */
     _onPointerDown(e) {
+        const nestedScrollView = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
+        if (nestedScrollView && nestedScrollView !== this) {
+            const parentDir = this.direction;
+            const childDir = nestedScrollView.getAttribute('direction') || 'both';
+            const sameAxis = parentDir === 'both'
+                || childDir === 'both'
+                || parentDir === childDir;
+            if (sameAxis) return;
+        }
         // Stop any ongoing animation
         this._stopAnimation();
         this._wrapper.style.transition = '';
@@ -136,7 +147,9 @@ class DiscoScrollView extends DiscoUIElement {
         // Reset overscroll if we are starting a drag (unless we are catching a bounce)
         // For simplicity, we continue from where we are.
 
-        this.setPointerCapture(e.pointerId);
+        if (this._capturePointer) {
+            this.setPointerCapture(e.pointerId);
+        }
         this.addEventListener('pointermove', this._onPointerMove);
         this.addEventListener('pointerup', this._onPointerUp);
         this.addEventListener('pointercancel', this._onPointerUp);
@@ -341,6 +354,15 @@ class DiscoScrollView extends DiscoUIElement {
      * @param {WheelEvent} e
      */
     _onWheel(e) {
+        const nestedScrollView = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
+        if (nestedScrollView && nestedScrollView !== this) {
+            const parentDir = this.direction;
+            const childDir = nestedScrollView.getAttribute('direction') || 'both';
+            const sameAxis = parentDir === 'both'
+                || childDir === 'both'
+                || parentDir === childDir;
+            if (sameAxis) return;
+        }
         e.preventDefault();
         this._stopAnimation();
         const direction = this.direction;

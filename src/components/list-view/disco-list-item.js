@@ -19,6 +19,13 @@ class DiscoListItem extends DiscoUIElement {
 
     this.enableTilt({ selector: '.item' });
   }
+  get direction() {
+    return 'vertical';
+  }
+
+  set direction(val) {
+    return
+  }
 }
 
 customElements.define('disco-list-item', DiscoListItem);

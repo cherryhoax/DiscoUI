@@ -1,4 +1,4 @@
-import DiscoUIElement from '../disco-ui-element.js';
+import DiscoScrollView from '../disco-scroll-view.js';
 import listViewStyles from './disco-list-view.scss';
 import './disco-list-item.js';
 
@@ -12,21 +12,23 @@ import './disco-list-item.js';
 /**
  * Disco list view with static and dynamic item support.
  */
-class DiscoListView extends DiscoUIElement {
+class DiscoListView extends DiscoScrollView {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
     this.loadStyle(listViewStyles, this.shadowRoot);
+
+    this._capturePointer = false;
 
     this._items = [];
     this._list = document.createElement('div');
     this._list.className = 'list';
 
-    this._slot = document.createElement('slot');
+    this._slot = this.shadowRoot.querySelector('slot') || document.createElement('slot');
     this._slot.addEventListener('slotchange', () => this._syncStaticVisibility());
-
-    this.shadowRoot.appendChild(this._list);
-    this.shadowRoot.appendChild(this._slot);
+    if (!this._slot.isConnected) {
+      this._wrapper.appendChild(this._slot);
+    }
+    this._wrapper.insertBefore(this._list, this._slot);
 
     this.setAttribute('role', 'list');
     this.addEventListener('click', (event) => this._handleClick(event));

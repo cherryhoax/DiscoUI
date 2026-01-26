@@ -6,3 +6,13 @@
     transition: transform .1ms;
   }
 }
+
+@mixin disco-fill-slotted-scrollables {
+  & ::slotted(disco-scroll-view),
+  & ::slotted(disco-list-view) {
+    flex: 1;
+    min-height: 0;
+    align-self: stretch;
+    padding-bottom: 120px;
+  }
+}

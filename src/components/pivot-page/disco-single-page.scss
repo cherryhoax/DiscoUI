@@ -1,3 +1,5 @@
+@use '../disco-ui-element.scss' as ui;
+
 :host {
     background-color: var(--disco-bg);
     color: var(--disco-fg);
@@ -50,13 +52,18 @@
 }
 
 .content-viewport {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 20px;
     box-sizing: border-box;
     transform-style: preserve-3d;
+
+    @include ui.disco-fill-slotted-scrollables;
 }
 
 .content-viewport::-webkit-scrollbar {

@@ -1,4 +1,4 @@
-import type DiscoUIElement from '../disco-ui-element.js';
+import type DiscoScrollView from '../disco-scroll-view.js';
 
 export type DiscoListItemClickDetail = {
   index: number;
@@ -6,7 +6,7 @@ export type DiscoListItemClickDetail = {
   data?: unknown;
 };
 
-export default class DiscoListView extends DiscoUIElement {
+export default class DiscoListView extends DiscoScrollView {
   items: unknown[];
   itemClickEnabled: boolean;
   selectionMode: string;
