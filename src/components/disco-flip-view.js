@@ -89,8 +89,11 @@ class DiscoFlipView extends DiscoScrollView {
 
   set scrollLeft(val) {
     if (this._isLooping() && this.direction === 'horizontal') {
-      this._loopVirtualX = val;
-      this._renderLoop();
+      if (this._loopVirtualX !== val) {
+        this._loopVirtualX = val;
+        this._renderLoop();
+        this.dispatchEvent(new Event('scroll'));
+      }
     } else {
       super.scrollLeft = val;
     }
@@ -105,8 +108,11 @@ class DiscoFlipView extends DiscoScrollView {
 
   set scrollTop(val) {
     if (this._isLooping() && this.direction === 'vertical') {
-      this._loopVirtualY = val;
-      this._renderLoop();
+      if (this._loopVirtualY !== val) {
+        this._loopVirtualY = val;
+        this._renderLoop();
+        this.dispatchEvent(new Event('scroll'));
+      }
     } else {
       super.scrollTop = val;
     }
