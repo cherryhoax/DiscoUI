@@ -128,6 +128,9 @@ class DiscoScrollView extends DiscoUIElement {
                 || parentDir === childDir;
             if (sameAxis) return;
         }
+        const tiltTarget = e.composedPath().find((node) =>
+            node instanceof DiscoUIElement && node.tiltEnabled
+        );
         // Stop any ongoing animation
         this._stopAnimation();
         this._wrapper.style.transition = '';
@@ -147,7 +150,7 @@ class DiscoScrollView extends DiscoUIElement {
         // Reset overscroll if we are starting a drag (unless we are catching a bounce)
         // For simplicity, we continue from where we are.
 
-        if (this._capturePointer) {
+        if (this._capturePointer && !tiltTarget) {
             this.setPointerCapture(e.pointerId);
         }
         this.addEventListener('pointermove', this._onPointerMove);

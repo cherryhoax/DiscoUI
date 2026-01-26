@@ -8,6 +8,7 @@ class DiscoUIElement extends HTMLElement {
     super();
     this.loadStyle(baseStyles);
     this.canClick = true;
+    this.tiltEnabled = false;
   }
 
   /**
@@ -58,6 +59,7 @@ class DiscoUIElement extends HTMLElement {
    * Enable pointer tilt interaction on the element.
    */
   enableTilt(options = {}) {
+    this.tiltEnabled = true;
 
     const { selector = null, tiltMultiplier = 1, margin = 20, pressDown = 10, keyPress = true } = options;
     const target =
