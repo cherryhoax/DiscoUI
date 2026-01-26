@@ -66,7 +66,7 @@ class DiscoScrollView extends DiscoUIElement {
 
         // Setup events
         this.addEventListener('pointerdown', this._onPointerDown);
-        this.addEventListener('wheel', this._onWheel, { passive: false });
+        //this.addEventListener('wheel', this._onWheel, { passive: false });
 
         // Observers
         this._resizeObserver = new ResizeObserver(() => this._updateMetrics());

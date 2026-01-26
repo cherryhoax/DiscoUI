@@ -213,7 +213,22 @@ class DiscoPivotPage extends DiscoPage {
     };
     this.getPageSpan = getPageSpan;
 
-    viewport.addEventListener('scroll', () => {
+    // State to track if we should override the visual active index based on a snap target
+    let snapTargetIndex = null;
+
+    viewport.addEventListener('mousedown', () => { snapTargetIndex = null; });
+    viewport.addEventListener('touchstart', () => { snapTargetIndex = null; });
+    
+    // Listen for snap target decision from FlipView
+    viewport.addEventListener('disco-snap-target', (e) => {
+        const idx = e.detail.index;
+        const count = items().length || 1;
+        // Normalize potentially looped index
+        snapTargetIndex = ((idx % count) + count) % count;
+        updateHeaders();
+    });
+
+    const updateHeaders = () => {
         let scrollX = viewport.scrollLeft;
         const pageSpan = getPageSpan();
         const headers = Array.from(strip.children).map((el) => /** @type {HTMLElement} */(el));
@@ -228,7 +243,8 @@ class DiscoPivotPage extends DiscoPage {
         // Wrap to [0, count)
         const wrappedPagePos = ((pagePos % count) + count) % count;
 
-        const currentIndex = Math.round(wrappedPagePos) % count;
+        // Use snap target if available, otherwise geometric position
+        const currentIndex = snapTargetIndex !== null ? snapTargetIndex : (Math.round(wrappedPagePos) % count);
 
         // Calculate offset within one cycle
         const clampedBase = Math.floor(wrappedPagePos);
@@ -244,28 +260,21 @@ class DiscoPivotPage extends DiscoPage {
         
         // Target scroll position:
         // We want the active header (in the middle set) to be roughly where it should be.
-        // Actually, standard Pivot behavior: The strip scrolls so the 'active' header is at LHS (or specific offset).
-        // Since we have 3 sets, we target the middle set (Set 1).
-        // Set 0 is [0..W], Set 1 is [W..2W], Set 2 is [2W..3W].
-        // Offset = cycleWidth + localOffset.
+        // We use set index 5 (middle of 11)
         
-        // However, we want 'active' header to be visible.
-        // If we simply set scrollLeft = cycleWidth + localOffset, the Left edge of the strip will
-        // align with the Start of the active header (because localOffset is the start of `currentIndex`).
-        // This is usually what we want (active header at left).
-        
-        strip.scrollLeft = cycleWidth + localOffset;
+        strip.scrollLeft = (cycleWidth * 5) + localOffset;
 
         headers.forEach((h) => {
             const idx = Number(h.dataset.index || 0);
-            const dist = Math.min(Math.abs(idx - wrappedPagePos), Math.abs(idx - (wrappedPagePos - count)), Math.abs(idx - (wrappedPagePos + count)));
             
             // Simple opacity toggle or smooth fade? Existing was switch.
             // Let's keep it simple: index logic
             h.style.opacity = idx === currentIndex ? '1' : '0.5';
             h.style.transform = 'none';
         });
-    });
+    };
+
+    viewport.addEventListener('scroll', updateHeaders);
   }
 }
 

@@ -333,6 +333,14 @@ class DiscoFlipView extends DiscoScrollView {
 
     this._amplitudeX = targetX - this.scrollLeft;
     this._amplitudeY = targetY - this.scrollTop;
+    
+    // Dispatch snap event with projected index
+    const finalizedIdx = direction === 'horizontal' ? Math.round(targetX / pageWidth) : Math.round(targetY / (this.clientHeight || 1));
+    this.dispatchEvent(new CustomEvent('disco-snap-target', {
+      detail: { index: finalizedIdx, targetX, targetY },
+      bubbles: true,
+      composed: true
+    }));
 
     this._timestampStart = performance.now();
     this._rafId = requestAnimationFrame(this._update);
@@ -368,6 +376,13 @@ class DiscoFlipView extends DiscoScrollView {
       this._targetY = target;
       this._amplitudeY = this._targetY - this.scrollTop;
     }
+    
+    // Dispatch snap event
+    this.dispatchEvent(new CustomEvent('disco-snap-target', {
+      detail: { index: idx, targetX: this._targetX, targetY: this._targetY },
+      bubbles: true,
+      composed: true
+    }));
 
     // use a shorter time constant for strict snap
     this._prevTimeConstant = this._timeConstant;
