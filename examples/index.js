@@ -26,6 +26,7 @@ const launchDemo = async () => {
   const progressPage = document.getElementById('componentsProgress');
   const buttonPage = document.getElementById('componentsButton');
   const scrollViewPage = document.getElementById('componentsScrollView');
+  const flipViewPage = document.getElementById('componentsFlipView');
   const stressScrollPage = document.getElementById('componentsStressScroll');
   const stressNativeScrollPage = document.getElementById('componentsStressNativeScroll');
 
@@ -37,7 +38,8 @@ const launchDemo = async () => {
       { id: 'progress', Title: 'Progress Bar' },
       { id: 'checkbox', Title: 'Checkbox' },
       { id: 'button', Title: 'Button' },
-      { id: 'scrollview', Title: 'Scroll View' }
+      { id: 'scrollview', Title: 'Scroll View' },
+      { id: 'flipview', Title: 'Flip View' }
     ];
 
     list.addEventListener('itemselect', (event) => {
@@ -60,6 +62,9 @@ const launchDemo = async () => {
       }
       if (id === 'scrollview') {
         frame.navigate(scrollViewPage);
+      }
+      if (id === 'flipview') {
+        frame.navigate(flipViewPage);
       }
       if (id === 'stressscroll') {
         frame.navigate(stressScrollPage);

@@ -1,6 +1,7 @@
 import DiscoPage from '../disco-page.js';
 import pivotPageCss from './disco-pivot-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
+import '../disco-flip-view.js';
 
 class DiscoPivotPage extends DiscoPage {
   /**
@@ -44,8 +45,6 @@ class DiscoPivotPage extends DiscoPage {
   connectedCallback() {
     this.renderHeaders();
     this.setupScrollSync();
-    // Defer initial jump until layout is ready so we don't land on the leading ghost.
-    requestAnimationFrame(() => this.jumpToFirstPage());
   }
 
   /**
@@ -57,13 +56,29 @@ class DiscoPivotPage extends DiscoPage {
       <div class="pivot-root">
         <div class="app-title">${this.appTitle}</div>
         <div class="header-strip" id="headerStrip"></div>
-        <div class="content-viewport" id="viewport">
-          <div class="ghost ghost-start"></div>
+        <disco-flip-view class="content-viewport" id="viewport" direction="horizontal" snap-mode="stop" overscroll-mode="loop">
           <slot></slot>
-          <div class="ghost ghost-end"></div>
-        </div>
+        </disco-flip-view>
       </div>
     `;
+  }
+
+  /**
+   * @param {HTMLElement} viewport
+   * @param {number} left
+   * @param {boolean} smooth
+   */
+  scrollViewportTo(viewport, left, smooth = true) {
+    if (!viewport) return;
+    if (viewport.tagName === 'DISCO-SCROLL-VIEW' && typeof viewport.scrollTo === 'function') {
+      viewport.scrollTo(left, 0, smooth);
+      return;
+    }
+    if (smooth && typeof viewport.scrollTo === 'function') {
+      viewport.scrollTo({ left, behavior: 'smooth' });
+      return;
+    }
+    viewport.scrollLeft = left;
   }
 
   /**
@@ -77,23 +92,6 @@ class DiscoPivotPage extends DiscoPage {
     const items = Array.from(this.querySelectorAll('disco-pivot-item'));
     strip.innerHTML = '';
 
-    // Leading clone of last header to support last->first continuity
-    if (items.length > 0) {
-      const last = items[items.length - 1];
-      const clone = document.createElement('div');
-      clone.className = 'header-item';
-      clone.dataset.index = `${items.length - 1}`;
-      clone.dataset.clone = 'leading';
-      clone.dataset.real = 'false';
-      clone.textContent = last.getAttribute('header') || `item ${items.length}`;
-      clone.style.opacity = '0.5';
-      clone.onclick = () => {
-        const span = this.getPageSpan(viewport);
-        viewport.scrollTo({ left: items.length * span, behavior: 'smooth' });
-      };
-      strip.appendChild(clone);
-    }
-
     // Build first real set
     items.forEach((item, i) => {
       const h = document.createElement('div');
@@ -104,32 +102,9 @@ class DiscoPivotPage extends DiscoPage {
       h.style.opacity = i === 0 ? '1' : '0.5';
       h.onclick = () => {
         const span = this.getPageSpan(viewport);
-        viewport.scrollTo({ left: (i + 1) * span, behavior: 'smooth' });
+        this.scrollViewportTo(viewport, i * span, true);
       };
       strip.appendChild(h);
-    });
-
-    // Measure single set width, then append repeats to enable scrolling room.
-    const repeats = 3;
-    this._headerRepeats = repeats;
-
-    requestAnimationFrame(() => {
-      // Append repeats after measuring baseline widths (measure function will recompute live each time).
-      for (let r = 1; r < repeats; r += 1) {
-        items.forEach((item, i) => {
-          const h = document.createElement('div');
-          h.className = 'header-item';
-          h.dataset.index = `${i}`;
-          h.dataset.real = 'repeat';
-          h.textContent = item.getAttribute('header') || `item ${i + 1}`;
-          h.style.opacity = '0.5';
-          h.onclick = () => {
-            const span = this.getPageSpan(viewport);
-            viewport.scrollTo({ left: (i + 1) * span, behavior: 'smooth' });
-          };
-          strip.appendChild(h);
-        });
-      }
     });
   }
 
@@ -140,10 +115,7 @@ class DiscoPivotPage extends DiscoPage {
     const viewport = this.shadowRoot?.getElementById('viewport');
     if (!viewport) return;
     const span = this.getPageSpan ? this.getPageSpan(viewport) : (viewport.clientWidth || 1);
-    const prevBehavior = viewport.style.scrollBehavior;
-    viewport.style.scrollBehavior = 'auto';
-    viewport.scrollLeft = span;
-    viewport.style.scrollBehavior = prevBehavior || 'smooth';
+    this.scrollViewportTo(viewport, 0, false);
   }
 
   /**
@@ -160,7 +132,6 @@ class DiscoPivotPage extends DiscoPage {
       const styles = getComputedStyle(strip);
       const gapVal = parseFloat(styles.columnGap || styles.gap || '0') || 0;
       const realHeaders = headersAll.filter((h) => h.dataset.real === 'true');
-      const leadingClone = headersAll.find((h) => h.dataset.clone === 'leading');
 
       const offsets = [0];
       realHeaders.forEach((el, i) => {
@@ -168,9 +139,8 @@ class DiscoPivotPage extends DiscoPage {
         offsets.push(prev + el.offsetWidth + (i < realHeaders.length - 1 ? gapVal : 0));
       });
 
-      const baseOffset = leadingClone ? leadingClone.offsetWidth + gapVal : 0;
-      const totalWidth = baseOffset + (offsets[offsets.length - 1] || 1);
-      return { offsets, totalWidth, gapVal, baseOffset };
+      const totalWidth = offsets[offsets.length - 1] || 1;
+      return { offsets, totalWidth, gapVal };
     };
     const getPageSpan = (vp = viewport) => {
       const width = vp.clientWidth || 1;
@@ -187,80 +157,24 @@ class DiscoPivotPage extends DiscoPage {
       const count = items().length || 1;
       if (count === 0) return;
 
-      const totalRealSpan = count * pageSpan;
-      const leadingOffset = pageSpan; // after first ghost
-      const trailingStart = leadingOffset + totalRealSpan; // start of trailing ghost
-
-      const disableSmooth = () => {
-        const prev = viewport.style.scrollBehavior;
-        viewport.style.scrollBehavior = 'auto';
-        return prev;
-      };
-
-      let snapRestoreRaf = null;
-      const withSnapDisabled = (fn) => {
-        const prevSnap = viewport.style.scrollSnapType;
-        viewport.style.scrollSnapType = 'none';
-        fn();
-        // Ensure snap always comes back, even across rapid teleports.
-        if (snapRestoreRaf) cancelAnimationFrame(snapRestoreRaf);
-        snapRestoreRaf = requestAnimationFrame(() => {
-          snapRestoreRaf = requestAnimationFrame(() => {
-            viewport.style.scrollSnapType = prevSnap && prevSnap !== 'none' ? prevSnap : 'x mandatory';
-          });
-        });
-      };
-
-      // Teleport when entering the teleport zones (second half of leading ghost, first half of trailing ghost).
-      if (scrollX <= pageSpan * 0.5) {
-        const prev = disableSmooth();
-        withSnapDisabled(() => {
-          viewport.scrollLeft = scrollX + totalRealSpan;
-        });
-        viewport.style.scrollBehavior = prev || 'smooth';
-        return;
-      }
-
-      if (scrollX >= trailingStart - pageSpan * 0.5) {
-        const prev = disableSmooth();
-        withSnapDisabled(() => {
-          viewport.scrollLeft = scrollX - totalRealSpan;
-        });
-        viewport.style.scrollBehavior = prev || 'smooth';
-        return;
-      }
-
       // Map page scroll to header scroll distance based on measured header widths.
-      const { offsets, totalWidth: headerSetWidth, baseOffset } = measureHeaders();
-      const repeats = this._headerRepeats || 1;
-      const maxScrollable = Math.max(headerSetWidth * repeats - strip.clientWidth, 0);
+      const { offsets, totalWidth: headerSetWidth } = measureHeaders();
+      const maxScrollable = Math.max(headerSetWidth - strip.clientWidth, 0);
 
-      // If we're in the leading ghost (before the first real page), interpolate across the clone width.
-      if (scrollX < leadingOffset) {
-        const ratio = Math.max(0, Math.min(scrollX / leadingOffset, 1));
-        const headerPos = Math.min(baseOffset * ratio, maxScrollable);
-        const currentIndexGhost = count - 1; // last title clone
-        strip.scrollLeft = headerPos;
-        headers.forEach((h) => {
-          const idx = Number(h.dataset.index || 0);
-          h.style.opacity = idx === currentIndexGhost ? '1' : '0.5';
-          h.style.transform = 'none';
-        });
-        return;
+      const currentIndex = Math.round(scrollX / pageSpan) % count;
+      let pagePos = scrollX / pageSpan; // pages scrolled (can be fractional)
+      
+      // Handle infinite loop wrapping for header animation
+      if (viewport.getAttribute('overscroll-mode') === 'loop') {
+         pagePos = (pagePos % count + count) % count;
       }
-
-      // Adjust for leading ghost to compute active index.
-      const effective = Math.max(scrollX - leadingOffset, 0);
-      const currentIndex = Math.round(effective / pageSpan) % count;
-
-      const pagePos = effective / pageSpan; // pages scrolled (can be fractional)
 
       // Use live measured widths + uniform gap for precise interpolation per page.
       const clampedBase = Math.max(0, Math.min(Math.floor(pagePos), offsets.length - 2));
       const frac = pagePos - clampedBase;
       const start = offsets[clampedBase] ?? 0;
       const end = offsets[clampedBase + 1] ?? headerSetWidth;
-      const headerPos = Math.min(baseOffset + start + frac * (end - start), maxScrollable);
+      const headerPos = Math.min(start + frac * (end - start), maxScrollable);
       strip.scrollLeft = headerPos;
 
       headers.forEach((h) => {

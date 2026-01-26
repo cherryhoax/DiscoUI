@@ -1,14 +1,15 @@
 :host {
   flex: 0 0 100%;
   height: 100%;
+  width: 100vw;
+  max-width: 100vw;
+  min-width: 100vw;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   box-sizing: border-box;
   overflow-y: auto;
   padding: 0 20px;
   display: block;
-  margin-right: 100%;
-
   * {
     transform-style: preserve-3d;
   }

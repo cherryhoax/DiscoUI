@@ -35,6 +35,18 @@
                     </disco-list-item>
                 </disco-list-view>
             </disco-pivot-item>
+            <disco-pivot-item header="List 2">
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">First item</div>
+                        <div class="setting-description">simple list content</div>
+                    </disco-list-item>
+                    <disco-list-item>
+                        <div class="setting-title">Second item</div>
+                        <div class="setting-description">more content</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-pivot-item>
         </disco-pivot-page>
         <disco-hub-page id="componentsHub" header="hub">
             <disco-hub-section header="featured">
@@ -76,7 +88,7 @@
         <disco-single-page id="componentsButton" app-title="DISCO UI" header="button">
             <disco-button id="homeButton">Navigate</disco-button>
         </disco-single-page>
-        <disco-single-page id="componentsScrollView" app-title="DISCO UI" header="scroll-view">
+        <disco-pivot-page id="componentsScrollView" app-title="DISCO UI">
             <style>
                 .scroll-demo {
                     display: flex;
@@ -134,8 +146,7 @@
                     }
                 }
             </style>
-            <disco-scroll-view direction="vertical">
-
+            <disco-pivot-item header="free">
                 <div class="scroll-demo">
                     <div>
                         <p class="scroll-demo__caption">Dimensions: 200x200</p>
@@ -153,18 +164,19 @@
                         </disco-scroll-view>
                     </div>
                     <div>
-                        <p class="scroll-demo__caption">Scroll snap tiles (vertical)</p>
-                        <disco-scroll-view class="scroll-demo__snap">
-                            <div class="scroll-demo__tiles" style="flex-direction: column">
-                                <div class="scroll-demo__tile">Tile 1</div>
-                                <div class="scroll-demo__tile">Tile 2</div>
-                                <div class="scroll-demo__tile">Tile 3</div>
-                            </div>
-                        </disco-scroll-view>
+                        <disco-button id="stressScrollButton">Open Stress Test Page</disco-button>
                     </div>
                     <div>
-                        <p class="scroll-demo__caption">Scroll snap tiles (vertical, snap stop)</p>
-                        <disco-scroll-view class="scroll-demo__snap" scroll-snap-stop>
+                        <disco-button id="stressNativeScrollButton">Open Stress Test Page (Native HTML5
+                            Scroll)</disco-button>
+                    </div>
+                </div>
+            </disco-pivot-item>
+            <disco-pivot-item header="snap align">
+                <div class="scroll-demo">
+                    <div>
+                        <p class="scroll-demo__caption">Scroll snap tiles (vertical)</p>
+                        <disco-scroll-view class="scroll-demo__snap">
                             <div class="scroll-demo__tiles" style="flex-direction: column">
                                 <div class="scroll-demo__tile">Tile 1</div>
                                 <div class="scroll-demo__tile">Tile 2</div>
@@ -182,32 +194,110 @@
                             </div>
                         </disco-scroll-view>
                     </div>
+                </div>
+            </disco-pivot-item>
+            <disco-pivot-item header="snap stop">
+                <div class="scroll-demo">
+                    <div>
+                        <p class="scroll-demo__caption">Scroll snap tiles (vertical, snap stop)</p>
+                        <disco-flip-view class="scroll-demo__snap" snap-mode="stop" direction="vertical">
+                            <div class="scroll-demo__tile">Tile 1</div>
+                            <div class="scroll-demo__tile">Tile 2</div>
+                            <div class="scroll-demo__tile">Tile 3</div>
+                        </disco-flip-view>
+                    </div>
                     <div>
                         <p class="scroll-demo__caption">Scroll snap tiles (horizontal, snap stop)</p>
-                        <disco-scroll-view class="scroll-demo__snap" scroll-snap-stop>
-                            <div class="scroll-demo__tiles">
-                                <div class="scroll-demo__tile">Tile 1</div>
-                                <div class="scroll-demo__tile">Tile 2</div>
-                                <div class="scroll-demo__tile">Tile 3</div>
-                            </div>
-                        </disco-scroll-view>
+                        <disco-flip-view class="scroll-demo__snap" snap-mode="stop">
+                            <div class="scroll-demo__tile">Tile 1</div>
+                            <div class="scroll-demo__tile">Tile 2</div>
+                            <div class="scroll-demo__tile">Tile 3</div>
+                        </disco-flip-view>
+                    </div>
+                </div>
+            </disco-pivot-item>
+        </disco-pivot-page>
+        <disco-single-page id="componentsFlipView" app-title="DISCO UI" header="flip-view">
+            <style>
+                .scroll-demo {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                .scroll-demo__caption {
+                    margin: 0 0 8px 0;
+                }
+
+                .scroll-demo__snap {
+                    width: 200px;
+                    height: 200px;
+                    background: #222;
+                }
+
+                .scroll-demo__tiles {
+                    display: flex;
+                    width: max-content;
+                }
+
+                .scroll-demo__tile {
+                    width: 200px;
+                    height: 200px;
+                    background: #2b2b2b;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    scroll-snap-align: start;
+
+                    &:nth-child(1) {
+                        background: #d80073;
+                    }
+
+                    &:nth-child(2) {
+                        background: #0050ef;
+                    }
+
+                    &:nth-child(3) {
+                        background: #00c300;
+                    }
+                }
+            </style>
+            <disco-scroll-view>
+                <div class="scroll-demo">
+                    <div>
+                        <p class="scroll-demo__caption">horizontal</p>
+                        <disco-flip-view class="scroll-demo__snap">
+                            <div class="scroll-demo__tile">Loop 1</div>
+                            <div class="scroll-demo__tile">Loop 2</div>
+                            <div class="scroll-demo__tile">Loop 3</div>
+                        </disco-flip-view>
                     </div>
                     <div>
-                        <disco-button id="stressScrollButton">Open Stress Test Page</disco-button>
+                        <p class="scroll-demo__caption">horizontal, snap stop</p>
+                        <disco-flip-view class="scroll-demo__snap" snap-mode="stop">
+                            <div class="scroll-demo__tile">Loop 1</div>
+                            <div class="scroll-demo__tile">Loop 2</div>
+                            <div class="scroll-demo__tile">Loop 3</div>
+                        </disco-flip-view>
                     </div>
                     <div>
-                        <disco-button id="stressNativeScrollButton">Open Stress Test Page (Native HTML5
-                            Scroll)</disco-button>
+                        <p class="scroll-demo__caption">horizontal, snap stop + loop</p>
+                        <disco-flip-view class="scroll-demo__snap" snap-mode="stop" overscroll-mode="loop">
+                            <div class="scroll-demo__tile">Loop 1</div>
+                            <div class="scroll-demo__tile">Loop 2</div>
+                            <div class="scroll-demo__tile">Loop 3</div>
+                        </disco-flip-view>
                     </div>
                 </div>
             </disco-scroll-view>
-
         </disco-single-page>
         <disco-single-page id="componentsStressNativeScroll" app-title="DISCO UI" header="native scroll stress test">
             <style>
-                *{
+                * {
                     touch-action: auto !important;
                 }
+
                 .stress-scroll__container {
                     display: flex;
                     flex-direction: column;

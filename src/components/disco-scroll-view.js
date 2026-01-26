@@ -3,7 +3,7 @@ import styles from './disco-scroll-view.scss';
 
 class DiscoScrollView extends DiscoUIElement {
     static get observedAttributes() {
-        return ['scroll-snap-stop', 'direction'];
+        return ['direction'];
     }
 
     /**
@@ -86,14 +86,6 @@ class DiscoScrollView extends DiscoUIElement {
         this._stopAnimation();
     }
 
-    get scrollSnapStop() {
-        return this.hasAttribute('scroll-snap-stop');
-    }
-
-    set scrollSnapStop(val) {
-        if (val) this.setAttribute('scroll-snap-stop', '');
-        else this.removeAttribute('scroll-snap-stop');
-    }
 
     get direction() {
         return this.getAttribute('direction') || 'both';
@@ -140,19 +132,17 @@ class DiscoScrollView extends DiscoUIElement {
         }
         this._snapBackActiveX = false;
         this._snapBackActiveY = false;
-        this._isDragging = true;
+        
+        // Initialize pre-drag state instead of capturing immediately
+        this._isDragging = false;
+        this._isPreDragging = true;
+        this._startDragPos = { x: e.clientX, y: e.clientY };
         this._lastPos = { x: e.clientX, y: e.clientY };
         this._velocity = { x: 0, y: 0 };
         this._lastTimestamp = performance.now();
         this._virtualX = this.scrollLeft - (this._overscrollX * 2);
         this._virtualY = this.scrollTop - (this._overscrollY * 2);
 
-        // Reset overscroll if we are starting a drag (unless we are catching a bounce)
-        // For simplicity, we continue from where we are.
-
-        if (this._capturePointer && !tiltTarget) {
-            this.setPointerCapture(e.pointerId);
-        }
         this.addEventListener('pointermove', this._onPointerMove);
         this.addEventListener('pointerup', this._onPointerUp);
         this.addEventListener('pointercancel', this._onPointerUp);
@@ -162,6 +152,44 @@ class DiscoScrollView extends DiscoUIElement {
      * @param {PointerEvent} e
      */
     _onPointerMove(e) {
+        if (this._isPreDragging) {
+            if (!this._capturePointer) return;
+            
+            const dx = Math.abs(e.clientX - this._startDragPos.x);
+            const dy = Math.abs(e.clientY - this._startDragPos.y);
+            const threshold = 5; // px
+
+            if (dx < threshold && dy < threshold) return;
+
+            // Check if captured by a nested view during the wait
+            const nested = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
+            if (nested && nested !== this && nested.hasPointerCapture(e.pointerId)) {
+                this._isPreDragging = false;
+                return;
+            }
+
+            const direction = this.direction;
+            const isHorizontal = dx > dy;
+            let shouldCapture = false;
+
+            if (direction === 'both') shouldCapture = true;
+            else if (direction === 'horizontal' && isHorizontal) shouldCapture = true;
+            else if (direction === 'vertical' && !isHorizontal) shouldCapture = true;
+
+            if (shouldCapture) {
+                this._isPreDragging = false;
+                this._isDragging = true;
+                this.setPointerCapture(e.pointerId);
+                // Reset lastPos so the move starts smoothly from here
+                this._lastPos = { x: e.clientX, y: e.clientY };
+                return;
+            } else {
+                // Not our direction
+                this._isPreDragging = false;
+                return;
+            }
+        }
+
         if (!this._isDragging) return;
 
         const now = performance.now();
@@ -254,7 +282,8 @@ class DiscoScrollView extends DiscoUIElement {
      */
     _onPointerUp(e) {
         this._isDragging = false;
-        this.releasePointerCapture(e.pointerId);
+        this._isPreDragging = false;
+        try { this.releasePointerCapture(e.pointerId); } catch (err) { }
         this.removeEventListener('pointermove', this._onPointerMove);
         this.removeEventListener('pointerup', this._onPointerUp);
         this.removeEventListener('pointercancel', this._onPointerUp);
@@ -397,80 +426,7 @@ class DiscoScrollView extends DiscoUIElement {
         if (direction === 'vertical') targetX = this.scrollLeft;
         if (direction === 'horizontal') targetY = this.scrollTop;
 
-        const candidates = this.getScrollSnapCandidates();
-        if (candidates.length > 0) {
-            const startX = this.scrollLeft;
-            const startY = this.scrollTop;
-            let bestCandidate = null;
-            let minDistance = Infinity;
-
-            const scrollDirY = this._velocity.y < 0 ? 1 : (this._velocity.y > 0 ? -1 : 0);
-            const scrollDirX = this._velocity.x < 0 ? 1 : (this._velocity.x > 0 ? -1 : 0);
-            const dominantAxis = Math.abs(this._velocity.x) > Math.abs(this._velocity.y) ? 'x' : 'y';
-
-            for (const cand of candidates) {
-                const dx = cand.x - targetX;
-                const dy = cand.y - targetY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    bestCandidate = cand;
-                }
-            }
-
-            if (this.scrollSnapStop && bestCandidate) {
-                let firstInDirection = null;
-                let firstDist = Infinity;
-
-                if (dominantAxis === 'x') {
-                    for (const cand of candidates) {
-                        if (scrollDirX === 1 && cand.x > startX + 10) {
-                            const dist = cand.x - startX;
-                            if (dist < firstDist) {
-                                firstDist = dist;
-                                firstInDirection = cand;
-                            }
-                        } else if (scrollDirX === -1 && cand.x < startX - 10) {
-                            const dist = startX - cand.x;
-                            if (dist < firstDist) {
-                                firstDist = dist;
-                                firstInDirection = cand;
-                            }
-                        }
-                    }
-
-                    if (firstInDirection && Math.abs(vX) > 50) {
-                        bestCandidate = firstInDirection;
-                    }
-                } else {
-                    for (const cand of candidates) {
-                        if (scrollDirY === 1 && cand.y > startY + 10) {
-                            const dist = cand.y - startY;
-                            if (dist < firstDist) {
-                                firstDist = dist;
-                                firstInDirection = cand;
-                            }
-                        } else if (scrollDirY === -1 && cand.y < startY - 10) {
-                            const dist = startY - cand.y;
-                            if (dist < firstDist) {
-                                firstDist = dist;
-                                firstInDirection = cand;
-                            }
-                        }
-                    }
-
-                    if (firstInDirection && Math.abs(vY) > 50) {
-                        bestCandidate = firstInDirection;
-                    }
-                }
-            }
-
-            if (bestCandidate) {
-                targetX = bestCandidate.x;
-                targetY = bestCandidate.y;
-            }
-        }
-
+        // No automatic snap points in DiscoScrollView — keep natural momentum destination
         if (targetX < 0 || targetX > this.maxScrollLeft) {
             const overscrollLimit = this._maxOverscroll * 4;
             targetX = Math.max(-overscrollLimit, Math.min(targetX, this.maxScrollLeft + overscrollLimit));
@@ -578,46 +534,12 @@ class DiscoScrollView extends DiscoUIElement {
     }
 
     /**
-     * Identifies snap points based on children
+     * Snap candidate detection removed from DiscoScrollView.
+     * Flip / Carousel components should provide their own snapping behavior.
      * @returns {Array<{x: number, y: number}>}
      */
     getScrollSnapCandidates() {
-        const slot = this.shadowRoot.querySelector('slot');
-        const nodes = slot.assignedElements({ flatten: true });
-        const candidates = [];
-
-        const maybeAddCandidate = (el) => {
-            if (!(el instanceof HTMLElement)) return;
-            if (el.closest('disco-scroll-view') !== this) return;
-            const style = getComputedStyle(el);
-            if (style.scrollSnapAlign === 'none') return;
-
-            const alignParts = style.scrollSnapAlign.split(' ');
-            const alignX = alignParts[0] || 'start';
-            const alignY = alignParts[1] || alignParts[0] || 'start';
-
-            const xStart = el.offsetLeft;
-            const yStart = el.offsetTop;
-            const xCenter = xStart - (this.clientWidth / 2 - el.offsetWidth / 2);
-            const yCenter = yStart - (this.clientHeight / 2 - el.offsetHeight / 2);
-            const xEnd = xStart - (this.clientWidth - el.offsetWidth);
-            const yEnd = yStart - (this.clientHeight - el.offsetHeight);
-
-            const x = alignX === 'center' ? xCenter : alignX === 'end' ? xEnd : xStart;
-            const y = alignY === 'center' ? yCenter : alignY === 'end' ? yEnd : yStart;
-
-            candidates.push({ x, y });
-        };
-
-        for (const node of nodes) {
-            if (!(node instanceof HTMLElement)) continue;
-            maybeAddCandidate(node);
-            const children = node.children;
-            for (const child of children) {
-                maybeAddCandidate(child);
-            }
-        }
-        return candidates;
+        return [];
     }
 
     /**
@@ -626,17 +548,22 @@ class DiscoScrollView extends DiscoUIElement {
      * @param {boolean} [animate=false]
      */
     scrollTo(x, y, animate = false) {
-        if (animate) {
-            this.shadowRoot.host.scrollTo({ left: x, top: y, behavior: 'smooth' });
-        } else {
-            this.shadowRoot.host.scrollTo(x, y);
+        const nativeScrollTo = HTMLElement.prototype.scrollTo || Element.prototype.scrollTo;
+        if (nativeScrollTo) {
+            if (animate) {
+                nativeScrollTo.call(this, { left: x, top: y, behavior: 'smooth' });
+            } else {
+                nativeScrollTo.call(this, x, y);
+            }
+            return;
         }
+        this.scrollLeft = x;
+        this.scrollTop = y;
     }
 
     _hasSnapPoints() {
-        // Small optimization, could cache this
-        const candidates = this.getScrollSnapCandidates();
-        return candidates.length > 0;
+        // Snap detection removed — ScrollView has no built-in snap points.
+        return false;
     }
 }
 
