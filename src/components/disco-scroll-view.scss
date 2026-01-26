@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  contain: strict;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.scroll-content {
+  display: flow-root;
+  box-sizing: border-box;
+  min-width: 100%;
+  min-height: 100%;
+}

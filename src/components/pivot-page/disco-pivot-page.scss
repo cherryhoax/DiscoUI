@@ -2,7 +2,8 @@
   background-color: var(--disco-bg);
   color: var(--disco-fg);
   overflow: hidden;
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   /* Ensure host is 100% height */
 }

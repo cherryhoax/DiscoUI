@@ -25,6 +25,8 @@ const launchDemo = async () => {
   const checkboxPage = document.getElementById('componentsCheckbox');
   const progressPage = document.getElementById('componentsProgress');
   const buttonPage = document.getElementById('componentsButton');
+  const scrollViewPage = document.getElementById('componentsScrollView');
+  const stressScrollPage = document.getElementById('componentsStressScroll');
 
   const list = homePage.querySelector('#componentsList');
   if (list) {
@@ -33,7 +35,9 @@ const launchDemo = async () => {
       { id: 'hub', Title: 'Hub' },
       { id: 'progress', Title: 'Progress Bar' },
       { id: 'checkbox', Title: 'Checkbox' },
-      { id: 'button', Title: 'Button' }
+      { id: 'button', Title: 'Button' },
+      { id: 'scrollview', Title: 'Scroll View' },
+      { id: 'stressscroll', Title: 'Scroll View Stress' }
     ];
 
     list.addEventListener('itemselect', (event) => {
@@ -54,12 +58,71 @@ const launchDemo = async () => {
       if (id === 'button') {
         frame.navigate(buttonPage);
       }
+      if (id === 'scrollview') {
+        frame.navigate(scrollViewPage);
+      }
+      if (id === 'stressscroll') {
+        frame.navigate(stressScrollPage);
+      }
     });
   }
 
   const button = document.getElementById('homeButton');
   if (button) {
     button.addEventListener('click', () => frame.navigate(homePage));
+  }
+
+  const stressButton = document.getElementById('stressScrollButton');
+  if (stressButton) {
+    stressButton.addEventListener('click', () => frame.navigate(stressScrollPage));
+  }
+
+  const stressContainer = document.getElementById('stressScrollContent');
+  if (stressContainer) {
+    const fragment = document.createDocumentFragment();
+    const variants = ['stress-scroll__item--card', 'stress-scroll__item--mesh', 'stress-scroll__item--ring'];
+    const animations = ['stress-scroll__anim--float', 'stress-scroll__anim--pulse', 'stress-scroll__anim--spin', 'stress-scroll__anim--shimmer'];
+    const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const pick = (list) => list[random(0, list.length - 1)];
+    for (let i = 1; i <= 48; i += 1) {
+      const item = document.createElement('div');
+      const variant = variants[i % variants.length];
+      item.className = `stress-scroll__item ${variant}`;
+
+      const content = document.createElement('div');
+      content.className = 'stress-scroll__content';
+
+      const blocks = random(3, 8);
+      for (let j = 0; j < blocks; j += 1) {
+        const block = document.createElement('div');
+        block.className = 'stress-scroll__block';
+        if (Math.random() < 0.6) block.classList.add(pick(animations));
+        content.appendChild(block);
+      }
+
+      const lines = random(1, 3);
+      for (let k = 0; k < lines; k += 1) {
+        const line = document.createElement('div');
+        line.className = 'stress-scroll__line';
+        if (Math.random() < 0.4) line.classList.add(pick(animations));
+        content.appendChild(line);
+      }
+
+      const label = document.createElement('div');
+      label.className = 'stress-scroll__label';
+      label.textContent = `Item ${i}`;
+      content.appendChild(label);
+
+      const badge = document.createElement('div');
+      badge.className = 'stress-scroll__badge';
+      if (Math.random() < 0.5) badge.classList.add(pick(animations));
+      badge.textContent = `#${random(100, 999)}`;
+
+      item.appendChild(content);
+      item.appendChild(badge);
+      fragment.appendChild(item);
+    }
+    stressContainer.appendChild(fragment);
   }
 
   // Progress controls
