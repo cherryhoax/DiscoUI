@@ -1,10 +1,11 @@
-@use '../disco-ui-element.scss';
+@use '../disco-ui-element.scss' as ui;
 
 :host {
   display: block;
 }
 
 .item {
+  @include ui.disco-tilt;
   display: block;
   padding: 12px 0px;
 }

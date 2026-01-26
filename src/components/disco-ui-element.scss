@@ -1,17 +1,6 @@
-:host([data-tilt]) {
+@mixin disco-tilt {
   transition: transform .25s .25s ease-out;
   transform-style: preserve-3d;
-  perspective: var(--disco-perspective);
-
-  &[data-pressed] {
-    transition: transform .1ms;
-  }
-}
-
-*[data-tilt] {
-  transition: transform .25s .25s ease-out;
-  transform-style: preserve-3d;
-  perspective: var(--disco-perspective);
 
   &[data-pressed] {
     transition: transform .1ms;

@@ -563,6 +563,7 @@ class DiscoScrollView extends DiscoUIElement {
 
         const maybeAddCandidate = (el) => {
             if (!(el instanceof HTMLElement)) return;
+            if (el.closest('disco-scroll-view') !== this) return;
             const style = getComputedStyle(el);
             if (style.scrollSnapAlign === 'none') return;
 
@@ -586,8 +587,8 @@ class DiscoScrollView extends DiscoUIElement {
         for (const node of nodes) {
             if (!(node instanceof HTMLElement)) continue;
             maybeAddCandidate(node);
-            const descendants = node.querySelectorAll('*');
-            for (const child of descendants) {
+            const children = node.children;
+            for (const child of children) {
                 maybeAddCandidate(child);
             }
         }

@@ -120,74 +120,84 @@
                     justify-content: center;
                     color: white;
                     scroll-snap-align: start;
+
                     &:nth-child(1) {
                         background: #d80073;
                     }
+
                     &:nth-child(2) {
                         background: #0050ef;
                     }
+
                     &:nth-child(3) {
                         background: #00c300;
                     }
                 }
             </style>
-            <div class="scroll-demo">
-                <div>
-                    <p class="scroll-demo__caption">Dimensions: 200x200</p>
-                    <disco-scroll-view class="scroll-demo__frame" direction="vertical">
-                        <div class="scroll-demo__content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </div>
-                    </disco-scroll-view>
+            <disco-scroll-view class="scroll-demo__frame" direction="vertical">
+
+                <div class="scroll-demo">
+                    <div>
+                        <p class="scroll-demo__caption">Dimensions: 200x200</p>
+                        <disco-scroll-view class="scroll-demo__frame" direction="vertical">
+                            <div class="scroll-demo__content">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                                incididunt ut
+                                labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                                ullamco
+                                laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                                in
+                                voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </div>
+                        </disco-scroll-view>
+                    </div>
+                    <div>
+                        <p class="scroll-demo__caption">Scroll snap tiles (vertical)</p>
+                        <disco-scroll-view class="scroll-demo__snap">
+                            <div class="scroll-demo__tiles" style="flex-direction: column">
+                                <div class="scroll-demo__tile">Tile 1</div>
+                                <div class="scroll-demo__tile">Tile 2</div>
+                                <div class="scroll-demo__tile">Tile 3</div>
+                            </div>
+                        </disco-scroll-view>
+                    </div>
+                    <div>
+                        <p class="scroll-demo__caption">Scroll snap tiles (vertical, snap stop)</p>
+                        <disco-scroll-view class="scroll-demo__snap" scroll-snap-stop>
+                            <div class="scroll-demo__tiles" style="flex-direction: column">
+                                <div class="scroll-demo__tile">Tile 1</div>
+                                <div class="scroll-demo__tile">Tile 2</div>
+                                <div class="scroll-demo__tile">Tile 3</div>
+                            </div>
+                        </disco-scroll-view>
+                    </div>
+                    <div>
+                        <p class="scroll-demo__caption">Scroll snap tiles (horizontal)</p>
+                        <disco-scroll-view class="scroll-demo__snap">
+                            <div class="scroll-demo__tiles">
+                                <div class="scroll-demo__tile">Tile 1</div>
+                                <div class="scroll-demo__tile">Tile 2</div>
+                                <div class="scroll-demo__tile">Tile 3</div>
+                            </div>
+                        </disco-scroll-view>
+                    </div>
+                    <div>
+                        <p class="scroll-demo__caption">Scroll snap tiles (horizontal, snap stop)</p>
+                        <disco-scroll-view class="scroll-demo__snap" scroll-snap-stop>
+                            <div class="scroll-demo__tiles">
+                                <div class="scroll-demo__tile">Tile 1</div>
+                                <div class="scroll-demo__tile">Tile 2</div>
+                                <div class="scroll-demo__tile">Tile 3</div>
+                            </div>
+                        </disco-scroll-view>
+                    </div>
+                    <div>
+                        <disco-button id="stressScrollButton">Open Stress Test Page</disco-button>
+                    </div>
                 </div>
-                <div>
-                    <p class="scroll-demo__caption">Scroll snap tiles (vertical)</p>
-                    <disco-scroll-view class="scroll-demo__snap">
-                        <div class="scroll-demo__tiles" style="flex-direction: column">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </div>
-                    </disco-scroll-view>
-                </div>
-                <div>
-                    <p class="scroll-demo__caption">Scroll snap tiles (vertical, snap stop)</p>
-                    <disco-scroll-view class="scroll-demo__snap" scroll-snap-stop>
-                        <div class="scroll-demo__tiles" style="flex-direction: column">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </div>
-                    </disco-scroll-view>
-                </div>
-                <div>
-                    <p class="scroll-demo__caption">Scroll snap tiles (horizontal)</p>
-                    <disco-scroll-view class="scroll-demo__snap">
-                        <div class="scroll-demo__tiles">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </div>
-                    </disco-scroll-view>
-                </div>
-                <div>
-                    <p class="scroll-demo__caption">Scroll snap tiles (horizontal, snap stop)</p>
-                    <disco-scroll-view class="scroll-demo__snap" scroll-snap-stop>
-                        <div class="scroll-demo__tiles">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </div>
-                    </disco-scroll-view>
-                </div>
-                <div>
-                    <disco-button id="stressScrollButton">Open Stress Test Page</disco-button>
-                </div>
-            </div>
+            </disco-scroll-view>
+
         </disco-single-page>
         <disco-single-page id="componentsStressScroll" app-title="DISCO UI" header="scroll-view stress test">
             <style>

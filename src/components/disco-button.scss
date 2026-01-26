@@ -1,3 +1,5 @@
+@use 'disco-ui-element.scss' as ui;
+
 :host {
   display: inline-block;
 }
@@ -9,6 +11,7 @@
 }
 
 .button {
+  @include ui.disco-tilt;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -23,6 +26,9 @@
   text-transform: none;
   box-sizing: border-box;
   outline: none;
+  &[data-pressed] {
+    background-color: var(--disco-accent);
+  }
 }
 
 .button:focus-visible {

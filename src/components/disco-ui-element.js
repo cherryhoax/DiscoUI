@@ -58,8 +58,8 @@ class DiscoUIElement extends HTMLElement {
    * Enable pointer tilt interaction on the element.
    */
   enableTilt(options = {}) {
-    
-    const { selector = null, tiltMultiplier = 4, margin = 20, pressDown = "-5px", keyPress = true } = options;
+
+    const { selector = null, tiltMultiplier = 1, margin = 20, pressDown = 10, keyPress = true } = options;
     const target =
       (selector
         ? (this.shadowRoot?.querySelector(selector) ?? this.querySelector(selector))
@@ -67,9 +67,14 @@ class DiscoUIElement extends HTMLElement {
     if (selector && target === this) {
       console.warn(`enableTilt: selector "${selector}" not found in shadowRoot or light DOM; falling back to host.`);
     }
-    console.log("target:", target)
     target.setAttribute('data-tilt', '');
     let keyPressActive = false;
+
+    const getTiltBoost = (rect) => {
+      const widthBoost = rect.width > 0 ? Math.min(3, 120 / rect.width) : 1;
+      const heightBoost = rect.height > 0 ? Math.min(3, 120 / rect.height) : 1;
+      return { widthBoost, heightBoost };
+    };
 
     const downHandler = (e) => {
       this.canClick = true;
@@ -79,7 +84,8 @@ class DiscoUIElement extends HTMLElement {
       const rect = this.getBoundingClientRect();
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-      target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier}deg) rotateY(${y * tiltMultiplier}deg)`;
+      const { widthBoost, heightBoost } = getTiltBoost(rect);
+      target.style.transform = `translateZ(${-pressDown}px) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
 
     };
 
@@ -95,7 +101,7 @@ class DiscoUIElement extends HTMLElement {
       if (keyPressActive) return;
       keyPressActive = true;
       this.setPressed(target, true);
-      target.style.transform = `translateZ(${pressDown})`;
+      target.style.transform = `translateZ(${-pressDown}px)`;
     };
 
     const keyUpHandler = (event) => {
@@ -118,7 +124,8 @@ class DiscoUIElement extends HTMLElement {
       const rect = this.getBoundingClientRect();
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-      target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier}deg) rotateY(${y * tiltMultiplier}deg)`;
+      const { widthBoost, heightBoost } = getTiltBoost(rect);
+      target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
 
 
       // detect if pointer is outside the element 10px margin
