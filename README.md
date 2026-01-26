@@ -44,13 +44,20 @@ Set the theme and accent color via attributes on the `<html>` tag:
 - `npm run dev` — start webpack dev server with hot reload
 - `npm run build` — production bundle
 
+## What's Expected Next Week (Jan 31)
+- Combobox
+- Flip View
+- Password Box
+- Radio Button
+- Text Box
+
 ## Road Map
 | | Control | Description | Class | Tag |
 |---|---|---|---:|---|
 | ✅ | Disco App | App entry/runner (launch, ready, splash control) | DiscoApp | N/A |
 | | Disco App Bar | Bottom app bar / command area | DiscoAppBar | disco-app-bar |
 | ✅ | Disco Button | Button control | DiscoButton | disco-button |
-| | Disco Checkbox | Checkbox input | DiscoCheckbox | disco-checkbox |
+| ✅ | Disco Checkbox | Checkbox input | DiscoCheckbox | disco-checkbox |
 | | Disco Combobox | Combo box input | DiscoCombobox | disco-combobox |
 | | Disco Context Menu | Contextual menu / right-click menu | DiscoContextMenu | disco-context-menu |
 | | Disco Date Picker | Date picker input | DiscoDatePicker | disco-date-picker |
@@ -70,6 +77,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | Disco Progress Bar | Indeterminate/determinate progress indicator | DiscoProgressBar | disco-progress-bar |
 | | Disco Progress Ring | Circular indeterminate/determinate progress indicator | DiscoProgressRing | disco-progress-ring |
 | | Disco Radio Button | Radio button input | DiscoRadioButton | disco-radio-button |
+| ✅ | Disco Scroll View | Scrollable content area | DiscoScrollView | disco-scroll-view |
 | | Disco Slider | Slider input control | DiscoSlider | disco-slider |
 | ✅ | Disco Splash | Optional splash screen (modes: none, auto, manual) | DiscoSplash | disco-splash |
 | | Disco Text Box | Single-line text input | DiscoTextBox | disco-text-box |
