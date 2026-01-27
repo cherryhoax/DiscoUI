@@ -172,6 +172,10 @@ class DiscoFlipView extends DiscoScrollView {
 
   _onPointerDown(e) {
     super._onPointerDown(e);
+    // Capture start position for scroll limiting
+    this._dragStartVirtualX = this.scrollLeft;
+    this._dragStartVirtualY = this.scrollTop;
+
     if (!this._isLooping()) return;
     this._loopVirtualX = this.scrollLeft;
     this._loopVirtualY = this.scrollTop;
@@ -186,10 +190,35 @@ class DiscoFlipView extends DiscoScrollView {
       return;
     }
 
+    const scrollLimit = (this.getAttribute('scroll-limit') || '').toLowerCase();
+    const hasPageLimit = scrollLimit === 'page';
+
     if (this.direction === 'horizontal') {
-      this.scrollLeft -= dx;
+      let nextLeft = this.scrollLeft - dx;
+      
+      if (hasPageLimit) {
+        const pageWidth = this.clientWidth || 1;
+        const start = this._dragStartVirtualX;
+        const diff = nextLeft - start;
+        
+        // Hard clamp to +/- 1 page
+        if (diff > pageWidth) nextLeft = start + pageWidth;
+        else if (diff < -pageWidth) nextLeft = start - pageWidth;
+      }
+
+      this.scrollLeft = nextLeft;
     } else {
-      this.scrollTop -= dy;
+      let nextTop = this.scrollTop - dy;
+
+      if (hasPageLimit) {
+        const pageHeight = this.clientHeight || 1;
+        const start = this._dragStartVirtualY;
+        const diff = nextTop - start;
+
+        if (diff > pageHeight) nextTop = start + pageHeight;
+        else if (diff < -pageHeight) nextTop = start - pageHeight;
+      }
+      this.scrollTop = nextTop;
     }
 
     this._overscrollX = 0;
@@ -234,7 +263,8 @@ class DiscoFlipView extends DiscoScrollView {
    * Override momentum launch to snap to exact page widths (no CSS snap involved).
    */
   _launchMomentum() {
-    const timeConstant = 325; // ms
+    const timeConstant = 100; // ms
+    this._timeConstant = timeConstant;
 
     const vX = this._velocity.x * 1000; // px/sec
     const vY = this._velocity.y * 1000; // px/sec

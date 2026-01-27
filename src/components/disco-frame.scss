@@ -24,5 +24,16 @@ disco-frame {
     -webkit-user-drag: none;
     -webkit-user-drag: none;
     transform-style: preserve-3d !important;
+    &::-webkit-scrollbar{
+      display: none;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    &:-moz-scrollbar{
+      display: none;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    
   }
 }

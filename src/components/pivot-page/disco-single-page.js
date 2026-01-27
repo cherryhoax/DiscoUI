@@ -32,13 +32,16 @@ class DiscoSinglePage extends DiscoPage {
      * @param {string | null} newValue
      */
     attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === 'app-title' && newValue != null) {
-            this.appTitle = newValue;
+        if (name === 'app-title') {
+            this.appTitle = newValue || 'DISCO APP';
+            const el = this.shadowRoot?.querySelector('.app-title');
+            if (el) el.textContent = this.appTitle;
         }
-        if (name === 'header' && newValue != null) {
-            this.header = newValue;
+        if (name === 'header') {
+            this.header = newValue || 'DETAILS';
+            const el = this.shadowRoot?.querySelector('.header-item');
+            if (el) el.textContent = this.header;
         }
-        this.render();
     }
 
     /**

@@ -23,6 +23,20 @@ class DiscoPivotPage extends DiscoPage {
     this.render();
   }
 
+  static get observedAttributes() {
+    return ['app-title'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'app-title' && oldValue !== newValue) {
+        this.appTitle = newValue;
+        const titleEl = this.shadowRoot?.querySelector('.app-title');
+        if (titleEl) {
+            titleEl.textContent = newValue;
+        }
+    }
+  }
+
   /**
     * @param {DiscoPageAnimationOptions} [options]
    * @returns {Promise<void>}
@@ -56,7 +70,7 @@ class DiscoPivotPage extends DiscoPage {
       <div class="pivot-root">
         <div class="app-title">${this.appTitle}</div>
         <div class="header-strip" id="headerStrip"></div>
-        <disco-flip-view class="content-viewport" id="viewport" direction="horizontal" snap-mode="stop" overscroll-mode="loop">
+        <disco-flip-view class="content-viewport" id="viewport" direction="horizontal" snap-mode="stop" overscroll-mode="loop" scroll-limit="page">
           <slot></slot>
         </disco-flip-view>
       </div>
@@ -91,11 +105,11 @@ class DiscoPivotPage extends DiscoPage {
 
     const items = Array.from(this.querySelectorAll('disco-pivot-item'));
     strip.innerHTML = '';
-    
+
     // Create 11 sets of headers to simulate infinite strip
     // Index 5 is middle (0,1,2,3,4, [5], 6,7,8,9,10)
-    const sets = Array.from({length: 11}, (_, i) => i);
-    
+    const sets = Array.from({ length: 11 }, (_, i) => i);
+
     sets.forEach(setIndex => {
       items.forEach((item, i) => {
         const h = document.createElement('div');
@@ -105,28 +119,28 @@ class DiscoPivotPage extends DiscoPage {
         h.textContent = item.getAttribute('header') || `item ${i + 1}`;
         h.style.opacity = '0.5';
         h.style.flexShrink = '0'; // Ensure accurate measurement
-        
+
         h.onclick = () => {
           // Find nearest target page index to current virtual position
           const span = this.getPageSpan(viewport);
           const currentVirtual = viewport.scrollLeft;
           const currentVirtualPage = currentVirtual / span;
           const targetBase = i;
-          
+
           // Determine nearest multiple of count
           const count = items.length;
           const currentCycle = Math.round(currentVirtualPage / count);
-          
+
           // Target page in roughly the same cycle
           let targetPage = currentCycle * count + targetBase;
-          
+
           // Optimize direction
           if (Math.abs((targetPage - count) - currentVirtualPage) < Math.abs(targetPage - currentVirtualPage)) {
             targetPage -= count;
           } else if (Math.abs((targetPage + count) - currentVirtualPage) < Math.abs(targetPage - currentVirtualPage)) {
             targetPage += count;
           }
-          
+
           this.scrollViewportTo(viewport, targetPage * span, true);
         };
         strip.appendChild(h);
@@ -152,46 +166,142 @@ class DiscoPivotPage extends DiscoPage {
     const strip = this.shadowRoot?.getElementById('headerStrip');
     if (!viewport || !strip) return;
 
-    // Use a small delay/rAF to ensure layout is stable before initial sync
-    requestAnimationFrame(() => {
-        // Initial setup
-        const items = Array.from(this.querySelectorAll('disco-pivot-item'));
-        const count = items.length || 1;
-        if (count > 0) {
-            // Measure one set
-            const headersAll = Array.from(strip.children).map((el) => /** @type {HTMLElement} */(el));
-            // Considering we rendered 3 sets, first set is indices 0 to count-1
-            const firstSet = headersAll.slice(0, count);
-            
-            const styles = getComputedStyle(strip);
-            const gapVal = parseFloat(styles.columnGap || styles.gap || '0') || 0;
-            
-            let w = 0;
-            firstSet.forEach((el, i) => {
-               w += el.offsetWidth + (i < count ? gapVal : 0);
-            });
-            // Total width of one set of headers (including gaps)
-            // Note: the last gap is conceptually part of the set for seamless tiling
-            // but in DOM flow, it might be spacing. 
-            // In 'renderHeaders', items are flex children.
-            // Let's assume uniform distribution logic from measureHeaders below is safest.
+    const items = () => Array.from(this.querySelectorAll('disco-pivot-item'));
 
-            // Reset scroll to middle set
-            strip.scrollLeft = w;
-            
-            // Force update of opacity/position sync
-            viewport.dispatchEvent(new Event('scroll'));
+    // Visibility Management
+    let dragStartIndex = 0;
+    let isSnapping = false;
+    let snapTargetIndex = null;
+
+    const setVisibleItems = (indices) => {
+        const itemElements = items();
+        const count = itemElements.length;
+        if (count === 0) return;
+        const set = new Set(indices.map(i => ((i % count) + count) % count));
+        
+        itemElements.forEach((el, i) => {
+            if (set.has(i)) {
+                el.style.visibility = 'visible';
+                el.style.opacity = '1';
+                el.style.transition = 'none';
+            } else {
+                el.style.visibility = 'hidden';
+                el.style.opacity = '0';
+                el.style.transition = 'none';
+            }
+        });
+    };
+
+    // Initialize visibility
+    requestAnimationFrame(() => {
+        setVisibleItems([0]);
+        // Trigger initial header measurement/scroll
+        if (items().length > 0) {
+            updateHeaders(); 
+            // Also center the strip initially
+            const { totalWidth } = measureOneSet();
+            const w = totalWidth; 
+            strip.scrollLeft = w * 5;
         }
     });
 
-    const items = () => Array.from(this.querySelectorAll('disco-pivot-item'));
+    // --- Header Interaction Sync ---
+    // Forward pointer events from headers to viewport to allow dragging from the top
+    strip.addEventListener('pointerdown', (e) => {
+        strip.setPointerCapture(e.pointerId);
+        
+        const cloneEvent = (type, original) => {
+            return new PointerEvent(type, {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+                pointerId: original.pointerId,
+                isPrimary: original.isPrimary,
+                clientX: original.clientX,
+                clientY: original.clientY,
+                screenX: original.screenX,
+                screenY: original.screenY,
+                movementX: original.movementX,
+                movementY: original.movementY,
+                button: original.button,
+                buttons: original.buttons
+            });
+        };
+
+        viewport.dispatchEvent(cloneEvent('pointerdown', e));
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const targetHeader = e.target.closest('.header-item');
+        let isTap = true;
+
+        const onSysMove = (moveE) => {
+            if (moveE.pointerId !== e.pointerId) return;
+            viewport.dispatchEvent(cloneEvent('pointermove', moveE));
+            
+            const dist = Math.hypot(moveE.clientX - startX, moveE.clientY - startY);
+            if (dist > 10) isTap = false;
+        };
+
+        const onSysUp = (upE) => {
+            if (upE.pointerId !== e.pointerId) return;
+            strip.removeEventListener('pointermove', onSysMove);
+            strip.removeEventListener('pointerup', onSysUp);
+            try { strip.releasePointerCapture(upE.pointerId); } catch(ex){}
+
+            viewport.dispatchEvent(cloneEvent('pointerup', upE));
+
+            if (isTap && targetHeader) {
+                const i = parseInt(targetHeader.dataset.index || '0', 10);
+                navigateToIndex(i);
+            }
+        };
+
+        strip.addEventListener('pointermove', onSysMove);
+        strip.addEventListener('pointerup', onSysUp);
+    });
+
+    const navigateToIndex = (index) => {
+      const span = this.getPageSpan(viewport);
+      const currentVirtual = viewport.scrollLeft;
+      const count = items().length;
+      
+      const currentVirtualPage = currentVirtual / span;
+      const currentCycle = Math.round(currentVirtualPage / count);
+      
+      let targetPage = currentCycle * count + index;
+      
+      // Optimize shortest path
+      if (Math.abs((targetPage - count) - currentVirtualPage) < Math.abs(targetPage - currentVirtualPage)) {
+        targetPage -= count;
+      } else if (Math.abs((targetPage + count) - currentVirtualPage) < Math.abs(targetPage - currentVirtualPage)) {
+        targetPage += count;
+      }
+      
+      this.scrollViewportTo(viewport, targetPage * span, true);
+    };
+
+    viewport.addEventListener('pointerdown', () => {
+        // User interaction starts
+        isSnapping = false;
+        snapTargetIndex = null;
+        
+        const span = this.getPageSpan(viewport);
+        // Determine current page based on scroll position
+        const current = Math.round(viewport.scrollLeft / span);
+        dragStartIndex = current;
+        
+        // Hide everything except where we started
+        setVisibleItems([dragStartIndex]);
+        updateHeaders();
+    });
+
     const measureOneSet = () => {
       const headersAll = Array.from(strip.children).map((el) => /** @type {HTMLElement} */(el));
       const styles = getComputedStyle(strip);
       const gapVal = parseFloat(styles.columnGap || styles.gap || '0') || 0;
       
       const count = items().length;
-      // We only measure the first 'count' headers to establish the rhythm
       const firstSet = headersAll.slice(0, count);
 
       const offsets = [0];
@@ -200,7 +310,6 @@ class DiscoPivotPage extends DiscoPage {
         offsets.push(prev + el.offsetWidth + gapVal);
       });
 
-      // The total width of one cycle
       const totalWidth = offsets[offsets.length - 1] || 1;
       return { offsets, totalWidth, gapVal };
     };
@@ -213,19 +322,50 @@ class DiscoPivotPage extends DiscoPage {
     };
     this.getPageSpan = getPageSpan;
 
-    // State to track if we should override the visual active index based on a snap target
-    let snapTargetIndex = null;
-
-    viewport.addEventListener('mousedown', () => { snapTargetIndex = null; });
-    viewport.addEventListener('touchstart', () => { snapTargetIndex = null; });
-    
-    // Listen for snap target decision from FlipView
-    viewport.addEventListener('disco-snap-target', (e) => {
+    viewport.addEventListener('disco-snap-target', async (e) => {
+        isSnapping = true;
         const idx = e.detail.index;
+        // console.log(`Snap target index: ${idx} (raw)`);
         const count = items().length || 1;
-        // Normalize potentially looped index
-        snapTargetIndex = ((idx % count) + count) % count;
+        const normalizedTarget = ((idx % count) + count) % count;
+        
+        snapTargetIndex = normalizedTarget;
+        
+        // Show BOTH the previous (dragStart) and the new Target during animation
+        setVisibleItems([dragStartIndex, normalizedTarget]);
+        
+        // Force header update
         updateHeaders();
+
+        // Only animate if changing pages
+        if (normalizedTarget !== dragStartIndex) {
+            // Calculate custom entrance animation offset
+            const dist = (e.detail.targetX || 0) - viewport.scrollLeft;
+            const width = viewport.clientWidth;
+            
+            // "translateX(viewport.width - dist) to translateX(0)"
+            let offset = width - Math.abs(dist) + width * 0.25; // Add small extra offset
+            if (dist < 0) {
+                // Moving left, offset should be negative
+                offset = -offset;
+            }
+            
+            const targetItem = items()[normalizedTarget];
+            if (targetItem && typeof targetItem.playEntranceAnimation === 'function') {
+              targetItem.style.visibility = 'hidden';
+               await new Promise(resolve => setTimeout(resolve, 100));
+               targetItem.style.visibility = '';
+               await targetItem.playEntranceAnimation(offset, 1000);
+            }
+        }
+        
+        // Cleanup after animation
+        // Only if we haven't started a new interaction
+        if (isSnapping && snapTargetIndex === normalizedTarget) {
+             dragStartIndex = normalizedTarget;
+             setVisibleItems([normalizedTarget]);
+             isSnapping = false; 
+        }
     });
 
     const updateHeaders = () => {
@@ -237,44 +377,38 @@ class DiscoPivotPage extends DiscoPage {
 
         const { offsets, totalWidth: cycleWidth } = measureOneSet();
       
-        // Current logical page position (floating point)
         const pagePos = scrollX / pageSpan;
-        
-        // Wrap to [0, count)
         const wrappedPagePos = ((pagePos % count) + count) % count;
-
-        // Use snap target if available, otherwise geometric position
+        
+        // Use snapTargetIndex if active, else geometric calculation
         const currentIndex = snapTargetIndex !== null ? snapTargetIndex : (Math.round(wrappedPagePos) % count);
 
-        // Calculate offset within one cycle
         const clampedBase = Math.floor(wrappedPagePos);
         const frac = wrappedPagePos - clampedBase;
         
-        // offsets has length count+1. 
-        // clampedBase is 0..count-1. 
-        // nextBase is clampedBase + 1.
         const start = offsets[clampedBase] ?? 0;
         const end = offsets[clampedBase + 1] ?? cycleWidth;
-        
         const localOffset = start + frac * (end - start);
-        
-        // Target scroll position:
-        // We want the active header (in the middle set) to be roughly where it should be.
-        // We use set index 5 (middle of 11)
         
         strip.scrollLeft = (cycleWidth * 5) + localOffset;
 
         headers.forEach((h) => {
             const idx = Number(h.dataset.index || 0);
-            
-            // Simple opacity toggle or smooth fade? Existing was switch.
-            // Let's keep it simple: index logic
             h.style.opacity = idx === currentIndex ? '1' : '0.5';
             h.style.transform = 'none';
         });
     };
 
-    viewport.addEventListener('scroll', updateHeaders);
+    viewport.addEventListener('scroll', () => {
+        updateHeaders();
+        // If simply dragging, ensure visibility is enforced
+        if (!isSnapping) {
+             setVisibleItems([dragStartIndex]);
+        }
+    });
+
+    // Check if hideInactiveItems logic exists from previous edit attempt and remove it if so
+    // ...
   }
 }
 

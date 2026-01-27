@@ -61,7 +61,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | | Disco Combobox | Combo box input | DiscoCombobox | disco-combobox |
 | | Disco Context Menu | Contextual menu / right-click menu | DiscoContextMenu | disco-context-menu |
 | | Disco Date Picker | Date picker input | DiscoDatePicker | disco-date-picker |
-| | Disco Flip View | Displays a collection of items one at a time | DiscoFlipView | disco-flip-view |
+| ✅ | Disco Flip View | Displays a collection of items one at a time | DiscoFlipView | disco-flip-view |
 | | Disco Flyout | Displays a non-modal popup | DiscoFlyout | disco-flyout |
 | ✅ | Disco Frame | Top-level frame handling navigation, theme, and transitions | DiscoFrame | disco-frame |
 | ✅ | Disco Hub | Panoramic layout with parallax header | DiscoHub | disco-hub |
