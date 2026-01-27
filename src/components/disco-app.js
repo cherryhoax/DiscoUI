@@ -1,6 +1,4 @@
 import appStyles from './disco-app.scss';
-import openSansRegular from '@fontsource/open-sans/400.css';
-import openSansItalic from '@fontsource/open-sans/400-italic.css';
 import './disco-frame.js';
 import './disco-splash.js';
 /** @typedef {import('./disco-splash.d.ts').DiscoSplashElement} DiscoSplashElement */
@@ -33,9 +31,19 @@ const injectFontStyles = (() => {
   let injected = false;
   return () => {
     if (injected) return;
-    const style = document.createElement('style');
-    style.textContent = `${openSansRegular}\n${openSansItalic}`;
-    document.head.appendChild(style);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap';
+    document.head.appendChild(link);
+    const preconnect = document.createElement('link');
+    preconnect.rel = 'preconnect';
+    preconnect.href = 'https://fonts.googleapis.com';
+    document.head.appendChild(preconnect);
+    const preconnect2 = document.createElement('link');
+    preconnect2.rel = 'preconnect';
+    preconnect2.href = 'https://fonts.gstatic.com';
+    preconnect2.crossOrigin = 'anonymous';
+    document.head.appendChild(preconnect2);
     injected = true;
   };
 })();

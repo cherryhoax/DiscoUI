@@ -7,16 +7,21 @@
 .item {
   @include ui.disco-tilt;
   display: block;
-  padding: 12px 0px;
+  padding: 24px 0px;
+  padding-top: 4px;
+  font-size: 34px;
+  font-weight: 300;
 }
 
 .item ::slotted(div.setting-title) {
-  font-size: 26px;
-  line-height: 1.2;
+  //font-size: 26px;
+  //line-height: 1.2;
 }
 
 .item ::slotted(div.setting-description) {
-  font-size: 18px;
+  //font-size: 18px;
   opacity: 0.5;
-  line-height: 1.2;
+  //line-height: 1.2;
+  font-size: 20px;
+  margin-top: -5px;
 }
