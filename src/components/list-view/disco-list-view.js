@@ -17,7 +17,9 @@ class DiscoListView extends DiscoScrollView {
     super();
     this.loadStyle(listViewStyles, this.shadowRoot);
 
-    this._capturePointer = false;
+    if (this.hasAttribute('direction')) {
+      this.removeAttribute('direction');
+    }
 
     this._items = [];
     this._list = document.createElement('div');
@@ -86,6 +88,22 @@ class DiscoListView extends DiscoScrollView {
       this.setAttribute('selection-mode', value);
     } else {
       this.removeAttribute('selection-mode');
+    }
+  }
+
+  /**
+   * @returns {'vertical'}
+   */
+  get direction() {
+    return 'vertical';
+  }
+
+  /**
+   * @param {string} _value
+   */
+  set direction(_value) {
+    if (this.hasAttribute('direction')) {
+      this.removeAttribute('direction');
     }
   }
 

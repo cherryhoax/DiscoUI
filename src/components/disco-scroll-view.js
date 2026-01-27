@@ -55,6 +55,8 @@ class DiscoScrollView extends DiscoUIElement {
         this._timeConstant = 217; // ms
         this._timestampStart = 0;
 
+        this._nestedScrollView = null;
+
         // Bindings
         this._onPointerDown = this._onPointerDown.bind(this);
         this._onPointerMove = this._onPointerMove.bind(this);
@@ -99,6 +101,60 @@ class DiscoScrollView extends DiscoUIElement {
         this.setAttribute('direction', val);
     }
 
+    /**
+     * @param {string | null | undefined} value
+     * @returns {'horizontal' | 'vertical' | 'both'}
+     */
+    _normalizeDirection(value) {
+        const dir = (value || '').toLowerCase();
+        if (dir === 'horizontal' || dir === 'vertical') return dir;
+        return 'both';
+    }
+
+    /**
+     * @param {Event} e
+     * @returns {DiscoScrollView | null}
+     */
+    _getNestedScrollViewFromEvent(e) {
+        if (!e || typeof e.composedPath !== 'function') return null;
+        const path = e.composedPath();
+        for (const node of path) {
+            if (node === this) break;
+            if (node instanceof DiscoScrollView) return node;
+        }
+        return null;
+    }
+
+    /**
+     * @param {DiscoScrollView} view
+     * @param {boolean} isHorizontal
+     * @returns {boolean}
+     */
+    _canScrollInAxis(view, isHorizontal) {
+        const dir = this._normalizeDirection(view.direction || view.getAttribute('direction'));
+        if (dir === 'horizontal' && !isHorizontal) return false;
+        if (dir === 'vertical' && isHorizontal) return false;
+
+        const overscrollMode = (view.getAttribute('overscroll-mode') || '').toLowerCase();
+        if (overscrollMode === 'loop') return true;
+
+        const maxScroll = isHorizontal ? view.maxScrollLeft : view.maxScrollTop;
+        return Number(maxScroll) > 0;
+    }
+
+    _removePointerListeners() {
+        this.removeEventListener('pointermove', this._onPointerMove);
+        this.removeEventListener('pointerup', this._onPointerUp);
+        this.removeEventListener('pointercancel', this._onPointerUp);
+    }
+
+    _cancelDrag() {
+        this._isDragging = false;
+        this._isPreDragging = false;
+        this._nestedScrollView = null;
+        this._removePointerListeners();
+    }
+
     get maxScrollLeft() {
         return this.scrollWidth - this.clientWidth;
     }
@@ -111,15 +167,7 @@ class DiscoScrollView extends DiscoUIElement {
      * @param {PointerEvent} e
      */
     _onPointerDown(e) {
-        const nestedScrollView = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
-        if (nestedScrollView && nestedScrollView !== this) {
-            const parentDir = this.direction;
-            const childDir = nestedScrollView.getAttribute('direction') || 'both';
-            const sameAxis = parentDir === 'both'
-                || childDir === 'both'
-                || parentDir === childDir;
-            if (sameAxis) return;
-        }
+        this._nestedScrollView = this._getNestedScrollViewFromEvent(e);
         const tiltTarget = e.composedPath().find((node) =>
             node instanceof DiscoUIElement && node.tiltEnabled
         );
@@ -161,15 +209,18 @@ class DiscoScrollView extends DiscoUIElement {
 
             if (dx < threshold && dy < threshold) return;
 
+            const isHorizontal = dx > dy;
+
             // Check if captured by a nested view during the wait
-            const nested = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
-            if (nested && nested !== this && nested.hasPointerCapture(e.pointerId)) {
-                this._isPreDragging = false;
-                return;
+            const nested = this._nestedScrollView;
+            if (nested && nested !== this) {
+                if (nested.hasPointerCapture(e.pointerId) || this._canScrollInAxis(nested, isHorizontal)) {
+                    this._cancelDrag();
+                    return;
+                }
             }
 
             const direction = this.direction;
-            const isHorizontal = dx > dy;
             let shouldCapture = false;
 
             if (direction === 'both') shouldCapture = true;
@@ -283,10 +334,9 @@ class DiscoScrollView extends DiscoUIElement {
     _onPointerUp(e) {
         this._isDragging = false;
         this._isPreDragging = false;
+        this._nestedScrollView = null;
         try { this.releasePointerCapture(e.pointerId); } catch (err) { }
-        this.removeEventListener('pointermove', this._onPointerMove);
-        this.removeEventListener('pointerup', this._onPointerUp);
-        this.removeEventListener('pointercancel', this._onPointerUp);
+        this._removePointerListeners();
 
         const overscrollX = Math.abs(this._overscrollX) > 1;
         const overscrollY = Math.abs(this._overscrollY) > 1;
@@ -386,14 +436,17 @@ class DiscoScrollView extends DiscoUIElement {
      * @param {WheelEvent} e
      */
     _onWheel(e) {
-        const nestedScrollView = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
+        const nestedScrollView = this._getNestedScrollViewFromEvent(e);
         if (nestedScrollView && nestedScrollView !== this) {
-            const parentDir = this.direction;
-            const childDir = nestedScrollView.getAttribute('direction') || 'both';
-            const sameAxis = parentDir === 'both'
-                || childDir === 'both'
-                || parentDir === childDir;
-            if (sameAxis) return;
+            const absX = Math.abs(e.deltaX);
+            const absY = Math.abs(e.deltaY);
+            let isHorizontal = absX > absY;
+            if (absX === absY) {
+                const dir = this._normalizeDirection(this.direction);
+                if (dir === 'horizontal') isHorizontal = true;
+                if (dir === 'vertical') isHorizontal = false;
+            }
+            if (this._canScrollInAxis(nestedScrollView, isHorizontal)) return;
         }
         e.preventDefault();
         this._stopAnimation();

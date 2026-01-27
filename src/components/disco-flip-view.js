@@ -1,15 +1,10 @@
 import DiscoScrollView from './disco-scroll-view.js';
 import flipViewCss from './disco-flip-view.scss';
 
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = flipViewCss;
-  document.head.appendChild(style);
-}
-
 class DiscoFlipView extends DiscoScrollView {
   constructor() {
     super();
+    this.loadStyle(flipViewCss, this.shadowRoot);
     // Force horizontal direction by default
     if (!this.hasAttribute('direction')) this.setAttribute('direction', 'horizontal');
 
@@ -232,14 +227,17 @@ class DiscoFlipView extends DiscoScrollView {
       return;
     }
 
-    const nestedScrollView = e.target instanceof HTMLElement ? e.target.closest('disco-scroll-view') : null;
+    const nestedScrollView = this._getNestedScrollViewFromEvent(e);
     if (nestedScrollView && nestedScrollView !== this) {
-      const parentDir = this.direction;
-      const childDir = nestedScrollView.getAttribute('direction') || 'both';
-      const sameAxis = parentDir === 'both'
-        || childDir === 'both'
-        || parentDir === childDir;
-      if (sameAxis) return;
+      const absX = Math.abs(e.deltaX);
+      const absY = Math.abs(e.deltaY);
+      let isHorizontal = absX > absY;
+      if (absX === absY) {
+        const dir = this._normalizeDirection(this.direction);
+        if (dir === 'horizontal') isHorizontal = true;
+        if (dir === 'vertical') isHorizontal = false;
+      }
+      if (this._canScrollInAxis(nestedScrollView, isHorizontal)) return;
     }
     e.preventDefault();
     this._stopAnimation();
