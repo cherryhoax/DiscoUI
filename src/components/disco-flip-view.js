@@ -10,6 +10,8 @@ class DiscoFlipView extends DiscoScrollView {
 
     this._boundUpdateChildren = this._updateChildrenLayout.bind(this);
     this._slotObserver = new MutationObserver(this._boundUpdateChildren);
+    this._loopInitialized = false;
+    this._lastPageSize = 0;
   }
 
   static get observedAttributes() {
@@ -21,6 +23,7 @@ class DiscoFlipView extends DiscoScrollView {
       super.attributeChangedCallback(name, oldValue, newValue);
     }
     if (name === 'overscroll-mode') {
+      this._loopInitialized = false;
       this._updateChildrenLayout();
     }
   }
@@ -42,6 +45,26 @@ class DiscoFlipView extends DiscoScrollView {
     this._slotObserver.disconnect();
   }
 
+  _updateMetrics() {
+    if (super._updateMetrics) super._updateMetrics();
+    if (!this._isLooping()) return;
+
+    const pageSize = this.direction === 'horizontal'
+      ? (this.clientWidth || 1)
+      : (this.clientHeight || 1);
+
+    if (!Number.isFinite(pageSize) || pageSize <= 1) return;
+
+    if (!Number.isFinite(this._lastPageSize) || this._lastPageSize <= 1) {
+      this._loopVirtualX = 0;
+      this._loopVirtualY = 0;
+      this._loopInitialized = true;
+    }
+
+    this._lastPageSize = pageSize;
+    this._renderLoop();
+  }
+
   _updateChildrenLayout() {
     if (this._isLooping()) {
       this.style.overflow = 'hidden';
@@ -55,8 +78,14 @@ class DiscoFlipView extends DiscoScrollView {
         node.style.willChange = 'transform';
       });
       // Ensure we have a valid virtual position
-      if (!Number.isFinite(this._loopVirtualX)) this._loopVirtualX = 0;
-      if (!Number.isFinite(this._loopVirtualY)) this._loopVirtualY = 0;
+      if (!this._loopInitialized) {
+        this._loopVirtualX = 0;
+        this._loopVirtualY = 0;
+        this._loopInitialized = true;
+      } else {
+        if (!Number.isFinite(this._loopVirtualX)) this._loopVirtualX = 0;
+        if (!Number.isFinite(this._loopVirtualY)) this._loopVirtualY = 0;
+      }
       this._renderLoop();
     } else {
       this.style.overflow = '';
@@ -136,6 +165,9 @@ class DiscoFlipView extends DiscoScrollView {
       if (offset > span / 2) {
         offset -= span;
       }
+
+      const zIndex = 100000 - (Math.round(Math.abs(offset)) * 10) - i;
+      node.style.zIndex = `${zIndex}`;
       
       if (direction === 'horizontal') {
         node.style.transform = `translate3d(${offset}px, 0, 0)`;
