@@ -60,20 +60,60 @@ class DiscoFrame extends DiscoUIElement {
       this.history[this.historyIndex] || null
     );
 
-    if (current) {
+    if (current && current !== page) {
       if (typeof current.animateOut === 'function') {
         await current.animateOut(options);
-      } else {
-        current.remove();
       }
+      this._setPageVisibility(current, false);
     }
 
-    this.innerHTML = '';
-    this.appendChild(page);
+    if (!this.contains(page)) {
+      this.appendChild(page);
+    }
+    this._setPageVisibility(page, true);
+    this._hideInactivePages(page);
 
     const typedPage = /** @type {import('./disco-page.js').default} */ (page);
     if (typeof typedPage.animateIn === 'function') {
       await typedPage.animateIn(options);
+    }
+  }
+
+  /**
+   * @param {HTMLElement} page
+   * @param {boolean} isVisible
+   */
+  _setPageVisibility(page, isVisible) {
+    if (isVisible) {
+      page.removeAttribute('hidden');
+      page.removeAttribute('aria-hidden');
+      if ('inert' in page) {
+        page.inert = false;
+      } else {
+        page.removeAttribute('inert');
+      }
+      return;
+    }
+
+    page.setAttribute('hidden', '');
+    page.setAttribute('aria-hidden', 'true');
+    if ('inert' in page) {
+      page.inert = true;
+    } else {
+      page.setAttribute('inert', '');
+    }
+  }
+
+  /**
+   * @param {HTMLElement} activePage
+   */
+  _hideInactivePages(activePage) {
+    const children = Array.from(this.children);
+    for (const child of children) {
+      const typedChild = /** @type {import('./disco-page.js').default} */ (child);
+      if (typeof typedChild.animateIn !== 'function' && typeof typedChild.animateOut !== 'function') continue;
+      if (child === activePage) continue;
+      this._setPageVisibility(child, false);
     }
   }
 

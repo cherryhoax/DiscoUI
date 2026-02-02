@@ -61,6 +61,7 @@ class DiscoScrollView extends DiscoUIElement {
         this._onPointerDown = this._onPointerDown.bind(this);
         this._onPointerMove = this._onPointerMove.bind(this);
         this._onPointerUp = this._onPointerUp.bind(this);
+        this._onPointerCancel = this._onPointerCancel.bind(this);
         this._onWheel = this._onWheel.bind(this);
         this._update = this._update.bind(this);
 
@@ -145,7 +146,7 @@ class DiscoScrollView extends DiscoUIElement {
     _removePointerListeners() {
         this.removeEventListener('pointermove', this._onPointerMove);
         this.removeEventListener('pointerup', this._onPointerUp);
-        this.removeEventListener('pointercancel', this._onPointerUp);
+        this.removeEventListener('pointercancel', this._onPointerCancel);
     }
 
     _cancelDrag() {
@@ -193,7 +194,7 @@ class DiscoScrollView extends DiscoUIElement {
 
         this.addEventListener('pointermove', this._onPointerMove);
         this.addEventListener('pointerup', this._onPointerUp);
-        this.addEventListener('pointercancel', this._onPointerUp);
+        this.addEventListener('pointercancel', this._onPointerCancel);
     }
 
     /**
@@ -357,6 +358,28 @@ class DiscoScrollView extends DiscoUIElement {
         }
 
         this._launchMomentum();
+    }
+
+    /**
+     * @param {PointerEvent} e
+     */
+    _onPointerCancel(e) {
+        this._isDragging = false;
+        this._isPreDragging = false;
+        this._nestedScrollView = null;
+        try { this.releasePointerCapture(e.pointerId); } catch (err) { }
+        this._removePointerListeners();
+
+        const overscrollX = Math.abs(this._overscrollX) > 1;
+        const overscrollY = Math.abs(this._overscrollY) > 1;
+
+        if (overscrollX || overscrollY) {
+            this._velocity.x = 0;
+            this._velocity.y = 0;
+            this._snapBack(overscrollX, overscrollY, true);
+        }
+
+        this._stopAnimation();
     }
 
     _snapBack(snapX = true, snapY = true, stopMomentum = true) {

@@ -18,7 +18,7 @@ const launchDemo = async () => {
 
   const frame = document.getElementById('componentsFrame');
   if (!frame) return;
-
+  window.frame = frame;
   const homePage = document.getElementById('componentsHome');
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');

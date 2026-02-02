@@ -27,6 +27,11 @@
     transform-style: preserve-3d;
   }
 
+  ::slotted(*) {
+    touch-action: none;
+    overscroll-behavior: contain;
+  }
+
   :host([direction='vertical']) .scroll-content {
     width: 100%;
   }

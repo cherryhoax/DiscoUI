@@ -423,10 +423,10 @@ class DiscoFlipView extends DiscoScrollView {
   _onPointerUp(e) {
     // Adapted from DiscoScrollView._onPointerUp but with snap-mode handling
     this._isDragging = false;
+    this._isPreDragging = false;
+    this._nestedScrollView = null;
     try { this.releasePointerCapture(e.pointerId); } catch (err) { }
-    this.removeEventListener('pointermove', this._onPointerMove);
-    this.removeEventListener('pointerup', this._onPointerUp);
-    this.removeEventListener('pointercancel', this._onPointerUp);
+    this._removePointerListeners();
 
     const overscrollX = Math.abs(this._overscrollX) > 1;
     const overscrollY = Math.abs(this._overscrollY) > 1;
@@ -463,6 +463,29 @@ class DiscoFlipView extends DiscoScrollView {
 
     // default behavior
     this._launchMomentum();
+  }
+
+  /**
+   * @param {PointerEvent} e
+   */
+  _onPointerCancel(e) {
+    this._isDragging = false;
+    this._isPreDragging = false;
+    this._nestedScrollView = null;
+    try { this.releasePointerCapture(e.pointerId); } catch (err) { }
+    this._removePointerListeners();
+
+    const overscrollX = Math.abs(this._overscrollX) > 1;
+    const overscrollY = Math.abs(this._overscrollY) > 1;
+
+    if (overscrollX || overscrollY) {
+      this._velocity.x = 0;
+      this._velocity.y = 0;
+      this._snapBack(overscrollX, overscrollY, true);
+      return;
+    }
+
+    this._snapToNearestPage();
   }
 
   _update() {

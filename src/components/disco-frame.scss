@@ -14,6 +14,10 @@ disco-frame {
   perspective-origin: center;
   perspective: var(--disco-perspective);
 
+  > *[hidden] {
+    display: none !important;
+  }
+
   &[disco-launched] {
     visibility: visible;
   }
@@ -24,16 +28,18 @@ disco-frame {
     -webkit-user-drag: none;
     -webkit-user-drag: none;
     transform-style: preserve-3d !important;
-    &::-webkit-scrollbar{
+
+    &::-webkit-scrollbar {
       display: none;
       width: 0 !important;
       height: 0 !important;
     }
-    &:-moz-scrollbar{
+
+    &:-moz-scrollbar {
       display: none;
       width: 0 !important;
       height: 0 !important;
     }
-    
+
   }
 }
