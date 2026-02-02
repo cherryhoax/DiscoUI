@@ -215,79 +215,113 @@
                 </div>
             </disco-pivot-item>
         </disco-pivot-page>
-        <disco-single-page id="componentsFlipView" app-title="DISCO UI" header="flip-view">
+        <disco-pivot-page id="componentsFlipView" app-title="DISCO UI" header="flip-view">
             <style>
-                .scroll-demo {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 16px;
+            .scroll-demo {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .scroll-demo__caption {
+                margin: 0 0 8px 0;
+            }
+
+            .scroll-demo__snap {
+                width: 200px;
+                height: 200px;
+                background: #222;
+            }
+
+            .scroll-demo__tiles {
+                display: flex;
+                width: max-content;
+            }
+
+            .scroll-demo__tile {
+                background: #2b2b2b;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                scroll-snap-align: start;
+                min-width: 200px;
+                min-height: 200px;
+
+                &:nth-child(1) {
+                background: #d80073;
                 }
 
-                .scroll-demo__caption {
-                    margin: 0 0 8px 0;
+                &:nth-child(2) {
+                background: #0050ef;
                 }
 
-                .scroll-demo__snap {
-                    width: 200px;
-                    height: 200px;
-                    background: #222;
+                &:nth-child(3) {
+                background: #00c300;
                 }
-
-                .scroll-demo__tiles {
-                    display: flex;
-                    width: max-content;
-                }
-
-                .scroll-demo__tile {
-                    background: #2b2b2b;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    scroll-snap-align: start;
-
-                    &:nth-child(1) {
-                        background: #d80073;
-                    }
-
-                    &:nth-child(2) {
-                        background: #0050ef;
-                    }
-
-                    &:nth-child(3) {
-                        background: #00c300;
-                    }
-                }
+            }
             </style>
+            <disco-pivot-item header="horizontal">
             <disco-scroll-view>
                 <div class="scroll-demo">
-                    <div>
-                        <p class="scroll-demo__caption">horizontal</p>
-                        <disco-flip-view class="scroll-demo__snap">
-                            <div class="scroll-demo__tile">Loop 1</div>
-                            <div class="scroll-demo__tile">Loop 2</div>
-                            <div class="scroll-demo__tile">Loop 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">horizontal, strict snap</p>
-                        <disco-flip-view class="scroll-demo__snap" snap-mode="strict">
-                            <div class="scroll-demo__tile">Loop 1</div>
-                            <div class="scroll-demo__tile">Loop 2</div>
-                            <div class="scroll-demo__tile">Loop 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">horizontal, loop</p>
-                        <disco-flip-view class="scroll-demo__snap" overscroll-mode="loop">
-                            <div class="scroll-demo__tile">Loop 1</div>
-                            <div class="scroll-demo__tile">Loop 2</div>
-                            <div class="scroll-demo__tile">Loop 3</div>
-                        </disco-flip-view>
-                    </div>
+                <div>
+                    <p class="scroll-demo__caption">standard</p>
+                    <disco-flip-view class="scroll-demo__snap">
+                    <div class="scroll-demo__tile">Tile 1</div>
+                    <div class="scroll-demo__tile">Tile 2</div>
+                    <div class="scroll-demo__tile">Tile 3</div>
+                    </disco-flip-view>
+                </div>
+                <div>
+                    <p class="scroll-demo__caption">strict snap</p>
+                    <disco-flip-view class="scroll-demo__snap" snap-mode="strict">
+                    <div class="scroll-demo__tile">Tile 1</div>
+                    <div class="scroll-demo__tile">Tile 2</div>
+                    <div class="scroll-demo__tile">Tile 3</div>
+                    </disco-flip-view>
+                </div>
+                <div>
+                    <p class="scroll-demo__caption">loop</p>
+                    <disco-flip-view class="scroll-demo__snap" overscroll-mode="loop">
+                    <div class="scroll-demo__tile">Tile 1</div>
+                    <div class="scroll-demo__tile">Tile 2</div>
+                    <div class="scroll-demo__tile">Tile 3</div>
+                    </disco-flip-view>
+                </div>
                 </div>
             </disco-scroll-view>
-        </disco-single-page>
+            </disco-pivot-item>
+            <disco-pivot-item header="vertical">
+            <disco-scroll-view>
+                <div class="scroll-demo">
+                <div>
+                    <p class="scroll-demo__caption">standard</p>
+                    <disco-flip-view class="scroll-demo__snap" direction="vertical">
+                    <div class="scroll-demo__tile">Tile 1</div>
+                    <div class="scroll-demo__tile">Tile 2</div>
+                    <div class="scroll-demo__tile">Tile 3</div>
+                    </disco-flip-view>
+                </div>
+                <div>
+                    <p class="scroll-demo__caption">strict snap</p>
+                    <disco-flip-view class="scroll-demo__snap" direction="vertical" snap-mode="strict">
+                    <div class="scroll-demo__tile">Tile 1</div>
+                    <div class="scroll-demo__tile">Tile 2</div>
+                    <div class="scroll-demo__tile">Tile 3</div>
+                    </disco-flip-view>
+                </div>
+                <div>
+                    <p class="scroll-demo__caption">loop</p>
+                    <disco-flip-view class="scroll-demo__snap" direction="vertical" overscroll-mode="loop">
+                    <div class="scroll-demo__tile">Tile 1</div>
+                    <div class="scroll-demo__tile">Tile 2</div>
+                    <div class="scroll-demo__tile">Tile 3</div>
+                    </disco-flip-view>
+                </div>
+                </div>
+            </disco-scroll-view>
+            </disco-pivot-item>
+        </disco-pivot-page>
         <disco-single-page id="componentsStressNativeScroll" app-title="DISCO UI" header="native scroll stress test">
             <style>
                 * {

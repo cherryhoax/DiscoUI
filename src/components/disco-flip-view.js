@@ -45,8 +45,7 @@ class DiscoFlipView extends DiscoScrollView {
   _updateChildrenLayout() {
     if (this._isLooping()) {
       this.style.overflow = 'hidden';
-      const slot = this.shadowRoot.querySelector('slot');
-      const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+      const nodes = this._getPageElements();
       nodes.forEach(node => {
         node.style.position = 'absolute';
         node.style.top = '0';
@@ -61,8 +60,7 @@ class DiscoFlipView extends DiscoScrollView {
       this._renderLoop();
     } else {
       this.style.overflow = '';
-      const slot = this.shadowRoot.querySelector('slot');
-      const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+      const nodes = this._getPageElements();
       nodes.forEach(node => {
         node.style.position = '';
         node.style.top = '';
@@ -117,8 +115,7 @@ class DiscoFlipView extends DiscoScrollView {
     const { direction, pageSize, span, count } = this._getLoopMetrics();
     if (count === 0) return;
 
-    const slot = this.shadowRoot.querySelector('slot');
-    const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+    const nodes = this._getPageElements();
     
     // We render based on _loopVirtualX/Y
     // Use modulo arithmetic to wrap items around
@@ -157,11 +154,24 @@ class DiscoFlipView extends DiscoScrollView {
   _getLoopMetrics() {
     const direction = this.direction;
     const pageSize = direction === 'horizontal' ? (this.clientWidth || 1) : (this.clientHeight || 1);
-    const slot = this.shadowRoot.querySelector('slot');
-    const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+    const nodes = this._getPageElements();
     const count = Math.max(1, nodes.length);
     const span = pageSize * count;
     return { direction, pageSize, count, span };
+  }
+
+  /**
+   * @returns {HTMLElement[]}
+   */
+  _getPageElements() {
+    const slot = this.shadowRoot?.querySelector('slot');
+    const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+    return nodes.filter((node) =>
+      node instanceof HTMLElement &&
+      node.tagName !== 'STYLE' &&
+      node.tagName !== 'SCRIPT' &&
+      node.tagName !== 'TEMPLATE'
+    );
   }
 
 
@@ -275,8 +285,7 @@ class DiscoFlipView extends DiscoScrollView {
     if (direction === 'horizontal') targetY = this.scrollTop;
 
     const pageWidth = this.clientWidth || 1;
-    const slot = this.shadowRoot.querySelector('slot');
-    const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+    const nodes = this._getPageElements();
     const maxIndex = Math.max(0, nodes.length - 1);
     const overscrollMode = (this.getAttribute('overscroll-mode') || '').toLowerCase();
     const loopEnabled = overscrollMode === 'loop';
@@ -377,8 +386,7 @@ class DiscoFlipView extends DiscoScrollView {
   _snapToNearestPage() {
     const direction = this.direction;
     const pageSize = direction === 'horizontal' ? (this.clientWidth || 1) : (this.clientHeight || 1);
-    const slot = this.shadowRoot.querySelector('slot');
-    const nodes = slot ? slot.assignedElements({ flatten: true }) : [];
+    const nodes = this._getPageElements();
     const maxIndex = Math.max(0, nodes.length - 1);
     const overscrollMode = (this.getAttribute('overscroll-mode') || '').toLowerCase();
     const loopEnabled = overscrollMode === 'loop';

@@ -127,6 +127,57 @@ class DiscoScrollView extends DiscoUIElement {
     }
 
     /**
+     * @param {Event} e
+     * @returns {DiscoScrollView | null}
+     */
+    _getParentScrollViewFromEvent(e) {
+        if (!e || typeof e.composedPath !== 'function') return null;
+        const path = e.composedPath();
+        let seenSelf = false;
+        for (const node of path) {
+            if (node === this) {
+                seenSelf = true;
+                continue;
+            }
+            if (!seenSelf) continue;
+            if (node instanceof DiscoScrollView) return node;
+        }
+        return null;
+    }
+
+    /**
+     * @param {PointerEvent} e
+     * @param {DiscoScrollView} parent
+     */
+    _handoffToParent(e, parent) {
+        this._cancelDrag();
+        try { this.releasePointerCapture(e.pointerId); } catch (err) { }
+        this._virtualX = this.scrollLeft;
+        this._virtualY = this.scrollTop;
+        this._overscrollX = 0;
+        this._overscrollY = 0;
+        this._renderOverscroll(0, 0);
+
+        const cloneEvent = (type) => new PointerEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            view: window,
+            pointerId: e.pointerId,
+            isPrimary: e.isPrimary,
+            clientX: e.clientX,
+            clientY: e.clientY,
+            screenX: e.screenX,
+            screenY: e.screenY,
+            button: e.button,
+            buttons: e.buttons
+        });
+
+        parent.dispatchEvent(cloneEvent('pointerdown'));
+        parent.dispatchEvent(cloneEvent('pointermove'));
+    }
+
+    /**
      * @param {DiscoScrollView} view
      * @param {boolean} isHorizontal
      * @returns {boolean}
@@ -229,6 +280,10 @@ class DiscoScrollView extends DiscoUIElement {
             else if (direction === 'vertical' && !isHorizontal) shouldCapture = true;
 
             if (shouldCapture) {
+                if (!this._canScrollInAxis(this, isHorizontal)) {
+                    this._isPreDragging = false;
+                    return;
+                }
                 this._isPreDragging = false;
                 this._isDragging = true;
                 this.setPointerCapture(e.pointerId);
@@ -244,12 +299,41 @@ class DiscoScrollView extends DiscoUIElement {
 
         if (!this._isDragging) return;
 
+        const moveDx = e.clientX - this._lastPos.x;
+        const moveDy = e.clientY - this._lastPos.y;
+        const absX = Math.abs(moveDx);
+        const absY = Math.abs(moveDy);
+        const isHorizontalMove = absX >= absY;
+        const direction = this.direction;
+
+        const atHorizontalEdge =
+            (this.scrollLeft <= 0 && moveDx > 0) ||
+            (this.scrollLeft >= this.maxScrollLeft && moveDx < 0);
+        const atVerticalEdge =
+            (this.scrollTop <= 0 && moveDy > 0) ||
+            (this.scrollTop >= this.maxScrollTop && moveDy < 0);
+
+        const overscrollMode = (this.getAttribute('overscroll-mode') || '').toLowerCase();
+        const loopEnabled = overscrollMode === 'loop';
+        const shouldHandoff = !loopEnabled && (
+            (direction === 'horizontal' && atHorizontalEdge) ||
+            (direction === 'vertical' && atVerticalEdge) ||
+            (direction === 'both' && (isHorizontalMove ? atHorizontalEdge : atVerticalEdge))
+        );
+
+        if (shouldHandoff) {
+            const parent = this._getParentScrollViewFromEvent(e);
+            if (parent) {
+                this._handoffToParent(e, parent);
+                return;
+            }
+        }
+
         const now = performance.now();
         const dt = now - this._lastTimestamp;
 
-        let dx = e.clientX - this._lastPos.x;
-        let dy = e.clientY - this._lastPos.y;
-        const direction = this.direction;
+        let dx = moveDx;
+        let dy = moveDy;
         if (direction === 'horizontal') dy = 0;
         if (direction === 'vertical') dx = 0;
 
@@ -272,7 +356,15 @@ class DiscoScrollView extends DiscoUIElement {
         this._virtualX -= dx;
         this._virtualY -= dy;
 
-        const { clampedX, clampedY, overscrollX, overscrollY } = this._computeOverscroll(this._virtualX, this._virtualY);
+        const resistance = 0.5;
+        const { clampedX, clampedY, overscrollX, overscrollY } = this._computeOverscroll(this._virtualX, this._virtualY, resistance);
+
+        if (overscrollX !== 0) {
+            this._virtualX = clampedX - (overscrollX / resistance);
+        }
+        if (overscrollY !== 0) {
+            this._virtualY = clampedY - (overscrollY / resistance);
+        }
 
         this.scrollLeft = clampedX;
         this.scrollTop = clampedY;
@@ -338,6 +430,8 @@ class DiscoScrollView extends DiscoUIElement {
         this._nestedScrollView = null;
         try { this.releasePointerCapture(e.pointerId); } catch (err) { }
         this._removePointerListeners();
+        this._virtualX = this.scrollLeft;
+        this._virtualY = this.scrollTop;
 
         const overscrollX = Math.abs(this._overscrollX) > 1;
         const overscrollY = Math.abs(this._overscrollY) > 1;
@@ -369,6 +463,8 @@ class DiscoScrollView extends DiscoUIElement {
         this._nestedScrollView = null;
         try { this.releasePointerCapture(e.pointerId); } catch (err) { }
         this._removePointerListeners();
+        this._virtualX = this.scrollLeft;
+        this._virtualY = this.scrollTop;
 
         const overscrollX = Math.abs(this._overscrollX) > 1;
         const overscrollY = Math.abs(this._overscrollY) > 1;

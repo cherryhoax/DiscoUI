@@ -167,6 +167,15 @@ class DiscoPivotPage extends DiscoPage {
     if (!viewport || !strip) return;
 
     const items = () => Array.from(this.querySelectorAll('disco-pivot-item'));
+    const isFromNestedFlipView = (event) => {
+      if (!event || typeof event.composedPath !== 'function') return false;
+      const path = event.composedPath();
+      for (const node of path) {
+        if (node === viewport) break;
+        if (node instanceof HTMLElement && node.tagName === 'DISCO-FLIP-VIEW') return true;
+      }
+      return false;
+    };
 
     // Visibility Management
     let dragStartIndex = 0;
@@ -281,7 +290,8 @@ class DiscoPivotPage extends DiscoPage {
       this.scrollViewportTo(viewport, targetPage * span, true);
     };
 
-    viewport.addEventListener('pointerdown', () => {
+    viewport.addEventListener('pointerdown', (e) => {
+      if (isFromNestedFlipView(e)) return;
         // User interaction starts
         isSnapping = false;
         snapTargetIndex = null;
@@ -323,6 +333,7 @@ class DiscoPivotPage extends DiscoPage {
     this.getPageSpan = getPageSpan;
 
     viewport.addEventListener('disco-snap-target', async (e) => {
+      if (isFromNestedFlipView(e)) return;
         isSnapping = true;
         const idx = e.detail.index;
         // console.log(`Snap target index: ${idx} (raw)`);
@@ -399,7 +410,8 @@ class DiscoPivotPage extends DiscoPage {
         });
     };
 
-    viewport.addEventListener('scroll', () => {
+    viewport.addEventListener('scroll', (e) => {
+      if (isFromNestedFlipView(e)) return;
         updateHeaders();
         // If simply dragging, ensure visibility is enforced
         if (!isSnapping) {

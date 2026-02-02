@@ -62,8 +62,14 @@
     padding: 0 20px;
     box-sizing: border-box;
     transform-style: preserve-3d;
+    perspective: var(--disco-perspective);
+    perspective-origin: center;
 
     @include ui.disco-fill-slotted-scrollables;
+}
+
+.content-viewport ::slotted(*) {
+    transform-style: preserve-3d;
 }
 
 .content-viewport::-webkit-scrollbar {

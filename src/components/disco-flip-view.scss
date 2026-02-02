@@ -11,6 +11,10 @@
   height: 100%;
 }
 
+:host([direction='horizontal']) .scroll-content {
+  width: 100%;
+}
+
 /* Ensure slotted children become full-page slides. Use direction attribute to apply appropriate sizing. */
 :host([direction='horizontal']) ::slotted(*) {
   flex: 0 0 100%;
