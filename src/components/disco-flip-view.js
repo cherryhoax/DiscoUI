@@ -45,6 +45,7 @@ class DiscoFlipView extends DiscoScrollView {
     this._slotObserver.disconnect();
   }
 
+
   _updateMetrics() {
     if (super._updateMetrics) super._updateMetrics();
     if (!this._isLooping()) return;

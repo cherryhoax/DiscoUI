@@ -42,7 +42,12 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {Promise<void>}
    */
   async animateInFn(options = { direction: 'forward' }) {
-    await DiscoAnimations.animationSet.page.in(this, options);
+    this._setAnimationOverflow(true);
+    try {
+      await DiscoAnimations.animationSet.page.in(this, options);
+    } finally {
+      this._setAnimationOverflow(false);
+    }
   }
 
   /**
@@ -50,7 +55,65 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {Promise<void>}
    */
   async animateOutFn(options = { direction: 'forward' }) {
-    await DiscoAnimations.animationSet.page.out(this, options);
+    this._setAnimationOverflow(true);
+    try {
+      await DiscoAnimations.animationSet.page.out(this, options);
+    } finally {
+      this._setAnimationOverflow(false);
+    }
+  }
+
+  /**
+   * @param {boolean} enabled
+   */
+  _setAnimationOverflow(enabled) {
+    if (enabled) {
+      this.setAttribute('data-animating', '');
+      this._isAnimating = true;
+    } else {
+      this.removeAttribute('data-animating');
+      this._isAnimating = false;
+    }
+    const viewport = this.shadowRoot?.getElementById('viewport');
+    if (viewport instanceof HTMLElement) {
+      viewport.style.overflow = enabled ? 'visible' : '';
+      viewport.style.contain = enabled ? 'none' : '';
+      const wrapper = viewport.shadowRoot?.querySelector('.scroll-content');
+      if (wrapper instanceof HTMLElement) {
+        wrapper.style.overflow = enabled ? 'visible' : '';
+      }
+      if (enabled) {
+        this._animPrevOverscrollMode = viewport.getAttribute('overscroll-mode');
+        if ((this._animPrevOverscrollMode || '').toLowerCase() === 'loop') {
+          viewport.removeAttribute('overscroll-mode');
+        }
+        if (typeof viewport._updateChildrenLayout === 'function') {
+          viewport._updateChildrenLayout();
+        }
+      } else if (this._animPrevOverscrollMode != null) {
+        viewport.setAttribute('overscroll-mode', this._animPrevOverscrollMode);
+        this._animPrevOverscrollMode = null;
+        if (typeof viewport._updateChildrenLayout === 'function') {
+          viewport._updateChildrenLayout();
+        }
+      }
+    }
+    const pivotItems = Array.from(this.querySelectorAll('disco-pivot-item'));
+    if (enabled) {
+      pivotItems.forEach((item) => {
+        item.style.visibility = 'visible';
+        item.style.opacity = '1';
+        item.style.transition = 'none';
+        item.style.animation = 'none';
+      });
+    } else {
+      pivotItems.forEach((item) => {
+        item.style.visibility = '';
+        item.style.opacity = '';
+        item.style.transition = '';
+        item.style.animation = '';
+      });
+    }
   }
 
   /**
@@ -182,28 +245,45 @@ class DiscoPivotPage extends DiscoPage {
     let isSnapping = false;
     let snapTargetIndex = null;
 
+    const showAllItems = () => {
+      const itemElements = items();
+      itemElements.forEach((el) => {
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        el.style.transition = 'none';
+      });
+    };
+
     const setVisibleItems = (indices) => {
-        const itemElements = items();
-        const count = itemElements.length;
-        if (count === 0) return;
-        const set = new Set(indices.map(i => ((i % count) + count) % count));
+      if (this._isAnimating) {
+        showAllItems();
+        return;
+      }
+      const itemElements = items();
+      const count = itemElements.length;
+      if (count === 0) return;
+      const set = new Set(indices.map(i => ((i % count) + count) % count));
         
-        itemElements.forEach((el, i) => {
-            if (set.has(i)) {
-                el.style.visibility = 'visible';
-                el.style.opacity = '1';
-                el.style.transition = 'none';
-            } else {
-                el.style.visibility = 'hidden';
-                el.style.opacity = '0';
-                el.style.transition = 'none';
-            }
-        });
+      itemElements.forEach((el, i) => {
+        if (set.has(i)) {
+          el.style.visibility = 'visible';
+          el.style.opacity = '1';
+          el.style.transition = 'none';
+        } else {
+          el.style.visibility = 'hidden';
+          el.style.opacity = '0';
+          el.style.transition = 'none';
+        }
+      });
     };
 
     // Initialize visibility
     requestAnimationFrame(() => {
+      if (this._isAnimating) {
+        showAllItems();
+      } else {
         setVisibleItems([0]);
+      }
         // Trigger initial header measurement/scroll
         if (items().length > 0) {
             updateHeaders(); 
@@ -292,6 +372,10 @@ class DiscoPivotPage extends DiscoPage {
 
     viewport.addEventListener('pointerdown', (e) => {
       if (isFromNestedFlipView(e)) return;
+      if (this._isAnimating) {
+        showAllItems();
+        return;
+      }
         // User interaction starts
         isSnapping = false;
         snapTargetIndex = null;
@@ -334,6 +418,10 @@ class DiscoPivotPage extends DiscoPage {
 
     viewport.addEventListener('disco-snap-target', async (e) => {
       if (isFromNestedFlipView(e)) return;
+      if (this._isAnimating) {
+        showAllItems();
+        return;
+      }
         isSnapping = true;
         const idx = e.detail.index;
         // console.log(`Snap target index: ${idx} (raw)`);
@@ -412,6 +500,10 @@ class DiscoPivotPage extends DiscoPage {
 
     viewport.addEventListener('scroll', (e) => {
       if (isFromNestedFlipView(e)) return;
+      if (this._isAnimating) {
+        showAllItems();
+        return;
+      }
         updateHeaders();
         // If simply dragging, ensure visibility is enforced
         if (!isSnapping) {
