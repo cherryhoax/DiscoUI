@@ -1,4 +1,4 @@
-import { html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS, LitElement } from 'lit';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import '../disco-flip-view.js';
@@ -30,8 +30,10 @@ class DiscoPivotPage extends DiscoPage {
     this.appTitle = 'DISCO APP';
   }
 
+  // Override parent's light DOM to use shadow DOM for this component
+  // Call LitElement's implementation directly to properly handle styles
   createRenderRoot() {
-    return this.attachShadow({ mode: 'open' });
+    return LitElement.prototype.createRenderRoot.call(this);
   }
 
   firstUpdated() {

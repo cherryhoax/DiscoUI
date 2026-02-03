@@ -60,6 +60,7 @@ class DiscoListView extends DiscoScrollView {
   updated(changedProperties) {
     super.updated(changedProperties);
     if (changedProperties.has('items')) {
+      this._items = this.items; // Sync public property to private property
       this._renderDynamic();
     }
     if (changedProperties.has('itemClickEnabled') || changedProperties.has('selectionMode')) {
