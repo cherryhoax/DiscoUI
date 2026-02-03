@@ -1,0 +1,8 @@
+@use 'components/disco-app.scss';
+@use 'components/disco-frame.scss';
+
+body {
+	margin: 0;
+	background-color: var(--disco-bg);
+	color: var(--disco-fg);
+}

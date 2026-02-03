@@ -22,9 +22,16 @@ const examplesDistAliasPlugin = () => {
     configResolved(config) {
       isServe = config.command === 'serve';
     },
+    transformIndexHtml(html) {
+      if (!isServe) return html;
+      return html.replace('./dist/discoui.preload.css', '/src/preload.scss');
+    },
     resolveId(source, importer) {
       if (!isServe || !importer) return null;
       if (source === './dist/index.js' && importer.endsWith('/examples/index.js')) {
+        return path.resolve(__dirname, 'src/index.js');
+      }
+      if (source === './dist/discoui.js' && importer.endsWith('/examples/index.js')) {
         return path.resolve(__dirname, 'src/index.js');
       }
       return null;
@@ -39,10 +46,16 @@ export default defineConfig({
     open: '/examples/index.html'
   },
   build: {
+    rollupOptions: {
+      input: {
+        discoui: path.resolve(__dirname, 'src/index.js'),
+        'discoui.preload': path.resolve(__dirname, 'src/preload.scss')
+      }
+    },
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       formats: ['es'],
-      fileName: 'index'
+      fileName: 'discoui'
     },
     outDir: 'dist',
     sourcemap: true
