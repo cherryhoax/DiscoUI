@@ -1,3 +1,5 @@
+import { html, css, unsafeCSS } from 'lit';
+import { property } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
 import checkboxStyles from './disco-checkbox.scss';
 
@@ -6,115 +8,73 @@ import checkboxStyles from './disco-checkbox.scss';
  * @extends DiscoUIElement
  */
 class DiscoCheckbox extends DiscoUIElement {
-  /**
-   * @constructor
-   */
+  static properties = {
+    checked: { type: Boolean, reflect: true },
+    disabled: { type: Boolean, reflect: true }
+  };
+
+  static styles = css`
+    ${unsafeCSS(checkboxStyles)}
+  `;
+
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(checkboxStyles, this.shadowRoot);
-    this.enableTilt();
-
-    const wrapper = document.createElement('label');
-    wrapper.className = 'wrapper';
-
-    this._input = document.createElement('input');
-    this._input.className = 'input';
-    this._input.type = 'checkbox';
-
-    const box = document.createElement('span');
-    box.className = 'box';
-
-    const text = document.createElement('span');
-    text.className = 'text';
-    const slot = document.createElement('slot');
-    text.appendChild(slot);
-
-    wrapper.appendChild(this._input);
-    wrapper.appendChild(box);
-    wrapper.appendChild(text);
-    this.shadowRoot.appendChild(wrapper);
-
-    wrapper.addEventListener('click', (event) => {
-      if (this.disabled) return;
-      event.preventDefault();
-      this.checked = !this.checked;
-      this._syncFromAttributes();
-      this.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    this._input.addEventListener('change', () => {
-      this.checked = this._input.checked;
-    });
-
+    this.checked = false;
+    this.disabled = false;
     this.setAttribute('role', 'checkbox');
     this.tabIndex = 0;
-    this.addEventListener('keydown', (event) => {
-      if (this.disabled) return;
-      if (event.key === ' ' || event.key === 'Enter') {
-        event.preventDefault();
-        this.checked = !this.checked;
-        this._syncFromAttributes();
-        this.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    });
-
-    this._syncFromAttributes();
   }
 
-  static get observedAttributes() {
-    return ['checked', 'disabled'];
+  render() {
+    return html`
+      <label class="wrapper" @click=${this._handleWrapperClick}>
+        <input
+          class="input"
+          type="checkbox"
+          .checked=${this.checked}
+          .disabled=${this.disabled}
+          @change=${this._handleInputChange}
+        />
+        <span class="box"></span>
+        <span class="text">
+          <slot></slot>
+        </span>
+      </label>
+    `;
   }
 
-  /**
-   * @returns {boolean}
-   */
-  get checked() {
-    return this.hasAttribute('checked');
+  firstUpdated() {
+    this.enableTilt();
+    this.addEventListener('keydown', this._handleKeydown);
   }
 
-  /**
-   * @param {boolean} next
-   */
-  set checked(next) {
-    if (next) {
-      this.setAttribute('checked', '');
-    } else {
-      this.removeAttribute('checked');
+  updated(changedProperties) {
+    if (changedProperties.has('checked') || changedProperties.has('disabled')) {
+      this._syncAriaAttributes();
     }
   }
 
-  /**
-   * @returns {boolean}
-   */
-  get disabled() {
-    return this.hasAttribute('disabled');
+  _handleWrapperClick(event) {
+    if (this.disabled) return;
+    event.preventDefault();
+    this.checked = !this.checked;
+    this.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
-  /**
-   * @param {boolean} next
-   */
-  set disabled(next) {
-    if (next) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
+  _handleInputChange(event) {
+    this.checked = event.target.checked;
+  }
+
+  _handleKeydown = (event) => {
+    if (this.disabled) return;
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      this.checked = !this.checked;
+      this.dispatchEvent(new Event('change', { bubbles: true }));
     }
-  }
+  };
 
-  /**
-   * @param {string} _name
-   * @param {string | null} _oldValue
-   * @param {string | null} _newValue
-   */
-  attributeChangedCallback(_name, _oldValue, _newValue) {
-    this._syncFromAttributes();
-  }
-
-  _syncFromAttributes() {
-    if (!this._input) return;
-    this._input.checked = this.checked;
-    this._input.disabled = this.disabled;
+  _syncAriaAttributes() {
     this.setAttribute('aria-checked', this.checked ? 'true' : 'false');
     if (this.disabled) {
       this.setAttribute('aria-disabled', 'true');
