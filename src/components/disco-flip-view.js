@@ -186,11 +186,18 @@ class DiscoFlipView extends DiscoScrollView {
 
   _getLoopMetrics() {
     const direction = this.direction;
-    const pageSize = direction === 'horizontal' ? (this.clientWidth || 1) : (this.clientHeight || 1);
+    const pageSize = this._getPageSize();
     const nodes = this._getPageElements();
     const count = Math.max(1, nodes.length);
     const span = pageSize * count;
     return { direction, pageSize, count, span };
+  }
+
+  /**
+   * @returns {number}
+   */
+  _getPageSize() {
+    return this.direction === 'horizontal' ? (this.clientWidth || 1) : (this.clientHeight || 1);
   }
 
   /**
@@ -317,7 +324,7 @@ class DiscoFlipView extends DiscoScrollView {
     if (direction === 'vertical') targetX = this.scrollLeft;
     if (direction === 'horizontal') targetY = this.scrollTop;
 
-    const pageWidth = this.clientWidth || 1;
+    const pageWidth = this._getPageSize();
     const nodes = this._getPageElements();
     const maxIndex = Math.max(0, nodes.length - 1);
     const overscrollMode = (this.getAttribute('overscroll-mode') || '').toLowerCase();
@@ -370,7 +377,7 @@ class DiscoFlipView extends DiscoScrollView {
 
       if (snapStopEnabled) {
         const currentPos = (loopEnabled && Number.isFinite(this._loopVirtualY)) ? this._loopVirtualY : this.scrollTop;
-        const currentIdx = currentPos / (this.clientHeight || 1);
+        const currentIdx = currentPos / (this._getPageSize() || 1);
         const flickThreshold = 50;
 
         if (Math.abs(vY) > flickThreshold) {
@@ -383,13 +390,13 @@ class DiscoFlipView extends DiscoScrollView {
           idx = Math.round(currentIdx);
         }
       } else {
-        idx = Math.round(targetY / (this.clientHeight || 1));
+        idx = Math.round(targetY / (this._getPageSize() || 1));
       }
 
       if (!loopEnabled) {
         idx = Math.max(0, Math.min(maxIndex, idx));
       }
-      targetY = idx * (this.clientHeight || 1);
+      targetY = idx * (this._getPageSize() || 1);
     }
 
     // clamp
@@ -405,7 +412,7 @@ class DiscoFlipView extends DiscoScrollView {
     this._amplitudeY = targetY - this.scrollTop;
     
     // Dispatch snap event with projected index
-    const finalizedIdx = direction === 'horizontal' ? Math.round(targetX / pageWidth) : Math.round(targetY / (this.clientHeight || 1));
+    const finalizedIdx = direction === 'horizontal' ? Math.round(targetX / pageWidth) : Math.round(targetY / (this._getPageSize() || 1));
     this.dispatchEvent(new CustomEvent('disco-snap-target', {
       detail: { index: finalizedIdx, targetX, targetY },
       bubbles: true,
@@ -418,7 +425,7 @@ class DiscoFlipView extends DiscoScrollView {
 
   _snapToNearestPage() {
     const direction = this.direction;
-    const pageSize = direction === 'horizontal' ? (this.clientWidth || 1) : (this.clientHeight || 1);
+    const pageSize = this._getPageSize();
     const nodes = this._getPageElements();
     const maxIndex = Math.max(0, nodes.length - 1);
     const overscrollMode = (this.getAttribute('overscroll-mode') || '').toLowerCase();

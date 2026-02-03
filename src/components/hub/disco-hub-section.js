@@ -33,8 +33,12 @@ class DiscoHubSection extends DiscoUIElement {
             this.header = newValue;
             this.render();
         }
-        if (name === 'width' && newValue != null) {
-            this.style.width = newValue;
+        if (name === 'width') {
+            if (newValue != null) {
+                this.style.width = newValue;
+            } else {
+                this.style.width = '';
+            }
         }
     }
 

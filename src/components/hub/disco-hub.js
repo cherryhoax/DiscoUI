@@ -1,6 +1,7 @@
 import DiscoPage from '../disco-page.js';
 import hubCss from './disco-hub.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
+import './disco-hub-view.js';
 
 /**
  * A Windows Phone 8.1 / Hub style Hub page.
@@ -51,7 +52,15 @@ class DiscoHub extends DiscoPage {
      * @returns {Promise<void>}
      */
     async animateInFn(options = { direction: 'forward' }) {
+        this.setAttribute('data-animating', '');
+        const viewport = this.shadowRoot?.getElementById('viewport');
+        if (viewport) viewport.setAttribute('data-animating', '');
+        const sections = Array.from(this.querySelectorAll('disco-hub-section'));
+        sections.forEach((section) => section.setAttribute('data-animating', ''));
         await DiscoAnimations.animationSet.page.in(this, options);
+        this.removeAttribute('data-animating');
+        if (viewport) viewport.removeAttribute('data-animating');
+        sections.forEach((section) => section.removeAttribute('data-animating'));
     }
 
     /**
@@ -59,12 +68,19 @@ class DiscoHub extends DiscoPage {
      * @returns {Promise<void>}
      */
     async animateOutFn(options = { direction: 'forward' }) {
+        this.setAttribute('data-animating', '');
+        const viewport = this.shadowRoot?.getElementById('viewport');
+        if (viewport) viewport.setAttribute('data-animating', '');
+        const sections = Array.from(this.querySelectorAll('disco-hub-section'));
+        sections.forEach((section) => section.setAttribute('data-animating', ''));
         await DiscoAnimations.animationSet.page.out(this, options);
+        this.removeAttribute('data-animating');
+        if (viewport) viewport.removeAttribute('data-animating');
+        sections.forEach((section) => section.removeAttribute('data-animating'));
     }
 
     connectedCallback() {
         this.setupParallax();
-        this.setupInfiniteScroll();
     }
 
     render() {
@@ -73,218 +89,17 @@ class DiscoHub extends DiscoPage {
             <div class="hub-header">
                 <h1 class="hub-title">${this.header}</h1>
             </div>
-            <div class="hub-viewport" id="viewport">
-                <div class="ghost ghost-left"></div>
+            <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal" data-debug-overflow>
                 <slot></slot>
-                <div class="ghost ghost-right"></div>
-            </div>
+            </disco-hub-view>
         `;
         this._header = this._container.querySelector('.hub-header')
-    }
-
-    setupInfiniteScroll() {
-        const viewport = this.shadowRoot.getElementById('viewport');
-        const slot = this.shadowRoot.querySelector('slot');
-        const ghostLeft = this.shadowRoot.querySelector('.ghost-left');
-        const ghostRight = this.shadowRoot.querySelector('.ghost-right');
-
-        if (!viewport || !slot || !ghostLeft || !ghostRight) return;
-
-        let items = [];
-        let isTeleporting = false;
-
-        const updateLayout = () => {
-            // Re-query assigned elements
-            items = slot.assignedElements().filter(el => el.tagName.toLowerCase().includes('hub-section'));
-
-            ghostLeft.innerHTML = '';
-            ghostRight.innerHTML = '';
-
-            if (items.length <= 1) {
-                ghostLeft.style.width = '24px';
-                ghostRight.style.width = '24px';
-                return;
-            }
-
-            // Remove manual widths (let content dictate)
-            ghostLeft.style.width = '';
-            ghostRight.style.width = '';
-
-            const viewportWidth = viewport.clientWidth || window.innerWidth;
-            const margin = 0; // Removed extra margin calculation as per user report of gaps
-
-            // Calculate Real Content Width/Check
-            const totalItemWidth = items.reduce((acc, item) => acc + item.offsetWidth, 0);
-
-            // If content is smaller than viewport, infinite loop is impossible without cloning.
-            // We disable the ghosts to prevent visual glitches.
-            if (totalItemWidth <= viewportWidth) {
-                ghostLeft.style.width = '24px'; // padding
-                ghostRight.style.width = '24px';
-                return;
-            }
-
-            const firstItem = items[0];
-            const lastItem = items[items.length - 1];
-            ghostLeft.style.width = `${lastItem.offsetWidth}px`;
-            // Ensure ghostRight is wide enough to let us align its start with the viewport left edge
-            // This prevents "jumps" when the first item is narrower than the screen
-            ghostRight.style.width = `${Math.max(firstItem.offsetWidth, viewportWidth)}px`;
-
-            // Initial Scroll Position: Jump from 0 to Start of Real Content
-            const ensureInitialScroll = (tries = 0) => {
-                if (tries > 6 || items.length === 0) return;
-
-                // Recalculate if layout changed
-                const currentTotal = items.reduce((acc, item) => acc + item.offsetWidth, 0);
-                if (currentTotal <= viewport.clientWidth) return;
-
-                const firstItem = items[0];
-                const targetLeft = firstItem.offsetLeft;
-                // Wait until layout settles and target is measurable
-                if (targetLeft <= 0 || viewport.scrollWidth === 0) {
-                    requestAnimationFrame(() => ensureInitialScroll(tries + 1));
-                    return;
-                }
-                // Only reset if we are near 0 (default) or clearly misaligned
-                if (viewport.scrollLeft < 10) {
-                    viewport.style.scrollBehavior = 'auto';
-                    viewport.style.scrollSnapType = 'none';
-                    viewport.scrollLeft = targetLeft;
-                    requestAnimationFrame(() => {
-                        viewport.style.scrollBehavior = '';
-                        viewport.style.scrollSnapType = '';
-                    });
-                }
-            };
-            requestAnimationFrame(() => ensureInitialScroll());
-        };
-
-        // Handle Slot Changes
-        slot.addEventListener('slotchange', () => {
-            requestAnimationFrame(updateLayout);
-            requestAnimationFrame(() => requestAnimationFrame(updateLayout));
-        });
-        window.addEventListener('resize', () => {
-            requestAnimationFrame(updateLayout);
-        });
-
-        requestAnimationFrame(updateLayout);
-
-        // Scroll Loop Logic
-        viewport.addEventListener('scroll', () => {
-            if (items.length <= 1 || isTeleporting) return;
-            const ghostLeft = this.shadowRoot.querySelector('.ghost-left');
-            const ghostRight = this.shadowRoot.querySelector('.ghost-right');
-
-            const firstItem = items[0];
-            const lastItem = items[items.length - 1];
-
-            const scrollLeft = viewport.scrollLeft;
-            const ghostLeftWidth = ghostLeft.offsetWidth;
-            const ghostRightWidth = firstItem.offsetWidth + 96
-            const totalScrollWidth = viewport.scrollWidth;
-
-            // Clean up visual transforms when not needed
-            // (We'll re-apply them if we are in a zone)
-            items[0].style.transform = '';
-            items[items.length - 1].style.transform = '';
-
-            // 1. Enter Left Ghost Zone
-            if (scrollLeft < ghostLeftWidth) {
-                // Determine layout
-                const lastItem = items[items.length - 1];
-
-                // Visual Transform: Move Last Item to occupy Ghost Left
-                // Goal: lastItem left edge should be at 0
-                // Current: lastItem.offsetLeft
-                lastItem.style.transform = `translateX(-${lastItem.offsetLeft}px)`;
-
-                // Teleport Logic
-                // Trigger when we've scrolled past the middle of the visual Last Item (Ghost Left)
-                // This ensures symmetry with the Right Zone trigger
-                if (scrollLeft <= ghostLeftWidth / 2) {
-                    this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
-                    this._header.classList.add('hub-header-animate-left');
-                    this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
-                    this._background.classList.add('hub-background-animate-left');
-                    clearTimeout(this._headerAnimationTimeout);
-                    this._headerAnimationTimeout = setTimeout(() => {
-                        this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
-                        this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
-                    }, 1000);
-                    isTeleporting = true;
-                    viewport.style.scrollBehavior = 'auto';
-                    viewport.style.scrollSnapType = 'none';
-
-                    // Jump to "Middle" of Real Last Item
-                    // Map visual position in Ghost Left directly to Real Last Item
-                    viewport.scrollLeft = lastItem.offsetLeft + scrollLeft;
-
-                    // Reset transform immediately so it doesn't look doubled
-                    lastItem.style.transform = '';
-
-                    requestAnimationFrame(() => {
-                        viewport.style.scrollBehavior = '';
-                        viewport.style.scrollSnapType = '';
-                        isTeleporting = false;
-                    });
-                }
-            }
-
-            // 2. Enter Right Ghost Zone
-            // Correctly identify the physical start of the Right Ghost element
-            // This is safer than calculating from totalWidth which might include margin quirks
-            const startOfGhostRight = ghostRight.offsetLeft;
-            const clientWidth = viewport.clientWidth;
-
-            if (scrollLeft + clientWidth > startOfGhostRight) {
-                const firstItem = items[0];
-
-                // Visual Transform: Move First Item to occupy Ghost Right
-                // Goal: Move item from its current visual position (offsetLeft) to the ghost's position.
-                // Transform = Dest - Source
-                const offset = startOfGhostRight - firstItem.offsetLeft;
-                firstItem.style.transform = `translateX(${offset}px)`;
-
-                // Teleport Logic
-                // We physically jump when the Viewport Left Edge hits the Ghost Right Start Edge.
-                // This corresponds to the user "landing" on the ghost page.
-                if (scrollLeft > lastItem.offsetLeft + lastItem.offsetWidth / 2) {
-                    this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
-                    this._header.classList.add('hub-header-animate-right');
-                    this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
-                    this._background.classList.add('hub-background-animate-right');
-                    clearTimeout(this._headerAnimationTimeout);
-                    this._headerAnimationTimeout = setTimeout(() => {
-                        this._header.classList.remove('hub-header-animate-right', 'hub-header-animate-left');
-                        this._background.classList.remove('hub-background-animate-right', 'hub-background-animate-left');
-                    }, 1000);
-                    isTeleporting = true;
-                    viewport.style.scrollBehavior = 'auto';
-                    viewport.style.scrollSnapType = 'none';
-
-                    // Jump to Start of Real Content (firstItem)
-                    // Maintain any sub-pixel overshoot (e.g. momentum scolling past the exact point)
-                    const delta = scrollLeft - startOfGhostRight;
-                    viewport.scrollLeft = firstItem.offsetLeft + delta;
-
-                    firstItem.style.transform = '';
-
-                    requestAnimationFrame(() => {
-                        viewport.style.scrollBehavior = '';
-                        viewport.style.scrollSnapType = '';
-                        isTeleporting = false;
-                    });
-                }
-            }
-        }, { passive: true });
     }
 
     setupParallax() {
         const viewport = this.shadowRoot.getElementById('viewport');
         if (!viewport) return;
-        const slot = this.shadowRoot.querySelector('slot');
+        const slot = viewport.shadowRoot?.querySelector('slot') || null;
         viewport.addEventListener('scroll', () => {
             const items = slot?.assignedElements().filter(el => el.tagName.toLowerCase().includes('hub-section')) || [];
             if (items.length === 0) return;
@@ -298,8 +113,6 @@ class DiscoHub extends DiscoPage {
             var scrollPercent = scrollLeft / totalScrollableDistance;
             var scrollFirst = viewport.scrollLeft / firstItem.offsetWidth;
             scrollPercent = scrollPercent < 0 ? (1 - scrollFirst) * -1 : scrollPercent;
-            const ghostLeft = this.shadowRoot.querySelector('.ghost-left');
-            const ghostRight = this.shadowRoot.querySelector('.ghost-right');
 /*
             if (viewport.scrollLeft < ghostLeft.offsetWidth) {
                 const ghostPercent = (viewport.scrollLeft - ghostLeft.offsetLeft) / ghostLeft.offsetWidth;

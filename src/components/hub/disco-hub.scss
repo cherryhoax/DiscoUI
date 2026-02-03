@@ -6,10 +6,14 @@
     width: 100%;
     height: 100%;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     user-select: none;
     background-color: var(--disco-bg, #000);
     color: var(--disco-fg, #fff);
+}
+
+:host([data-animating]) {
+    overflow: visible !important;
 }
 
 .hub-background {
@@ -44,6 +48,11 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: visible;
+}
+
+:host([data-animating]) .hub-shell {
+    overflow: visible !important;
 }
 
 .hub-header {
@@ -140,40 +149,12 @@
 
 .hub-viewport {
     flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    display: flex;
-    flex-direction: row;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
-    scrollbar-width: none;
-    scroll-snap-type: x mandatory;
+    display: block;
     padding-left: 0;
     padding-right: 0;
+    overflow: visible;
 }
 
-.hub-viewport::-webkit-scrollbar {
-    display: none;
+:host([data-animating]) .hub-viewport {
+    overflow: visible !important;
 }
-
-/* ghosts are spacers */
-    .ghost {
-        flex-shrink: 0;
-        height: 100%;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        display: flex;
-    }
-
-    /* .hub-content removed; styles merged into viewport */
-
-    ::slotted(disco-hub-section),
-    .ghost disco-hub-section {
-        max-width: calc(100% - 74px);
-        min-width: 400px;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        flex-shrink: 0;
-        padding-left: 24px;
-    }
