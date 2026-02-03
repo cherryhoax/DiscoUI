@@ -22,8 +22,56 @@ const launchDemo = async () => {
   const buttonPage = document.getElementById('componentsButton');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
-  const stressScrollPage = document.getElementById('componentsStressScroll');
-  const stressNativeScrollPage = document.getElementById('componentsStressNativeScroll');
+  let stressScrollPage = document.getElementById('componentsStressScroll');
+  let stressNativeScrollPage = document.getElementById('componentsStressNativeScroll');
+
+  const populateStressContent = (container) => {
+    if (!container) return;
+    const fragment = document.createDocumentFragment();
+    const variants = ['stress-scroll__item--card', 'stress-scroll__item--mesh', 'stress-scroll__item--ring'];
+    const animations = ['stress-scroll__anim--float', 'stress-scroll__anim--pulse', 'stress-scroll__anim--spin', 'stress-scroll__anim--shimmer'];
+    const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const pick = (list) => list[random(0, list.length - 1)];
+    for (let i = 1; i <= 48; i += 1) {
+      const item = document.createElement('div');
+      const variant = variants[i % variants.length];
+      item.className = `stress-scroll__item ${variant}`;
+
+      const content = document.createElement('div');
+      content.className = 'stress-scroll__content';
+
+      const blocks = random(3, 8);
+      for (let j = 0; j < blocks; j += 1) {
+        const block = document.createElement('div');
+        block.className = 'stress-scroll__block';
+        if (Math.random() < 0.6) block.classList.add(pick(animations));
+        content.appendChild(block);
+      }
+
+      const lines = random(1, 3);
+      for (let k = 0; k < lines; k += 1) {
+        const line = document.createElement('div');
+        line.className = 'stress-scroll__line';
+        if (Math.random() < 0.4) line.classList.add(pick(animations));
+        content.appendChild(line);
+      }
+
+      const label = document.createElement('div');
+      label.className = 'stress-scroll__label';
+      label.textContent = `Item ${i}`;
+      content.appendChild(label);
+
+      const badge = document.createElement('div');
+      badge.className = 'stress-scroll__badge';
+      if (Math.random() < 0.5) badge.classList.add(pick(animations));
+      badge.textContent = `#${random(100, 999)}`;
+
+      item.appendChild(content);
+      item.appendChild(badge);
+      fragment.appendChild(item);
+    }
+    container.appendChild(fragment);
+  };
 
   const list = homePage.querySelector('#componentsList');
   if (list) {
@@ -37,7 +85,7 @@ const launchDemo = async () => {
       { id: 'flipview', Title: 'Flip View' }
     ];
 
-    list.addEventListener('itemselect', (event) => {
+    list.addEventListener('itemselect', async (event) => {
       const detail = event.detail;
       const id = detail?.data?.id;
       if (id === 'pivot') {
@@ -62,9 +110,19 @@ const launchDemo = async () => {
         frame.navigate(flipViewPage);
       }
       if (id === 'stressscroll') {
+        if (!stressScrollPage) {
+          stressScrollPage = await frame.loadPage('stress-scroll.html', {
+            onLoad: (page) => populateStressContent(page.querySelector('#stressScrollContent'))
+          });
+        }
         frame.navigate(stressScrollPage);
       }
       if (id === 'stressnative') {
+        if (!stressNativeScrollPage) {
+          stressNativeScrollPage = await frame.loadPage('stress-native-scroll.html', {
+            onLoad: (page) => populateStressContent(page.querySelector('#stressNativeScrollContent'))
+          });
+        }
         frame.navigate(stressNativeScrollPage);
       }
     });
@@ -77,110 +135,30 @@ const launchDemo = async () => {
 
   const stressButton = document.getElementById('stressScrollButton');
   if (stressButton) {
-    stressButton.addEventListener('click', () => frame.navigate(stressScrollPage));
+    stressButton.addEventListener('click', async () => {
+      if (!stressScrollPage) {
+        stressScrollPage = await frame.loadPage('stress-scroll.html', {
+          onLoad: (page) => populateStressContent(page.querySelector('#stressScrollContent'))
+        });
+      }
+      frame.navigate(stressScrollPage);
+    });
   }
 
   const stressNativeButton = document.getElementById('stressNativeScrollButton');
   if (stressNativeButton) {
-    stressNativeButton.addEventListener('click', () => frame.navigate(stressNativeScrollPage));
+    stressNativeButton.addEventListener('click', async () => {
+      if (!stressNativeScrollPage) {
+        stressNativeScrollPage = await frame.loadPage('stress-native-scroll.html', {
+          onLoad: (page) => populateStressContent(page.querySelector('#stressNativeScrollContent'))
+        });
+      }
+      frame.navigate(stressNativeScrollPage);
+    });
   }
 
-  const stressContainer = document.getElementById('stressScrollContent');
-  if (stressContainer) {
-    const fragment = document.createDocumentFragment();
-    const variants = ['stress-scroll__item--card', 'stress-scroll__item--mesh', 'stress-scroll__item--ring'];
-    const animations = ['stress-scroll__anim--float', 'stress-scroll__anim--pulse', 'stress-scroll__anim--spin', 'stress-scroll__anim--shimmer'];
-    const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const pick = (list) => list[random(0, list.length - 1)];
-    for (let i = 1; i <= 48; i += 1) {
-      const item = document.createElement('div');
-      const variant = variants[i % variants.length];
-      item.className = `stress-scroll__item ${variant}`;
-
-      const content = document.createElement('div');
-      content.className = 'stress-scroll__content';
-
-      const blocks = random(3, 8);
-      for (let j = 0; j < blocks; j += 1) {
-        const block = document.createElement('div');
-        block.className = 'stress-scroll__block';
-        if (Math.random() < 0.6) block.classList.add(pick(animations));
-        content.appendChild(block);
-      }
-
-      const lines = random(1, 3);
-      for (let k = 0; k < lines; k += 1) {
-        const line = document.createElement('div');
-        line.className = 'stress-scroll__line';
-        if (Math.random() < 0.4) line.classList.add(pick(animations));
-        content.appendChild(line);
-      }
-
-      const label = document.createElement('div');
-      label.className = 'stress-scroll__label';
-      label.textContent = `Item ${i}`;
-      content.appendChild(label);
-
-      const badge = document.createElement('div');
-      badge.className = 'stress-scroll__badge';
-      if (Math.random() < 0.5) badge.classList.add(pick(animations));
-      badge.textContent = `#${random(100, 999)}`;
-
-      item.appendChild(content);
-      item.appendChild(badge);
-      fragment.appendChild(item);
-    }
-    stressContainer.appendChild(fragment);
-  }
-
-  const nativeContainer = document.getElementById('stressNativeScrollContent');
-  if (nativeContainer) {
-    const fragment = document.createDocumentFragment();
-    const variants = ['stress-scroll__item--card', 'stress-scroll__item--mesh', 'stress-scroll__item--ring'];
-    const animations = ['stress-scroll__anim--float', 'stress-scroll__anim--pulse', 'stress-scroll__anim--spin', 'stress-scroll__anim--shimmer'];
-    const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const pick = (list) => list[random(0, list.length - 1)];
-    for (let i = 1; i <= 48; i += 1) {
-      const item = document.createElement('div');
-      const variant = variants[i % variants.length];
-      item.className = `stress-scroll__item ${variant}`;
-
-      const content = document.createElement('div');
-      content.className = 'stress-scroll__content';
-
-      const blocks = random(3, 8);
-      for (let j = 0; j < blocks; j += 1) {
-        const block = document.createElement('div');
-        block.className = 'stress-scroll__block';
-        if (Math.random() < 0.6) block.classList.add(pick(animations));
-        content.appendChild(block);
-      }
-
-      const lines = random(1, 3);
-      for (let k = 0; k < lines; k += 1) {
-        const line = document.createElement('div');
-        line.className = 'stress-scroll__line';
-        if (Math.random() < 0.4) line.classList.add(pick(animations));
-        content.appendChild(line);
-      }
-
-      const label = document.createElement('div');
-      label.className = 'stress-scroll__label';
-      label.textContent = `Item ${i}`;
-      content.appendChild(label);
-
-      const badge = document.createElement('div');
-      badge.className = 'stress-scroll__badge';
-      if (Math.random() < 0.5) badge.classList.add(pick(animations));
-      badge.textContent = `#${random(100, 999)}`;
-
-      item.appendChild(content);
-      item.appendChild(badge);
-      fragment.appendChild(item);
-    }
-    nativeContainer.appendChild(fragment);
-  }
-
+  // Stress content population logic moved to populateStressContent() and called via loadPage options
+  
   // Progress controls
   const inc = document.getElementById('incProgress');
   const toggle = document.getElementById('toggleIndeterminate');

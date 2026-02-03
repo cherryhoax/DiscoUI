@@ -32,6 +32,53 @@ class DiscoFrame extends DiscoUIElement {
   }
 
   /**
+   * Loads a page from an external HTML file and appends it to the frame (hidden).
+   * Note: Scripts inside the loaded HTML will not be executed.
+   * @param {string} path - URL to the HTML file
+   * @param {object} [options]
+   * @param {(page: HTMLElement) => void} [options.onLoad]
+   * @param {(error: Error) => void} [options.onError]
+   * @returns {Promise<HTMLElement>}
+   */
+  async loadPage(path, options = {}) {
+    try {
+      const response = await fetch(path);
+      if (!response.ok) {
+        throw new Error(`Failed to load page: ${response.status} ${response.statusText}`);
+      }
+      const html = await response.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Validation: Check for single root element
+      // Filter out empty text nodes and comments to find real elements
+      const elements = Array.from(doc.body.children).filter((node) => node.nodeType === Node.ELEMENT_NODE);
+
+      if (elements.length !== 1) {
+        throw new Error(`Page content at ${path} must have exactly one root element.`);
+      }
+
+      const page = /** @type {HTMLElement} */ (elements[0]);
+
+      // Ensure it's hidden before appending
+      this._setPageVisibility(page, false);
+
+      this.appendChild(page);
+
+      if (options.onLoad) {
+        options.onLoad(page);
+      }
+
+      return page;
+    } catch (error) {
+      if (options.onError) {
+        options.onError(error instanceof Error ? error : new Error(String(error)));
+      }
+      throw error;
+    }
+  }
+
+  /**
    * @param {HTMLElement | null | undefined} page
    * @returns {Promise<void>}
    */

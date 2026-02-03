@@ -1,0 +1,159 @@
+<disco-single-page id="componentsStressNativeScroll" app-title="DISCO UI" header="native scroll stress test">
+    <style>
+        * {
+            touch-action: auto !important;
+        }
+
+        .stress-scroll__container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stress-scroll__viewport {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .stress-scroll__item {
+            width: 100%;
+            height: 150px;
+            background: #2b2b2b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stress-scroll__item--card {
+            background: linear-gradient(135deg, #2b2b2b, #1c1c1c);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .stress-scroll__item--mesh {
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+            background-size: 24px 24px;
+            background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+        }
+
+        .stress-scroll__item--ring {
+            background: radial-gradient(circle at 20% 20%, rgba(216, 0, 115, 0.25), transparent 60%),
+                radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.15), transparent 55%),
+                #222;
+        }
+
+        .stress-scroll__content {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .stress-scroll__block {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.02));
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .stress-scroll__line {
+            width: 60px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stress-scroll__label {
+            margin-left: 8px;
+        }
+
+        .stress-scroll__badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(216, 0, 115, 0.2);
+            border: 1px solid rgba(216, 0, 115, 0.5);
+        }
+
+        .stress-scroll__anim--float {
+            animation: stress-float 4s ease-in-out infinite;
+        }
+
+        .stress-scroll__anim--pulse {
+            animation: stress-pulse 3.2s ease-in-out infinite;
+        }
+
+        .stress-scroll__anim--spin {
+            animation: stress-spin 6s linear infinite;
+        }
+
+        .stress-scroll__anim--shimmer {
+            animation: stress-shimmer 2.8s linear infinite;
+        }
+
+        @keyframes stress-float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        @keyframes stress-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.06);
+                opacity: 0.85;
+            }
+        }
+
+        @keyframes stress-spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes stress-shimmer {
+            0% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.3);
+            }
+
+            100% {
+                filter: brightness(1);
+            }
+        }
+    </style>
+    <div class="stress-scroll__viewport">
+        <div class="stress-scroll__container" id="stressNativeScrollContent">
+            <!-- Items will be added here dynamically -->
+        </div>
+    </div>
+</disco-single-page>
