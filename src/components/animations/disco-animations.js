@@ -180,7 +180,7 @@ const animationSet = {
                     { opacity: 0 }
                 ],
                 {
-                    duration: 150,
+                    duration: 50,
                     easing: DiscoAnimations.easeInQuad,
                     fill: 'forwards'
                 }
