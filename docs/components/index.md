@@ -11,3 +11,8 @@
 - [Checkbox (disco-checkbox)](checkbox.md)
 - [Progress Bar (disco-progress-bar)](progress.md)
 - [Splash (disco-splash)](splash.md)
+
+## Base Classes
+
+- [DiscoUIElement](ui-element.md)
+- [DiscoAnimations](animations.md)
