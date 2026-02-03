@@ -1,15 +1,7 @@
 /**
  * Example demo loader used by the examples page.
  */
-let DiscoAppModule;
-try {
-  console.log('Trying to load from ./dist/index.js');
-  DiscoAppModule = await import('./dist/index.js');
-} catch {
-  console.log('Falling back to ../dist/index.js');
-  DiscoAppModule = await import('../dist/index.js');
-}
-const { DiscoApp } = DiscoAppModule;
+import { DiscoApp } from '/src/index.js';
 
 const launchDemo = async () => {
   const app = new DiscoApp({

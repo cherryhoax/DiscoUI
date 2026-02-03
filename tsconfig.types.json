@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "System",
+    "module": "ES2020",
     "moduleResolution": "Bundler",
     "allowJs": true,
     "checkJs": true,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outFile": "dist/index.d.ts",
+    "rootDir": "src",
+    "outDir": "dist",
     "skipLibCheck": true
   },
   "files": ["src/index.js", "src/types/global.d.ts"]

@@ -9,6 +9,9 @@ import '../disco-flip-view.js';
  */
 class DiscoPivotPage extends DiscoPage {
   /**
+   * @typedef {HTMLElement & { _updateChildrenLayout?: () => void }} PivotViewport
+   */
+  /**
    * @typedef {object} DiscoPageAnimationOptions
    * @property {'forward' | 'back'} direction
    */
@@ -78,8 +81,8 @@ class DiscoPivotPage extends DiscoPage {
       this.removeAttribute('data-animating');
       this._isAnimating = false;
     }
-    const viewport = this.shadowRoot?.getElementById('viewport');
-    if (viewport instanceof HTMLElement) {
+    const viewport = this._getViewport();
+    if (viewport) {
       viewport.style.overflow = enabled ? 'visible' : '';
       viewport.style.contain = enabled ? 'none' : '';
       const wrapper = viewport.shadowRoot?.querySelector('.scroll-content');
@@ -102,7 +105,7 @@ class DiscoPivotPage extends DiscoPage {
         }
       }
     }
-    const pivotItems = Array.from(this.querySelectorAll('disco-pivot-item'));
+    const pivotItems = /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
     if (enabled) {
       pivotItems.forEach((item) => {
         item.style.visibility = 'visible';
@@ -118,6 +121,14 @@ class DiscoPivotPage extends DiscoPage {
         item.style.animation = '';
       });
     }
+  }
+
+  /**
+   * @returns {PivotViewport | null}
+   */
+  _getViewport() {
+    const viewport = this.shadowRoot?.getElementById('viewport');
+    return viewport instanceof HTMLElement ? /** @type {PivotViewport} */ (viewport) : null;
   }
 
   /**
@@ -151,8 +162,9 @@ class DiscoPivotPage extends DiscoPage {
    */
   scrollViewportTo(viewport, left, smooth = true) {
     if (!viewport) return;
-    if (viewport.tagName === 'DISCO-SCROLL-VIEW' && typeof viewport.scrollTo === 'function') {
-      viewport.scrollTo(left, 0, smooth);
+    const scrollView = /** @type {{ scrollTo?: (x: number, y: number, animate?: boolean) => void }} */ (viewport);
+    if (viewport.tagName === 'DISCO-SCROLL-VIEW' && typeof scrollView.scrollTo === 'function') {
+      scrollView.scrollTo(left, 0, smooth);
       return;
     }
     if (smooth && typeof viewport.scrollTo === 'function') {
@@ -167,10 +179,10 @@ class DiscoPivotPage extends DiscoPage {
    */
   renderHeaders() {
     const strip = this.shadowRoot?.getElementById('headerStrip');
-    const viewport = this.shadowRoot?.getElementById('viewport');
+    const viewport = this._getViewport();
     if (!strip || !viewport) return;
 
-    const items = Array.from(this.querySelectorAll('disco-pivot-item'));
+    const items = /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
     strip.innerHTML = '';
 
     // Create 11 sets of headers to simulate infinite strip
@@ -219,7 +231,7 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {void}
    */
   jumpToFirstPage() {
-    const viewport = this.shadowRoot?.getElementById('viewport');
+    const viewport = this._getViewport();
     if (!viewport) return;
     const span = this.getPageSpan ? this.getPageSpan(viewport) : (viewport.clientWidth || 1);
     this.scrollViewportTo(viewport, 0, false);
@@ -229,11 +241,11 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {void}
    */
   setupScrollSync() {
-    const viewport = this.shadowRoot?.getElementById('viewport');
+    const viewport = this._getViewport();
     const strip = this.shadowRoot?.getElementById('headerStrip');
     if (!viewport || !strip) return;
 
-    const items = () => Array.from(this.querySelectorAll('disco-pivot-item'));
+    const items = () => /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
     const isFromNestedFlipView = (event) => {
       if (!event || typeof event.composedPath !== 'function') return false;
       const path = event.composedPath();
@@ -325,7 +337,7 @@ class DiscoPivotPage extends DiscoPage {
 
         const startX = e.clientX;
         const startY = e.clientY;
-        const targetHeader = e.target.closest('.header-item');
+        const targetHeader = (e.target instanceof Element) ? e.target.closest('.header-item') : null;
         let isTap = true;
 
         const onSysMove = (moveE) => {
@@ -344,8 +356,8 @@ class DiscoPivotPage extends DiscoPage {
 
             viewport.dispatchEvent(cloneEvent('pointerup', upE));
 
-            if (isTap && targetHeader) {
-                const i = parseInt(targetHeader.dataset.index || '0', 10);
+            if (isTap && targetHeader instanceof HTMLElement) {
+              const i = parseInt(targetHeader.dataset.index || '0', 10);
                 navigateToIndex(i);
             }
         };
@@ -426,8 +438,9 @@ class DiscoPivotPage extends DiscoPage {
         showAllItems();
         return;
       }
+        const detail = /** @type {{ index: number, targetX?: number }} */ ((/** @type {CustomEvent} */(e)).detail || { index: 0 });
         isSnapping = true;
-        const idx = e.detail.index;
+        const idx = detail.index;
         // console.log(`Snap target index: ${idx} (raw)`);
         const count = items().length || 1;
         const normalizedTarget = ((idx % count) + count) % count;
@@ -443,7 +456,7 @@ class DiscoPivotPage extends DiscoPage {
         // Only animate if changing pages
         if (normalizedTarget !== dragStartIndex) {
             // Calculate custom entrance animation offset
-            const dist = (e.detail.targetX || 0) - viewport.scrollLeft;
+            const dist = (detail.targetX || 0) - viewport.scrollLeft;
             const width = viewport.clientWidth;
             
             // "translateX(viewport.width - dist) to translateX(0)"
@@ -453,7 +466,7 @@ class DiscoPivotPage extends DiscoPage {
                 offset = -offset;
             }
             
-            const targetItem = items()[normalizedTarget];
+            const targetItem = /** @type {HTMLElement & { playEntranceAnimation?: (offset: number, duration: number) => Promise<void> }} */ (items()[normalizedTarget]);
             if (targetItem && typeof targetItem.playEntranceAnimation === 'function') {
               targetItem.style.visibility = 'hidden';
                await new Promise(resolve => setTimeout(resolve, 100));

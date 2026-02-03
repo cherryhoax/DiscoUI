@@ -41,7 +41,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 - `webpack.config.js` — bundling/dev-server config
 
 ## Development
-- `npm run dev` — start webpack dev server with hot reload
+- `npm run dev` — start Vite dev server with hot reload
 - `npm run build` — production bundle
 
 ## What's Expected Next Week (Jan 31)
