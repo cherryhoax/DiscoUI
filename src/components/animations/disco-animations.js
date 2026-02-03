@@ -927,7 +927,11 @@ const DiscoAnimations = {
             };
             const delay = Number(item?.delay) || 0;
             if (delay > 0) {
-                window.setTimeout(start, delay);
+                const delayTarget = item?.target instanceof Element
+                    ? item.target
+                    : document.documentElement;
+                const delayAnimation = delayTarget.animate([], { duration: delay, fill: 'both' });
+                delayAnimation.finished.then(start, reject);
             } else {
                 start();
             }
