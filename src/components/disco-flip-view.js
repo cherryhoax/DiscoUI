@@ -58,10 +58,6 @@ class DiscoFlipView extends DiscoScrollView {
     this._lastPageSize = 0;
   }
 
-  static get observedAttributes() {
-    return ['direction', 'overscroll-mode'];
-  }
-
   updated(changedProperties) {
     super.updated(changedProperties);
     if (changedProperties.has('overscrollMode')) {

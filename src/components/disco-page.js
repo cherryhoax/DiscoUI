@@ -17,6 +17,14 @@ class DiscoPage extends DiscoUIElement {
     return this;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
   // Methods for the Frame to call
   /**
    * @typedef {object} DiscoPageAnimationOptions

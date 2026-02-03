@@ -83,41 +83,6 @@ class DiscoListView extends DiscoScrollView {
   }
 
   /**
-   * @returns {unknown[]}
-   */
-  get items() {
-    return this._items || [];
-  }
-
-  /**
-   * @param {unknown[]} value
-   */
-  set items(value) {
-    this._items = Array.isArray(value) ? value : [];
-    this.requestUpdate('items');
-  }
-
-  /**
-   * @returns {boolean}
-   */
-  get itemClickEnabled() {
-    return this.hasAttribute('item-click-enabled') || this.hasAttribute('is-item-click-enabled');
-  }
-
-  /**
-   * @param {boolean} value
-   */
-  set itemClickEnabled(value) {
-    if (value) {
-      this.setAttribute('item-click-enabled', '');
-    } else {
-      this.removeAttribute('item-click-enabled');
-      this.removeAttribute('is-item-click-enabled');
-    }
-    this._syncItemInteractivity();
-  }
-
-  /**
    * @returns {string}
    */
   get selectionMode() {

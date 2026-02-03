@@ -147,18 +147,6 @@ class DiscoScrollView extends DiscoUIElement {
         `;
     }
 
-    get direction() {
-        return this.getAttribute('direction') || 'both';
-    }
-
-    set direction(val) {
-        if (!val || val === 'both') {
-            this.removeAttribute('direction');
-            return;
-        }
-        this.setAttribute('direction', val);
-    }
-
     /**
      * @param {string | null | undefined} value
      * @returns {'horizontal' | 'vertical' | 'both'}
