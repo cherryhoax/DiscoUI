@@ -21,8 +21,6 @@ class DiscoSplash extends DiscoUIElement {
     this._logoNode = null;
   }
 
-  _logoNode = null;
-
   /**
    * @param {HTMLElement | null} node
    */
