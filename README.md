@@ -38,18 +38,24 @@ Set the theme and accent color via attributes on the `<html>` tag:
 ## Project Structure
 - `src/components/` — web components (frame, page base, splash, pivot, hub, list view)
 - `examples/` — demo apps and viewer shell
-- `webpack.config.js` — bundling/dev-server config
+- `vite.config.js` — bundling/dev-server config
 
 ## Development
 - `npm run dev` — start Vite dev server with hot reload
 - `npm run build` — production bundle
+- `npm run test:unit` — run unit tests (Vitest + jsdom)
+- `npm run test:e2e` — run browser tests (Playwright)
 
-## What's Expected Next Week (Jan 31)
+## Planned
 - Combobox
-- Flip View
 - Password Box
 - Radio Button
 - Text Box
+
+## Contributing
+1. Install dependencies: `npm install`.
+2. Run tests: `npm test`.
+3. Ensure `npm run types` passes before opening a PR.
 
 ## Road Map
 | | Control | Description | Class | Tag |

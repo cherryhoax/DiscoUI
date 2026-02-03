@@ -14,8 +14,26 @@ const cssInlinePlugin = () => ({
   }
 });
 
+const examplesDistAliasPlugin = () => {
+  let isServe = false;
+  return {
+    name: 'examples-dist-alias',
+    enforce: 'pre',
+    configResolved(config) {
+      isServe = config.command === 'serve';
+    },
+    resolveId(source, importer) {
+      if (!isServe || !importer) return null;
+      if (source === './dist/index.js' && importer.endsWith('/examples/index.js')) {
+        return path.resolve(__dirname, 'src/index.js');
+      }
+      return null;
+    }
+  };
+};
+
 export default defineConfig({
-  plugins: [cssInlinePlugin()],
+  plugins: [cssInlinePlugin(), examplesDistAliasPlugin()],
   server: {
     port: 3000,
     open: '/examples/index.html'

@@ -1,8 +1,8 @@
 /**
  * Example demo loader used by the examples page.
  */
-import { DiscoApp } from '/src/index.js';
 
+import { DiscoApp } from './dist/index.js';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
