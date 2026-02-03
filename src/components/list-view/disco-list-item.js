@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { query } from 'lit/decorators.js';
 import DiscoUIElement from '../disco-ui-element.js';
 import listItemStyles from './disco-list-item.scss';
 
@@ -9,14 +8,13 @@ import listItemStyles from './disco-list-item.scss';
 class DiscoListItem extends DiscoUIElement {
   static styles = css`${unsafeCSS(listItemStyles)}`;
 
-  @query('.item') _item;
-
   constructor() {
     super();
     this.setAttribute('role', 'listitem');
   }
 
   firstUpdated() {
+    this._item = this.shadowRoot.querySelector('.item');
     this.enableTilt({ selector: '.item' });
   }
 

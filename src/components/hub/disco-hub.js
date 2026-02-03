@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import './disco-hub-view.js';
@@ -12,16 +11,17 @@ import hubStyles from './disco-hub.scss';
 class DiscoHub extends DiscoPage {
     static styles = css`${unsafeCSS(hubStyles)}`;
 
-    @property({ type: String }) header = 'DISCO';
-    @property({ type: String }) background = '';
-
-    @query('.hub-shell') _container;
-    @query('.hub-header') _header;
-    @query('.hub-background') _background;
-    @query('#viewport') _viewport;
+    static get properties() {
+        return {
+            header: { type: String },
+            background: { type: String }
+        };
+    }
 
     constructor() {
         super();
+        this.header = 'DISCO';
+        this.background = '';
     }
 
     createRenderRoot() {
@@ -39,6 +39,10 @@ class DiscoHub extends DiscoPage {
     }
 
     firstUpdated() {
+        this._container = this.shadowRoot.querySelector('.hub-shell');
+        this._header = this.shadowRoot.querySelector('.hub-header');
+        this._background = this.shadowRoot.querySelector('.hub-background');
+        this._viewport = this.shadowRoot.querySelector('#viewport');
         this.setupParallax();
     }
 

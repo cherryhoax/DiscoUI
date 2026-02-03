@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
 import buttonStyles from './disco-button.scss';
 
@@ -10,9 +9,8 @@ import buttonStyles from './disco-button.scss';
 class DiscoButton extends DiscoUIElement {
   static styles = css`${unsafeCSS(buttonStyles)}`;
 
-  @query('.button') _button;
-
   firstUpdated() {
+    this._button = this.shadowRoot.querySelector('.button');
     this.enableTilt({ selector: '.button' });
   }
 

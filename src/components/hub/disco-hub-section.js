@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property } from 'lit/decorators.js';
 import DiscoUIElement from '../disco-ui-element.js';
 import hubSectionStyles from './disco-hub-section.scss';
 
@@ -9,8 +8,18 @@ import hubSectionStyles from './disco-hub-section.scss';
 class DiscoHubSection extends DiscoUIElement {
     static styles = css`${unsafeCSS(hubSectionStyles)}`;
 
-    @property({ type: String }) header = '';
-    @property({ type: String }) width = '';
+    static get properties() {
+        return {
+            header: { type: String },
+            width: { type: String }
+        };
+    }
+
+    constructor() {
+        super();
+        this.header = '';
+        this.width = '';
+    }
 
     updated(changedProperties) {
         if (changedProperties.has('width')) {

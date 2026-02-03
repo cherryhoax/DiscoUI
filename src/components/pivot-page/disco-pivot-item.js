@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { query } from 'lit/decorators.js';
 import DiscoUIElement from '../disco-ui-element.js';
 import pivotItemStyles from './disco-pivot-item.scss';
 
@@ -10,7 +9,9 @@ import pivotItemStyles from './disco-pivot-item.scss';
 class DiscoPivotItem extends DiscoUIElement {
   static styles = css`${unsafeCSS(pivotItemStyles)}`;
 
-  @query('.pivot-item-content') _contentWrapper;
+  firstUpdated() {
+    this._contentWrapper = this.shadowRoot.querySelector('.pivot-item-content');
+  }
 
   render() {
     return html`

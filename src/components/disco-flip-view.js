@@ -1,5 +1,4 @@
 import { css, unsafeCSS } from 'lit';
-import { property } from 'lit/decorators.js';
 import DiscoScrollView from './disco-scroll-view.js';
 import flipViewStyles from './disco-flip-view.scss';
 
@@ -13,10 +12,16 @@ class DiscoFlipView extends DiscoScrollView {
     css`${unsafeCSS(flipViewStyles)}`
   ];
 
-  @property({ type: String, reflect: true, attribute: 'overscroll-mode' }) overscrollMode = '';
+  static get properties() {
+    return {
+      ...super.properties,
+      overscrollMode: { type: String, reflect: true, attribute: 'overscroll-mode' }
+    };
+  }
 
   constructor() {
     super();
+    this.overscrollMode = '';
     // Force horizontal direction by default
     if (!this.hasAttribute('direction')) this.setAttribute('direction', 'horizontal');
 

@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
 import checkboxStyles from './disco-checkbox.scss';
 
@@ -10,18 +9,23 @@ import checkboxStyles from './disco-checkbox.scss';
 class DiscoCheckbox extends DiscoUIElement {
   static styles = css`${unsafeCSS(checkboxStyles)}`;
 
-  @property({ type: Boolean, reflect: true }) checked = false;
-  @property({ type: Boolean, reflect: true }) disabled = false;
-
-  @query('.input') _input;
+  static get properties() {
+    return {
+      checked: { type: Boolean, reflect: true },
+      disabled: { type: Boolean, reflect: true }
+    };
+  }
 
   constructor() {
     super();
+    this.checked = false;
+    this.disabled = false;
     this.setAttribute('role', 'checkbox');
     this.tabIndex = 0;
   }
 
   firstUpdated() {
+    this._input = this.shadowRoot.querySelector('.input');
     this.enableTilt();
     this._syncAttributes();
   }

@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import '../disco-flip-view.js';
@@ -20,14 +19,15 @@ class DiscoPivotPage extends DiscoPage {
    * @property {'forward' | 'back'} direction
    */
 
-  @property({ type: String, attribute: 'app-title' }) appTitle = 'DISCO APP';
-
-  @query('.pivot-shell') _container;
-  @query('#viewport') _viewport;
-  @query('#headerStrip') _headerStrip;
+  static get properties() {
+    return {
+      appTitle: { type: String, attribute: 'app-title' }
+    };
+  }
 
   constructor() {
     super();
+    this.appTitle = 'DISCO APP';
   }
 
   createRenderRoot() {
@@ -35,6 +35,9 @@ class DiscoPivotPage extends DiscoPage {
   }
 
   firstUpdated() {
+    this._container = this.shadowRoot.querySelector('.pivot-shell');
+    this._viewport = this.shadowRoot.querySelector('#viewport');
+    this._headerStrip = this.shadowRoot.querySelector('#headerStrip');
     this.renderHeaders();
     this.setupScrollSync();
   }

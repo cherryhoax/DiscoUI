@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
 import splashStyles from './disco-splash.scss';
 
@@ -10,7 +9,17 @@ import splashStyles from './disco-splash.scss';
 class DiscoSplash extends DiscoUIElement {
   static styles = css`${unsafeCSS(splashStyles)}`;
 
-  @property({ type: String }) logo = '';
+  static get properties() {
+    return {
+      logo: { type: String }
+    };
+  }
+
+  constructor() {
+    super();
+    this.logo = '';
+    this._logoNode = null;
+  }
 
   _logoNode = null;
 

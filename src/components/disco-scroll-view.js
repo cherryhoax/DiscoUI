@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, state, query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
 import scrollViewStyles from './disco-scroll-view.scss';
 
@@ -10,15 +9,19 @@ import scrollViewStyles from './disco-scroll-view.scss';
 class DiscoScrollView extends DiscoUIElement {
     static styles = css`${unsafeCSS(scrollViewStyles)}`;
 
-    @property({ type: String, reflect: true }) direction = 'both';
-
-    @query('.scroll-content') _wrapper;
+    static get properties() {
+        return {
+            direction: { type: String, reflect: true }
+        };
+    }
 
     /**
      * @constructor
      */
     constructor() {
         super();
+
+        this.direction = 'both';
 
         // State
         this._isDragging = false;
@@ -93,6 +96,7 @@ class DiscoScrollView extends DiscoUIElement {
     }
 
     firstUpdated() {
+        this._wrapper = this.shadowRoot.querySelector('.scroll-content');
         this._updateMetrics();
     }
 

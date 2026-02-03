@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, query } from 'lit/decorators.js';
 import DiscoScrollView from '../disco-scroll-view.js';
 import './disco-list-item.js';
 import listViewStyles from './disco-list-view.scss';
@@ -20,15 +19,20 @@ class DiscoListView extends DiscoScrollView {
     css`${unsafeCSS(listViewStyles)}`
   ];
 
-  @property({ type: Array }) items = [];
-  @property({ type: Boolean, attribute: 'item-click-enabled' }) itemClickEnabled = false;
-  @property({ type: String, attribute: 'selection-mode' }) selectionMode = 'none';
-
-  @query('.list') _list;
-  @query('slot') _slot;
+  static get properties() {
+    return {
+      ...super.properties,
+      items: { type: Array },
+      itemClickEnabled: { type: Boolean, attribute: 'item-click-enabled' },
+      selectionMode: { type: String, attribute: 'selection-mode' }
+    };
+  }
 
   constructor() {
     super();
+    this.items = [];
+    this.itemClickEnabled = false;
+    this.selectionMode = 'none';
 
     if (this.hasAttribute('direction')) {
       this.removeAttribute('direction');
@@ -48,6 +52,8 @@ class DiscoListView extends DiscoScrollView {
 
   firstUpdated() {
     super.firstUpdated();
+    this._list = this.shadowRoot.querySelector('.list');
+    this._slot = this.shadowRoot.querySelector('slot');
     this._renderDynamic();
   }
 

@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
 import progressBarStyles from './disco-progress-bar.scss';
 
@@ -10,15 +9,24 @@ import progressBarStyles from './disco-progress-bar.scss';
 class DiscoProgressBar extends DiscoUIElement {
   static styles = css`${unsafeCSS(progressBarStyles)}`;
 
-  @property({ type: Boolean, reflect: true }) indeterminate = false;
-  @property({ type: Number }) value = 0;
-  @property({ type: Number }) max = 100;
-
-  @query('.fill') _fill;
+  static get properties() {
+    return {
+      indeterminate: { type: Boolean, reflect: true },
+      value: { type: Number },
+      max: { type: Number }
+    };
+  }
 
   constructor() {
     super();
+    this.indeterminate = false;
+    this.value = 0;
+    this.max = 100;
     this.setAttribute('role', 'progressbar');
+  }
+
+  firstUpdated() {
+    this._fill = this.shadowRoot.querySelector('.fill');
   }
 
   updated(changedProperties) {

@@ -1,5 +1,4 @@
 import { html, css, unsafeCSS } from 'lit';
-import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import singlePageStyles from './disco-single-page.scss';
@@ -10,13 +9,21 @@ import singlePageStyles from './disco-single-page.scss';
 class DiscoSinglePage extends DiscoPage {
     static styles = css`${unsafeCSS(singlePageStyles)}`;
 
-    @property({ type: String, attribute: 'app-title' }) appTitle = 'DISCO APP';
-    @property({ type: String }) header = 'DETAILS';
-
-    @query('.single-shell') _container;
+    static get properties() {
+        return {
+            appTitle: { type: String, attribute: 'app-title' },
+            header: { type: String }
+        };
+    }
 
     constructor() {
         super();
+        this.appTitle = 'DISCO APP';
+        this.header = 'DETAILS';
+    }
+
+    firstUpdated() {
+        this._container = this.shadowRoot.querySelector('.single-shell');
     }
 
     createRenderRoot() {
