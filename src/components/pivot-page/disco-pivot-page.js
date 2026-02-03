@@ -1,5 +1,6 @@
+import { html, css } from 'lit';
+import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
-import pivotPageCss from './disco-pivot-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 import '../disco-flip-view.js';
 
@@ -8,6 +9,105 @@ import '../disco-flip-view.js';
  * @extends DiscoPage
  */
 class DiscoPivotPage extends DiscoPage {
+  static styles = css`
+    :host {
+      background-color: var(--disco-bg);
+      color: var(--disco-fg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    :host([data-animating]) {
+      overflow: visible;
+    }
+
+    .pivot-shell {
+      height: 100%;
+    }
+
+    :host([data-animating]) .pivot-shell,
+    :host([data-animating]) .pivot-root {
+      overflow: visible;
+    }
+
+    .pivot-root {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .app-title {
+      font-size: 22px;
+      text-transform: uppercase;
+      padding: 18px 20px 0;
+      letter-spacing: 0.05em;
+      opacity: 1;
+    }
+
+    .header-strip {
+      display: flex;
+      gap: 25px;
+      padding: 0px 20px 20px;
+      overflow: hidden;
+      scrollbar-width: none;
+    }
+
+    :host([data-animating]) .header-strip {
+      overflow: visible;
+    }
+
+    :host([data-animating]) .header-strip .header-item[data-set]:not([data-set="5"]) {
+      display: none;
+    }
+
+    .header-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .header-item {
+      font-size: 67px;
+      font-weight: 100;
+      white-space: nowrap;
+      transition: transform 0.2s ease;
+      will-change: opacity, transform;
+      text-transform: lowercase;
+    }
+
+    .content-viewport {
+      display: block;
+      flex: 1;
+      height: 100%;
+      min-height: 0;
+    }
+
+    :host([data-animating]) .content-viewport {
+      overflow: visible;
+    }
+
+    :host([data-animating]) > disco-pivot-item {
+      visibility: visible !important;
+      opacity: 1 !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    :host([data-animating]) > disco-pivot-item * {
+      transition: none !important;
+      animation: none !important;
+    }
+
+    .ghost {
+      flex: 0 0 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      margin-right: 100%;
+    }
+  `;
+
   /**
    * @typedef {HTMLElement & { _updateChildrenLayout?: () => void }} PivotViewport
    */
@@ -16,32 +116,23 @@ class DiscoPivotPage extends DiscoPage {
    * @property {'forward' | 'back'} direction
    */
 
-  /**
-   * @param {string} [appTitle]
-   */
-  constructor(appTitle = 'DISCO APP') {
+  @property({ type: String, attribute: 'app-title' }) appTitle = 'DISCO APP';
+
+  @query('.pivot-shell') _container;
+  @query('#viewport') _viewport;
+  @query('#headerStrip') _headerStrip;
+
+  constructor() {
     super();
-    this.appTitle = appTitle;
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(pivotPageCss, this.shadowRoot);
-    this._container = document.createElement('div');
-    this._container.className = 'pivot-shell';
-    this.shadowRoot.appendChild(this._container);
-    this.render();
   }
 
-  static get observedAttributes() {
-    return ['app-title'];
+  createRenderRoot() {
+    return this.attachShadow({ mode: 'open' });
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'app-title' && oldValue !== newValue) {
-        this.appTitle = newValue;
-        const titleEl = this.shadowRoot?.querySelector('.app-title');
-        if (titleEl) {
-            titleEl.textContent = newValue;
-        }
-    }
+  firstUpdated() {
+    this.renderHeaders();
+    this.setupScrollSync();
   }
 
   /**
@@ -127,30 +218,26 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {PivotViewport | null}
    */
   _getViewport() {
-    const viewport = this.shadowRoot?.getElementById('viewport');
-    return viewport instanceof HTMLElement ? /** @type {PivotViewport} */ (viewport) : null;
+    return this._viewport instanceof HTMLElement ? /** @type {PivotViewport} */ (this._viewport) : null;
   }
 
   /**
    * @returns {void}
    */
   connectedCallback() {
-    this.renderHeaders();
-    this.setupScrollSync();
+    super.connectedCallback();
   }
 
-  /**
-   * @returns {void}
-   */
   render() {
-    if (!this.shadowRoot || !this._container) return;
-    this._container.innerHTML = `
-      <div class="pivot-root">
-        <div class="app-title">${this.appTitle}</div>
-        <div class="header-strip" id="headerStrip"></div>
-        <disco-flip-view class="content-viewport" id="viewport" direction="horizontal" snap-mode="stop" overscroll-mode="loop" scroll-limit="page">
-          <slot></slot>
-        </disco-flip-view>
+    return html`
+      <div class="pivot-shell">
+        <div class="pivot-root">
+          <div class="app-title">${this.appTitle}</div>
+          <div class="header-strip" id="headerStrip"></div>
+          <disco-flip-view class="content-viewport" id="viewport" direction="horizontal" snap-mode="stop" overscroll-mode="loop" scroll-limit="page">
+            <slot></slot>
+          </disco-flip-view>
+        </div>
       </div>
     `;
   }
@@ -178,7 +265,7 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {void}
    */
   renderHeaders() {
-    const strip = this.shadowRoot?.getElementById('headerStrip');
+    const strip = this._headerStrip;
     const viewport = this._getViewport();
     if (!strip || !viewport) return;
 
@@ -242,7 +329,7 @@ class DiscoPivotPage extends DiscoPage {
    */
   setupScrollSync() {
     const viewport = this._getViewport();
-    const strip = this.shadowRoot?.getElementById('headerStrip');
+    const strip = this._headerStrip;
     if (!viewport || !strip) return;
 
     const items = () => /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
