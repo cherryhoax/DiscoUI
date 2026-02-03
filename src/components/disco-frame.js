@@ -17,7 +17,12 @@ class DiscoFrame extends DiscoUIElement {
     this._historyListenerAttached = false;
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   connectedCallback() {
+    super.connectedCallback();
     if (this._historyEnabled && !this._historyListenerAttached && typeof window !== 'undefined') {
       window.addEventListener('popstate', this._onPopState);
       this._historyListenerAttached = true;
@@ -25,6 +30,7 @@ class DiscoFrame extends DiscoUIElement {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
     if (this._historyListenerAttached && typeof window !== 'undefined') {
       window.removeEventListener('popstate', this._onPopState);
       this._historyListenerAttached = false;

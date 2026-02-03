@@ -1,5 +1,6 @@
+import { html, css } from 'lit';
+import { property, query } from 'lit/decorators.js';
 import DiscoScrollView from '../disco-scroll-view.js';
-import listViewStyles from './disco-list-view.scss';
 import './disco-list-item.js';
 
 /**
@@ -13,26 +14,69 @@ import './disco-list-item.js';
  * Disco list view with static and dynamic item support.
  */
 class DiscoListView extends DiscoScrollView {
+  static styles = [
+    DiscoScrollView.styles,
+    css`
+      .list {
+        display: block;
+        transform-style: preserve-3d;
+      }
+
+      ::slotted(disco-list-item) {
+        transition: transform .25s .25s ease-out;
+        transform-style: preserve-3d;
+        display: block;
+      }
+
+      ::slotted(disco-list-item[data-pressed]) {
+        transition: transform .1ms;
+      }
+    `
+  ];
+
+  @property({ type: Array }) items = [];
+  @property({ type: Boolean, attribute: 'item-click-enabled' }) itemClickEnabled = false;
+  @property({ type: String, attribute: 'selection-mode' }) selectionMode = 'none';
+
+  @query('.list') _list;
+  @query('slot') _slot;
+
   constructor() {
     super();
-    this.loadStyle(listViewStyles, this.shadowRoot);
 
     if (this.hasAttribute('direction')) {
       this.removeAttribute('direction');
     }
 
-    this._items = [];
-    this._list = document.createElement('div');
-    this._list.className = 'list';
-
-    this._slot = this.shadowRoot.querySelector('slot') || document.createElement('slot');
-    this._slot.addEventListener('slotchange', () => this._syncStaticVisibility());
-    if (!this._slot.isConnected) {
-      this._wrapper.appendChild(this._slot);
-    }
-    this._wrapper.insertBefore(this._list, this._slot);
-
     this.setAttribute('role', 'list');
+  }
+
+  render() {
+    return html`
+      <div class="scroll-content">
+        <div class="list"></div>
+        <slot @slotchange=${this._syncStaticVisibility}></slot>
+      </div>
+    `;
+  }
+
+  firstUpdated() {
+    super.firstUpdated();
+    this._renderDynamic();
+  }
+
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has('items')) {
+      this._renderDynamic();
+    }
+    if (changedProperties.has('itemClickEnabled') || changedProperties.has('selectionMode')) {
+      this._syncItemInteractivity();
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
     this.addEventListener('click', (event) => this._handleClick(event));
     this.addEventListener('keydown', (event) => this._handleKeydown(event));
     this.addEventListener('keyup', (event) => this._handleKeyup(event));
@@ -42,7 +86,7 @@ class DiscoListView extends DiscoScrollView {
    * @returns {unknown[]}
    */
   get items() {
-    return this._items;
+    return this._items || [];
   }
 
   /**
@@ -50,7 +94,7 @@ class DiscoListView extends DiscoScrollView {
    */
   set items(value) {
     this._items = Array.isArray(value) ? value : [];
-    this._renderDynamic();
+    this.requestUpdate('items');
   }
 
   /**

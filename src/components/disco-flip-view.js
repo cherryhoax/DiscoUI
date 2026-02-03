@@ -1,14 +1,54 @@
+import { css } from 'lit';
+import { property } from 'lit/decorators.js';
 import DiscoScrollView from './disco-scroll-view.js';
-import flipViewCss from './disco-flip-view.scss';
 
 /**
  * Flip-style view that pages children horizontally or vertically with loop overscroll support.
  * @extends DiscoScrollView
  */
 class DiscoFlipView extends DiscoScrollView {
+  static styles = [
+    DiscoScrollView.styles,
+    css`
+      :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .scroll-content {
+        height: 100%;
+      }
+
+      :host([direction='horizontal']) .scroll-content {
+        width: 100%;
+      }
+
+      :host([direction='horizontal']) ::slotted(*) {
+        flex: 0 0 100%;
+        box-sizing: border-box;
+        height: 100%;
+        overflow: hidden;
+        touch-action: none;
+        overscroll-behavior: contain;
+      }
+
+      :host([direction='vertical']) ::slotted(*) {
+        flex: 0 0 100%;
+        box-sizing: border-box;
+        width: 100%;
+        overflow: hidden;
+        touch-action: none;
+        overscroll-behavior: contain;
+      }
+    `
+  ];
+
+  @property({ type: String, reflect: true, attribute: 'overscroll-mode' }) overscrollMode = '';
+
   constructor() {
     super();
-    this.loadStyle(flipViewCss, this.shadowRoot);
     // Force horizontal direction by default
     if (!this.hasAttribute('direction')) this.setAttribute('direction', 'horizontal');
 
@@ -22,11 +62,9 @@ class DiscoFlipView extends DiscoScrollView {
     return ['direction', 'overscroll-mode'];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (super.attributeChangedCallback) {
-      super.attributeChangedCallback(name, oldValue, newValue);
-    }
-    if (name === 'overscroll-mode') {
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has('overscrollMode')) {
       this._loopInitialized = false;
       this._updateChildrenLayout();
     }

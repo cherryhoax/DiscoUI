@@ -1,47 +1,125 @@
+import { html, css } from 'lit';
+import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
-import singlePageCss from './disco-single-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 
 /**
  * Single pivot-style page with one header and one content slot.
  */
 class DiscoSinglePage extends DiscoPage {
-    /**
-     * @param {string} [appTitle]
-     * @param {string} [header]
-     */
-    constructor(appTitle = 'DISCO APP', header = 'DETAILS') {
+    static styles = css`
+        :host {
+            background-color: var(--disco-bg);
+            color: var(--disco-fg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            perspective: var(--disco-perspective);
+        }
+
+        :host * {
+            transform-style: preserve-3d;
+        }
+
+        .single-shell {
+            height: 100%;
+        }
+
+        .single-root {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .app-title {
+            font-size: 22px;
+            text-transform: uppercase;
+            padding: 18px 20px 0;
+            letter-spacing: 0.05em;
+            opacity: 1;
+        }
+
+        .header-strip {
+            display: flex;
+            gap: 25px;
+            padding: 0px 20px 20px;
+            overflow: hidden;
+            scrollbar-width: none;
+        }
+
+        .header-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .header-item {
+            font-size: 67px;
+            font-weight: 100;
+            white-space: nowrap;
+            text-transform: lowercase;
+        }
+
+        .content-viewport {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 20px;
+            box-sizing: border-box;
+            transform-style: preserve-3d;
+            perspective: var(--disco-perspective);
+            perspective-origin: center;
+        }
+
+        .content-viewport ::slotted(disco-scroll-view),
+        .content-viewport ::slotted(disco-list-view) {
+            flex: 1;
+            min-height: 0;
+            align-self: stretch;
+            padding: 0 20px;
+            padding-bottom: 120px;
+            margin: 0 -20px;
+        }
+
+        .content-viewport ::slotted(*) {
+            transform-style: preserve-3d;
+        }
+
+        .content-viewport::-webkit-scrollbar {
+            display: none;
+        }
+    `;
+
+    @property({ type: String, attribute: 'app-title' }) appTitle = 'DISCO APP';
+    @property({ type: String }) header = 'DETAILS';
+
+    @query('.single-shell') _container;
+
+    constructor() {
         super();
-        this.appTitle = appTitle;
-        this.header = header;
-        this.attachShadow({ mode: 'open' });
-        this.loadStyle(singlePageCss, this.shadowRoot);
-        this._container = document.createElement('div');
-        this._container.className = 'single-shell';
-        this.shadowRoot.appendChild(this._container);
-        this.render();
     }
 
-    static get observedAttributes() {
-        return ['app-title', 'header'];
+    createRenderRoot() {
+        return this.attachShadow({ mode: 'open' });
     }
 
-    /**
-     * @param {string} name
-     * @param {string | null} _oldValue
-     * @param {string | null} newValue
-     */
-    attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === 'app-title') {
-            this.appTitle = newValue || 'DISCO APP';
-            const el = this.shadowRoot?.querySelector('.app-title');
-            if (el) el.textContent = this.appTitle;
-        }
-        if (name === 'header') {
-            this.header = newValue || 'DETAILS';
-            const el = this.shadowRoot?.querySelector('.header-item');
-            if (el) el.textContent = this.header;
-        }
+    render() {
+        return html`
+            <div class="single-shell">
+                <div class="single-root">
+                    <div class="app-title">${this.appTitle}</div>
+                    <div class="header-strip">
+                        <div class="header-item">${this.header}</div>
+                    </div>
+                    <div class="content-viewport">
+                        <slot></slot>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     /**
@@ -49,9 +127,9 @@ class DiscoSinglePage extends DiscoPage {
     * @returns {Promise<void>}
     */
     async animateInFn(options = { direction: 'forward' }) {
-        const appTitle = this._container.querySelector('.app-title');
-        const headerStrip = this._container.querySelector('.header-strip');
-        const viewport = this._container.querySelector('.content-viewport');
+        const appTitle = this.shadowRoot?.querySelector('.app-title');
+        const headerStrip = this.shadowRoot?.querySelector('.header-strip');
+        const viewport = this.shadowRoot?.querySelector('.content-viewport');
         const slot = viewport ? viewport.querySelector('slot') : null;
         const viewportChildren = slot
             ? slot.assignedElements({ flatten: true })
@@ -84,9 +162,9 @@ class DiscoSinglePage extends DiscoPage {
     * @returns {Promise<void>}
     */
     async animateOutFn(options = { direction: 'forward' }) {
-        const appTitle = this._container.querySelector('.app-title');
-        const headerStrip = this._container.querySelector('.header-strip');
-        const viewport = this._container.querySelector('.content-viewport');
+        const appTitle = this.shadowRoot?.querySelector('.app-title');
+        const headerStrip = this.shadowRoot?.querySelector('.header-strip');
+        const viewport = this.shadowRoot?.querySelector('.content-viewport');
         const slot = viewport ? viewport.querySelector('slot') : null;
         const viewportChildren = slot
             ? slot.assignedElements({ flatten: true })
@@ -111,24 +189,6 @@ class DiscoSinglePage extends DiscoPage {
         });
 
         await DiscoAnimations.animateAll(animationItems);
-    }
-
-    /**
-     * @returns {void}
-     */
-    render() {
-        if (!this.shadowRoot || !this._container) return;
-        this._container.innerHTML = `
-      <div class="single-root">
-        <div class="app-title">${this.appTitle}</div>
-        <div class="header-strip">
-          <div class="header-item">${this.header}</div>
-        </div>
-        <div class="content-viewport">
-          <slot></slot>
-        </div>
-      </div>
-    `;
     }
 }
 

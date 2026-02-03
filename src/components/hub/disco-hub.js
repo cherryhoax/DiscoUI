@@ -1,5 +1,6 @@
+import { html, css } from 'lit';
+import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
-import hubCss from './disco-hub.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 import './disco-hub-view.js';
 
@@ -8,56 +9,139 @@ import './disco-hub-view.js';
  * Features a large title, background with parallax, and horizontal scrolling sections.
  */
 class DiscoHub extends DiscoPage {
-    /**
-     * @param {string} [header]
-     */
-    constructor(header = 'DISCO') {
+    static styles = css`
+        :host {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: visible;
+            user-select: none;
+            background-color: var(--disco-bg, #000);
+            color: var(--disco-fg, #fff);
+        }
+
+        :host([data-animating]) {
+            overflow: visible !important;
+        }
+
+        .hub-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 200%;
+            z-index: 0;
+            background-size: 200% 100%;
+            background-repeat: repeat-x;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .hub-background-clip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hub-shell {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+        }
+
+        :host([data-animating]) .hub-shell {
+            overflow: visible !important;
+        }
+
+        .hub-header {
+            padding: 5px 20px 28px 20px;
+            z-index: 2;
+            --translate-x: 0px;
+            transform: translateX(var(--translate-x)) translateX(var(--animate-offset));
+        }
+
+        .hub-title {
+            font-size: 90px;
+            font-weight: lighter;
+            line-height: 1;
+            margin: 0;
+            white-space: nowrap;
+            text-transform: lowercase;
+            opacity: 0.9;
+        }
+
+        .hub-viewport {
+            flex: 1;
+            display: block;
+            padding-left: 0;
+            padding-right: 0;
+            overflow: visible;
+        }
+
+        :host([data-animating]) .hub-viewport {
+            overflow: visible !important;
+        }
+    `;
+
+    @property({ type: String }) header = 'DISCO';
+    @property({ type: String }) background = '';
+
+    @query('.hub-shell') _container;
+    @query('.hub-header') _header;
+    @query('.hub-background') _background;
+    @query('#viewport') _viewport;
+
+    constructor() {
         super();
-        this.header = header;
-        this.attachShadow({ mode: 'open' });
-        this.loadStyle(hubCss, this.shadowRoot);
-
-        this._container = document.createElement('div');
-        this._container.className = 'hub-shell';
-        this.shadowRoot.appendChild(this._container);
-
-        this._backgroundClip = document.createElement('div');
-        this._backgroundClip.className = 'hub-background-clip';
-        this.shadowRoot.insertBefore(this._backgroundClip, this._container);
-
-        this._background = document.createElement('div');
-        this._background.className = 'hub-background';
-        this._backgroundClip.appendChild(this._background);
-
-        this.render();
     }
 
-    static get observedAttributes() {
-        return ['header', 'background'];
+    createRenderRoot() {
+        return this.attachShadow({ mode: 'open' });
     }
 
-    /**
-     * @param {string} name
-     * @param {string | null} _oldValue
-     * @param {string | null} newValue
-     */
-    attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === 'header' && newValue != null) {
-            this.header = newValue;
-            this.render();
-        }
-        if (name === 'background' && newValue != null) {
-            this._background.style.backgroundImage = `url(${newValue})`;
+    updated(changedProperties) {
+        if (changedProperties.has('background') && this._background) {
+            this._background.style.backgroundImage = this.background ? `url(${this.background})` : '';
         }
     }
 
-    /**
-     * @param {DiscoPageAnimationOptions} [options]
-     * @returns {Promise<void>}
-     */
+    connectedCallback() {
+        super.connectedCallback();
+    }
+
+    firstUpdated() {
+        this.setupParallax();
+    }
+
+    render() {
+        return html`
+            <div class="hub-background-clip">
+                <div class="hub-background"></div>
+            </div>
+            <div class="hub-shell">
+                <div class="hub-header">
+                    <h1 class="hub-title">${this.header}</h1>
+                </div>
+                <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal">
+                    <slot></slot>
+                </disco-hub-view>
+            </div>
+        `;
+    }
+
     async animateInFn(options = { direction: 'forward' }) {
         this.setAttribute('data-animating', '');
-        const viewport = this.shadowRoot?.getElementById('viewport');
+        const viewport = this._viewport;
         if (viewport) viewport.setAttribute('data-animating', '');
         const sections = Array.from(this.querySelectorAll('disco-hub-section'));
         sections.forEach((section) => section.setAttribute('data-animating', ''));
@@ -106,13 +190,9 @@ class DiscoHub extends DiscoPage {
         }
     }
 
-    /**
-     * @param {DiscoPageAnimationOptions} [options]
-     * @returns {Promise<void>}
-     */
     async animateOutFn(options = { direction: 'forward' }) {
         this.setAttribute('data-animating', '');
-        const viewport = this.shadowRoot?.getElementById('viewport');
+        const viewport = this._viewport;
         if (viewport) viewport.setAttribute('data-animating', '');
         const sections = Array.from(this.querySelectorAll('disco-hub-section'));
         sections.forEach((section) => section.setAttribute('data-animating', ''));
@@ -122,25 +202,8 @@ class DiscoHub extends DiscoPage {
         sections.forEach((section) => section.removeAttribute('data-animating'));
     }
 
-    connectedCallback() {
-        this.setupParallax();
-    }
-
-    render() {
-        if (!this.shadowRoot || !this._container) return;
-        this._container.innerHTML = `
-            <div class="hub-header">
-                <h1 class="hub-title">${this.header}</h1>
-            </div>
-            <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal">
-                <slot></slot>
-            </disco-hub-view>
-        `;
-        this._header = this._container.querySelector('.hub-header')
-    }
-
     setupParallax() {
-        const viewport = this.shadowRoot.getElementById('viewport');
+        const viewport = this._viewport;
         if (!viewport) return;
         const updateParallax = () => {
             const items = Array.from(this.querySelectorAll('disco-hub-section'));
@@ -177,18 +240,6 @@ if (window.CSS && CSS.registerProperty) {
             inherits: false,
             initialValue: '0px'
         });
-        /* CSS.registerProperty({
-             name: '--bg-pos-x',
-             syntax: '<percentage>',
-             inherits: false,
-             initialValue: '0%'
-         });
-         CSS.registerProperty({
-             name: '--bg-animate-offset',
-             syntax: '<number>',
-             inherits: false,
-             initialValue: '0'
-         });*/
     } catch (e) {
         // Property already registered or error
     }

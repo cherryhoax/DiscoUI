@@ -1,31 +1,47 @@
+import { html, css } from 'lit';
+import { query } from 'lit/decorators.js';
 import DiscoUIElement from '../disco-ui-element.js';
-import itemCss from './disco-pivot-item.scss';
 
 /**
  * An item used within a pivot page.
  * @extends DiscoUIElement
  */
 class DiscoPivotItem extends DiscoUIElement {
-  /**
-   * @constructor
-   */
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(itemCss, this.shadowRoot);
-    this._contentWrapper = document.createElement('div');
-    this._contentWrapper.className = 'pivot-item-content';
-    this._contentWrapper.style.height = '100%';
-    this._contentWrapper.style.width = '100%';
-    const slot = document.createElement('slot');
-    this._contentWrapper.appendChild(slot);
-    this.shadowRoot.appendChild(this._contentWrapper);
+  static styles = css`
+    :host {
+      flex: 0 0 100%;
+      height: 100%;
+      width: 100vw;
+      max-width: 100vw;
+      min-width: 100vw;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      box-sizing: border-box;
+      overflow-y: auto;
+      padding: 0 20px;
+      display: block;
+    }
+
+    :host * {
+      transform-style: preserve-3d;
+    }
+
+    .pivot-item-content {
+      height: 100%;
+      width: 100%;
+    }
+  `;
+
+  @query('.pivot-item-content') _contentWrapper;
+
+  render() {
+    return html`
+      <div class="pivot-item-content">
+        <slot></slot>
+      </div>
+    `;
   }
 
-  /**
-   * @param {number} startOffset
-   * @param {number} [duration=300]
-   */
   /**
    * @param {number} startOffset
    * @param {number} [duration=300]

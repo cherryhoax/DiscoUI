@@ -1,120 +1,151 @@
+import { html, css } from 'lit';
+import { property, query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
-import checkboxStyles from './disco-checkbox.scss';
 
 /**
  * Checkbox control element for Disco UI.
  * @extends DiscoUIElement
  */
 class DiscoCheckbox extends DiscoUIElement {
-  /**
-   * @constructor
-   */
+  static styles = css`
+    :host {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--disco-fg);
+      font-size: 16px;
+    }
+
+    .input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+
+    .box {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--disco-fg);
+      background-color: var(--disco-bg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+
+    .box::after {
+      content: '';
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid var(--disco-fg);
+      border-bottom: 2px solid var(--disco-fg);
+      transform: rotate(-45deg);
+      opacity: 0;
+    }
+
+    .input:checked+.box::after {
+      opacity: 1;
+    }
+
+    :host([data-pressed]) .wrapper .box,
+    :host([data-pressed]) .input+.box {
+      background-color: var(--disco-accent);
+    }
+
+    :host([data-pressed]) .wrapper .box::after,
+    :host([data-pressed]) .input+.box::after {
+      border-left-color: #fff;
+      border-bottom-color: #fff;
+    }
+
+    :host([disabled]) .wrapper {
+      opacity: 0.5;
+    }
+
+    .text {
+      display: inline-flex;
+      align-items: center;
+    }
+  `;
+
+  @property({ type: Boolean, reflect: true }) checked = false;
+  @property({ type: Boolean, reflect: true }) disabled = false;
+
+  @query('.input') _input;
+
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(checkboxStyles, this.shadowRoot);
-    this.enableTilt();
-
-    const wrapper = document.createElement('label');
-    wrapper.className = 'wrapper';
-
-    this._input = document.createElement('input');
-    this._input.className = 'input';
-    this._input.type = 'checkbox';
-
-    const box = document.createElement('span');
-    box.className = 'box';
-
-    const text = document.createElement('span');
-    text.className = 'text';
-    const slot = document.createElement('slot');
-    text.appendChild(slot);
-
-    wrapper.appendChild(this._input);
-    wrapper.appendChild(box);
-    wrapper.appendChild(text);
-    this.shadowRoot.appendChild(wrapper);
-
-    wrapper.addEventListener('click', (event) => {
-      if (this.disabled) return;
-      event.preventDefault();
-      this.checked = !this.checked;
-      this._syncFromAttributes();
-      this.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    this._input.addEventListener('change', () => {
-      this.checked = this._input.checked;
-    });
-
     this.setAttribute('role', 'checkbox');
     this.tabIndex = 0;
-    this.addEventListener('keydown', (event) => {
-      if (this.disabled) return;
-      if (event.key === ' ' || event.key === 'Enter') {
-        event.preventDefault();
-        this.checked = !this.checked;
-        this._syncFromAttributes();
-        this.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    });
-
-    this._syncFromAttributes();
   }
 
-  static get observedAttributes() {
-    return ['checked', 'disabled'];
+  firstUpdated() {
+    this.enableTilt();
+    this._syncAttributes();
   }
 
-  /**
-   * @returns {boolean}
-   */
-  get checked() {
-    return this.hasAttribute('checked');
-  }
-
-  /**
-   * @param {boolean} next
-   */
-  set checked(next) {
-    if (next) {
-      this.setAttribute('checked', '');
-    } else {
-      this.removeAttribute('checked');
+  updated(changedProperties) {
+    if (changedProperties.has('checked') || changedProperties.has('disabled')) {
+      this._syncAttributes();
     }
   }
 
-  /**
-   * @returns {boolean}
-   */
-  get disabled() {
-    return this.hasAttribute('disabled');
+  render() {
+    return html`
+      <label class="wrapper" @click=${this._handleClick}>
+        <input 
+          class="input" 
+          type="checkbox" 
+          .checked=${this.checked}
+          .disabled=${this.disabled}
+          @change=${this._handleInputChange}
+        />
+        <span class="box"></span>
+        <span class="text">
+          <slot></slot>
+        </span>
+      </label>
+    `;
   }
 
-  /**
-   * @param {boolean} next
-   */
-  set disabled(next) {
-    if (next) {
-      this.setAttribute('disabled', '');
-    } else {
-      this.removeAttribute('disabled');
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('keydown', this._handleKeyDown);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('keydown', this._handleKeyDown);
+  }
+
+  _handleClick = (event) => {
+    if (this.disabled) return;
+    event.preventDefault();
+    this.checked = !this.checked;
+    this.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  _handleInputChange = () => {
+    this.checked = this._input.checked;
+  };
+
+  _handleKeyDown = (event) => {
+    if (this.disabled) return;
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      this.checked = !this.checked;
+      this.dispatchEvent(new Event('change', { bubbles: true }));
     }
-  }
+  };
 
-  /**
-   * @param {string} _name
-   * @param {string | null} _oldValue
-   * @param {string | null} _newValue
-   */
-  attributeChangedCallback(_name, _oldValue, _newValue) {
-    this._syncFromAttributes();
-  }
-
-  _syncFromAttributes() {
-    if (!this._input) return;
-    this._input.checked = this.checked;
-    this._input.disabled = this.disabled;
+  _syncAttributes() {
     this.setAttribute('aria-checked', this.checked ? 'true' : 'false');
     if (this.disabled) {
       this.setAttribute('aria-disabled', 'true');

@@ -13,6 +13,10 @@ class DiscoPage extends DiscoUIElement {
     this.loadStyle(pageStyles);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
   // Methods for the Frame to call
   /**
    * @typedef {object} DiscoPageAnimationOptions

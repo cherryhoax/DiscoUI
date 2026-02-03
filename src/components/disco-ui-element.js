@@ -1,9 +1,10 @@
+import { LitElement } from 'lit';
 import baseStyles from './disco-ui-element.scss';
 
 /**
  * Base class for Disco UI custom elements.
  */
-class DiscoUIElement extends HTMLElement {
+class DiscoUIElement extends LitElement {
   constructor() {
     super();
     this.loadStyle(baseStyles);
