@@ -1,36 +1,14 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { query } from 'lit/decorators.js';
 import DiscoUIElement from '../disco-ui-element.js';
+import pivotItemStyles from './disco-pivot-item.scss';
 
 /**
  * An item used within a pivot page.
  * @extends DiscoUIElement
  */
 class DiscoPivotItem extends DiscoUIElement {
-  static styles = css`
-    :host {
-      flex: 0 0 100%;
-      height: 100%;
-      width: 100vw;
-      max-width: 100vw;
-      min-width: 100vw;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      box-sizing: border-box;
-      overflow-y: auto;
-      padding: 0 20px;
-      display: block;
-    }
-
-    :host * {
-      transform-style: preserve-3d;
-    }
-
-    .pivot-item-content {
-      height: 100%;
-      width: 100%;
-    }
-  `;
+  static styles = css`${unsafeCSS(pivotItemStyles)}`;
 
   @query('.pivot-item-content') _contentWrapper;
 

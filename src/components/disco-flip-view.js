@@ -1,6 +1,7 @@
-import { css } from 'lit';
+import { css, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import DiscoScrollView from './disco-scroll-view.js';
+import flipViewStyles from './disco-flip-view.scss';
 
 /**
  * Flip-style view that pages children horizontally or vertically with loop overscroll support.
@@ -9,40 +10,7 @@ import DiscoScrollView from './disco-scroll-view.js';
 class DiscoFlipView extends DiscoScrollView {
   static styles = [
     DiscoScrollView.styles,
-    css`
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .scroll-content {
-        height: 100%;
-      }
-
-      :host([direction='horizontal']) .scroll-content {
-        width: 100%;
-      }
-
-      :host([direction='horizontal']) ::slotted(*) {
-        flex: 0 0 100%;
-        box-sizing: border-box;
-        height: 100%;
-        overflow: hidden;
-        touch-action: none;
-        overscroll-behavior: contain;
-      }
-
-      :host([direction='vertical']) ::slotted(*) {
-        flex: 0 0 100%;
-        box-sizing: border-box;
-        width: 100%;
-        overflow: hidden;
-        touch-action: none;
-        overscroll-behavior: contain;
-      }
-    `
+    css`${unsafeCSS(flipViewStyles)}`
   ];
 
   @property({ type: String, reflect: true, attribute: 'overscroll-mode' }) overscrollMode = '';

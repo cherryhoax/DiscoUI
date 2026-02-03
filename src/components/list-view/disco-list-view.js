@@ -1,7 +1,8 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import DiscoScrollView from '../disco-scroll-view.js';
 import './disco-list-item.js';
+import listViewStyles from './disco-list-view.scss';
 
 /**
  * @typedef {object} DiscoListItemClickDetail
@@ -16,22 +17,7 @@ import './disco-list-item.js';
 class DiscoListView extends DiscoScrollView {
   static styles = [
     DiscoScrollView.styles,
-    css`
-      .list {
-        display: block;
-        transform-style: preserve-3d;
-      }
-
-      ::slotted(disco-list-item) {
-        transition: transform .25s .25s ease-out;
-        transform-style: preserve-3d;
-        display: block;
-      }
-
-      ::slotted(disco-list-item[data-pressed]) {
-        transition: transform .1ms;
-      }
-    `
+    css`${unsafeCSS(listViewStyles)}`
   ];
 
   @property({ type: Array }) items = [];

@@ -1,112 +1,16 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import '../disco-flip-view.js';
+import pivotPageStyles from './disco-pivot-page.scss';
 
 /**
  * Pivot-style page with header strip and flip-view content.
  * @extends DiscoPage
  */
 class DiscoPivotPage extends DiscoPage {
-  static styles = css`
-    :host {
-      background-color: var(--disco-bg);
-      color: var(--disco-fg);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    :host([data-animating]) {
-      overflow: visible;
-    }
-
-    .pivot-shell {
-      height: 100%;
-    }
-
-    :host([data-animating]) .pivot-shell,
-    :host([data-animating]) .pivot-root {
-      overflow: visible;
-    }
-
-    .pivot-root {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      position: relative;
-    }
-
-    .app-title {
-      font-size: 22px;
-      text-transform: uppercase;
-      padding: 18px 20px 0;
-      letter-spacing: 0.05em;
-      opacity: 1;
-    }
-
-    .header-strip {
-      display: flex;
-      gap: 25px;
-      padding: 0px 20px 20px;
-      overflow: hidden;
-      scrollbar-width: none;
-    }
-
-    :host([data-animating]) .header-strip {
-      overflow: visible;
-    }
-
-    :host([data-animating]) .header-strip .header-item[data-set]:not([data-set="5"]) {
-      display: none;
-    }
-
-    .header-strip::-webkit-scrollbar {
-      display: none;
-    }
-
-    .header-item {
-      font-size: 67px;
-      font-weight: 100;
-      white-space: nowrap;
-      transition: transform 0.2s ease;
-      will-change: opacity, transform;
-      text-transform: lowercase;
-    }
-
-    .content-viewport {
-      display: block;
-      flex: 1;
-      height: 100%;
-      min-height: 0;
-    }
-
-    :host([data-animating]) .content-viewport {
-      overflow: visible;
-    }
-
-    :host([data-animating]) > disco-pivot-item {
-      visibility: visible !important;
-      opacity: 1 !important;
-      transition: none !important;
-      animation: none !important;
-    }
-
-    :host([data-animating]) > disco-pivot-item * {
-      transition: none !important;
-      animation: none !important;
-    }
-
-    .ghost {
-      flex: 0 0 100%;
-      height: 100%;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      margin-right: 100%;
-    }
-  `;
+  static styles = css`${unsafeCSS(pivotPageStyles)}`;
 
   /**
    * @typedef {HTMLElement & { _updateChildrenLayout?: () => void }} PivotViewport

@@ -1,57 +1,14 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { property, state, query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
+import scrollViewStyles from './disco-scroll-view.scss';
 
 /**
  * Scroll view with touch/mouse momentum, overscroll, and nested scrolling support.
  * @extends DiscoUIElement
  */
 class DiscoScrollView extends DiscoUIElement {
-    static styles = css`
-        :host {
-            display: block;
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            touch-action: none;
-            contain: strict;
-            user-select: none;
-            -webkit-user-select: none;
-            perspective: var(--disco-perspective);
-        }
-
-        :host * {
-            transform-style: preserve-3d;
-        }
-
-        .scroll-content {
-            display: block;
-            box-sizing: border-box;
-            width: max-content;
-            height: max-content;
-            min-width: 100%;
-            min-height: 100%;
-            will-change: transform;
-            transform-style: preserve-3d;
-        }
-
-        ::slotted(*) {
-            touch-action: none;
-            overscroll-behavior: contain;
-        }
-
-        :host([direction='vertical']) .scroll-content {
-            width: 100%;
-        }
-
-        :host([direction='horizontal']) .scroll-content {
-            height: 100%;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-        }
-    `;
+    static styles = css`${unsafeCSS(scrollViewStyles)}`;
 
     @property({ type: String, reflect: true }) direction = 'both';
 

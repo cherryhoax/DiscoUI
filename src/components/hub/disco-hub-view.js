@@ -1,6 +1,7 @@
-import { css } from 'lit';
+import { css, unsafeCSS } from 'lit';
 import DiscoFlipView from '../disco-flip-view.js';
 import DiscoAnimations from '../animations/disco-animations.js';
+import hubViewStyles from './disco-hub-view.scss';
 
 /**
  * A Hub-specific flip view that defaults to looping and stop snapping.
@@ -8,38 +9,7 @@ import DiscoAnimations from '../animations/disco-animations.js';
 class DiscoHubView extends DiscoFlipView {
   static styles = [
     DiscoFlipView.styles,
-    css`
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-        touch-action: none;
-        overscroll-behavior: contain;
-        overflow: visible;
-        contain: none;
-      }
-
-      :host([data-animating]) {
-        overflow: visible;
-      }
-
-      :host([direction='horizontal']) .scroll-content {
-        align-items: stretch;
-        touch-action: none;
-        overscroll-behavior: contain;
-      }
-
-      :host([direction='horizontal']) ::slotted(disco-hub-section) {
-        width: calc(100vw - 50px);
-        min-width: calc(100vw - 50px);
-        max-width: none;
-        box-sizing: border-box;
-        flex: 0 0 auto;
-        padding-left: 24px;
-        touch-action: none;
-        overscroll-behavior: contain;
-      }
-    `
+    css`${unsafeCSS(hubViewStyles)}`
   ];
 
   constructor() {

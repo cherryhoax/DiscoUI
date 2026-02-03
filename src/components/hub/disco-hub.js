@@ -1,97 +1,16 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import './disco-hub-view.js';
+import hubStyles from './disco-hub.scss';
 
 /**
  * A Windows Phone 8.1 / Hub style Hub page.
  * Features a large title, background with parallax, and horizontal scrolling sections.
  */
 class DiscoHub extends DiscoPage {
-    static styles = css`
-        :host {
-            display: block;
-            width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: visible;
-            user-select: none;
-            background-color: var(--disco-bg, #000);
-            color: var(--disco-fg, #fff);
-        }
-
-        :host([data-animating]) {
-            overflow: visible !important;
-        }
-
-        .hub-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 200%;
-            z-index: 0;
-            background-size: 200% 100%;
-            background-repeat: repeat-x;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .hub-background-clip {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .hub-shell {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow: visible;
-        }
-
-        :host([data-animating]) .hub-shell {
-            overflow: visible !important;
-        }
-
-        .hub-header {
-            padding: 5px 20px 28px 20px;
-            z-index: 2;
-            --translate-x: 0px;
-            transform: translateX(var(--translate-x)) translateX(var(--animate-offset));
-        }
-
-        .hub-title {
-            font-size: 90px;
-            font-weight: lighter;
-            line-height: 1;
-            margin: 0;
-            white-space: nowrap;
-            text-transform: lowercase;
-            opacity: 0.9;
-        }
-
-        .hub-viewport {
-            flex: 1;
-            display: block;
-            padding-left: 0;
-            padding-right: 0;
-            overflow: visible;
-        }
-
-        :host([data-animating]) .hub-viewport {
-            overflow: visible !important;
-        }
-    `;
+    static styles = css`${unsafeCSS(hubStyles)}`;
 
     @property({ type: String }) header = 'DISCO';
     @property({ type: String }) background = '';

@@ -1,97 +1,14 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
+import singlePageStyles from './disco-single-page.scss';
 
 /**
  * Single pivot-style page with one header and one content slot.
  */
 class DiscoSinglePage extends DiscoPage {
-    static styles = css`
-        :host {
-            background-color: var(--disco-bg);
-            color: var(--disco-fg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            perspective: var(--disco-perspective);
-        }
-
-        :host * {
-            transform-style: preserve-3d;
-        }
-
-        .single-shell {
-            height: 100%;
-        }
-
-        .single-root {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .app-title {
-            font-size: 22px;
-            text-transform: uppercase;
-            padding: 18px 20px 0;
-            letter-spacing: 0.05em;
-            opacity: 1;
-        }
-
-        .header-strip {
-            display: flex;
-            gap: 25px;
-            padding: 0px 20px 20px;
-            overflow: hidden;
-            scrollbar-width: none;
-        }
-
-        .header-strip::-webkit-scrollbar {
-            display: none;
-        }
-
-        .header-item {
-            font-size: 67px;
-            font-weight: 100;
-            white-space: nowrap;
-            text-transform: lowercase;
-        }
-
-        .content-viewport {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 0 20px;
-            box-sizing: border-box;
-            transform-style: preserve-3d;
-            perspective: var(--disco-perspective);
-            perspective-origin: center;
-        }
-
-        .content-viewport ::slotted(disco-scroll-view),
-        .content-viewport ::slotted(disco-list-view) {
-            flex: 1;
-            min-height: 0;
-            align-self: stretch;
-            padding: 0 20px;
-            padding-bottom: 120px;
-            margin: 0 -20px;
-        }
-
-        .content-viewport ::slotted(*) {
-            transform-style: preserve-3d;
-        }
-
-        .content-viewport::-webkit-scrollbar {
-            display: none;
-        }
-    `;
+    static styles = css`${unsafeCSS(singlePageStyles)}`;
 
     @property({ type: String, attribute: 'app-title' }) appTitle = 'DISCO APP';
     @property({ type: String }) header = 'DETAILS';

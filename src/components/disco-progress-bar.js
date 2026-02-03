@@ -1,115 +1,14 @@
-import { html, css } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { property, query } from 'lit/decorators.js';
 import DiscoUIElement from './disco-ui-element.js';
+import progressBarStyles from './disco-progress-bar.scss';
 
 /**
  * Progress bar element with determinate and indeterminate modes.
  * @extends DiscoUIElement
  */
 class DiscoProgressBar extends DiscoUIElement {
-  static styles = css`
-    :host {
-      display: inline-block;
-      width: 265px;
-      height: 4px;
-      box-sizing: border-box;
-    }
-
-    .track {
-      width: 100%;
-      height: 100%;
-      --disco-progress-bar-bg: calc(25 + (205 * var(--disco-theme)));
-      background-color: rgb(var(--disco-progress-bar-bg), var(--disco-progress-bar-bg), var(--disco-progress-bar-bg));
-      overflow: hidden;
-      position: relative;
-    }
-
-    .fill {
-      width: 0%;
-      height: 100%;
-      background-color: var(--disco-accent);
-      transition: width 160ms ease-out;
-    }
-
-    .dots {
-      position: absolute;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      animation: disco-progress-dots 3s infinite linear;
-    }
-
-    .dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 2px;
-      background-color: var(--disco-accent);
-      animation: disco-progress-dot 3s infinite var(--disco-ease-in-out-sine);
-      opacity: 0;
-    }
-
-    .dot:nth-child(1) {
-      animation-delay: 0.5s;
-    }
-
-    .dot:nth-child(2) {
-      animation-delay: 0.4s;
-    }
-
-    .dot:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    .dot:nth-child(4) {
-      animation-delay: 0.2s;
-    }
-
-    .dot:nth-child(5) {
-      animation-delay: 0.1s;
-    }
-
-    :host([indeterminate]) .track {
-      background-color: transparent;
-    }
-
-    :host([indeterminate]) .fill {
-      display: none;
-    }
-
-    :host([indeterminate]) .dots {
-      display: flex;
-    }
-
-    @keyframes disco-progress-dots {
-      0% {
-        transform: translateX(-30%);
-      }
-      100% {
-        transform: translateX(30%);
-      }
-    }
-
-    @keyframes disco-progress-dot {
-      0% {
-        transform: translateX(-1500%);
-        opacity: 0;
-      }
-      20% {
-        transform: translateX(0%);
-        opacity: 1;
-      }
-      40% {
-        transform: translateX(0%);
-        opacity: 1;
-      }
-      60%, 100% {
-        transform: translateX(1500%);
-        opacity: 0;
-      }
-    }
-  `;
+  static styles = css`${unsafeCSS(progressBarStyles)}`;
 
   @property({ type: Boolean, reflect: true }) indeterminate = false;
   @property({ type: Number }) value = 0;
