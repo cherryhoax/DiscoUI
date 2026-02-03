@@ -1,4 +1,5 @@
 import DiscoFlipView from '../disco-flip-view.js';
+import DiscoAnimations from '../animations/disco-animations.js';
 import hubViewCss from './disco-hub-view.scss';
 
 /**
@@ -114,6 +115,10 @@ class DiscoHubView extends DiscoFlipView {
         }
       }
 
+      if (isAnimating && i === count - 1 && offset > 0) {
+        offset -= span;
+      }
+
       const zIndex = 100000 - (Math.round(Math.abs(offset)) * 10) - i;
       node.style.zIndex = `${zIndex}`;
 
@@ -126,35 +131,6 @@ class DiscoHubView extends DiscoFlipView {
 
     if (!this._suppressScrollEmit && this._emitScroll) this._emitScroll();
 
-  }
-
-  /**
-   * @param {number} from
-   * @param {number} to
-   * @param {number} [duration=480]
-   * @returns {Promise<void>}
-   */
-  animateIntroScroll(from, to, duration = 480) {
-    return new Promise((resolve) => {
-      const start = performance.now();
-      const delta = to - from;
-      this._suppressScrollEmit = true;
-      const tick = (now) => {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const value = from + (delta * eased);
-        this.scrollLeft = value;
-        if (t < 1) {
-          requestAnimationFrame(tick);
-        } else {
-          this.scrollLeft = to;
-          this._suppressScrollEmit = false;
-          resolve();
-        }
-      };
-      this.scrollLeft = from;
-      requestAnimationFrame(tick);
-    });
   }
 
 }

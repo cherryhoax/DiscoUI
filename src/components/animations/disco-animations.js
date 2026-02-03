@@ -135,6 +135,62 @@ const animationSet = {
         }
 
     },
+    hub: {
+        /**
+         * @param {Element} target
+         * @param {DiscoPageAnimationOptions} [options]
+         * @returns {Promise<void>}
+         */
+        in: async (target, options = { direction: 'forward' }) => {
+            if (options.direction !== 'forward') {
+                await animationSet.page.in(target, options);
+                return;
+            }
+            const animation = DiscoAnimations.animate(
+                target,
+                [
+                    /*     {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                    },
+                    {
+                        transform: `translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
+                    }*/
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `translateX(-400px) translateZ(-2000px) translateX(${window.innerWidth / 8}px) rotateY(120deg) translateX(${window.innerWidth / 5}px)`
+
+                        //transform: `translateZ(-1800px) translateX(-400px) rotateY(90deg)`
+                    },
+                    {
+                       //opacity: 1,
+                        //transformOrigin: 'left center',
+                        //transform: `translateZ(-900px) translateX(-50px) rotateY(45deg)`
+                        transform: `translateX(0px) translateZ(-750px) translateX(${window.innerWidth / 16}px) rotateY(60deg) translateX(${window.innerWidth / 8}px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `translateX(0px) translateZ(0px) translateX(0px) rotateY(0deg) translateX(0px)`
+                    }
+                ],
+                {
+                    duration: 600,
+                    easing: DiscoAnimations.easeOutQuart,
+                    spline: true,
+                    fill: 'forwards'
+                }
+            );
+            await animation.finished;
+        }
+    },
     list: {
         /**
          * @param {Element[]} targets

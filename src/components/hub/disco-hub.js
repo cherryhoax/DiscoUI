@@ -62,38 +62,42 @@ class DiscoHub extends DiscoPage {
         const sections = Array.from(this.querySelectorAll('disco-hub-section'));
         sections.forEach((section) => section.setAttribute('data-animating', ''));
         try {
-            const scrollPromise = viewport && typeof viewport.animateIntroScroll === 'function'
-                ? viewport.animateIntroScroll(-200, 0, 900)
-                : Promise.resolve();
-            const pagePromise = options.direction === 'forward'
+            const introDuration = 1200;
+            const scrollPromise = viewport
                 ? DiscoAnimations.animate(
-                    this,
+                    viewport,
                     [
-                        {
-                            opacity: 1,
-                            transformOrigin: 'left center',
-                            transform: `translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
-                        },
-                        {
-                            transform: `translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
-                        },
-                        {
-                            opacity: 1,
-                            transformOrigin: 'left center',
-                            transform: `translateX(0px) rotateY(0deg) translateX(0px)`
-                        }
+                        { transform: 'translateX(1000px)' },
+                        { transform: 'translateX(0px)' }
                     ],
                     {
-                        duration: 600,
+                        duration: introDuration,
                         easing: DiscoAnimations.easeOutQuart,
-                        spline: true,
+                        fill: 'forwards'
+                    }
+                ).finished.finally(() => {
+                    viewport.style.transform = '';
+                })
+                : Promise.resolve();
+            const headerPromise = this._header
+                ? DiscoAnimations.animate(
+                    this._header,
+                    [
+                        { transform: 'translateX(500px)' },
+                        { transform: 'translateX(0px)' }
+                    ],
+                    {
+                        duration: introDuration,
+                        easing: DiscoAnimations.easeOutQuart,
                         fill: 'forwards'
                     }
                 ).finished
-                : DiscoAnimations.animationSet.page.in(this, options);
+                : Promise.resolve();
+            const pagePromise = DiscoAnimations.animationSet.hub.in(this, options);
             await Promise.all([
                 pagePromise,
-                scrollPromise
+                scrollPromise,
+                headerPromise
             ]);
         } finally {
             this.removeAttribute('data-animating');
