@@ -1,3 +1,4 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoUIElement from './disco-ui-element.js';
 import progressBarStyles from './disco-progress-bar.scss';
 
@@ -6,107 +7,48 @@ import progressBarStyles from './disco-progress-bar.scss';
  * @extends DiscoUIElement
  */
 class DiscoProgressBar extends DiscoUIElement {
-  /**
-   * @constructor
-   */
+  static styles = css`${unsafeCSS(progressBarStyles)}`;
+
+  static get properties() {
+    return {
+      indeterminate: { type: Boolean, reflect: true },
+      value: { type: Number },
+      max: { type: Number }
+    };
+  }
+
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(progressBarStyles, this.shadowRoot);
-
-    this._track = document.createElement('div');
-    this._track.className = 'track';
-
-    this._fill = document.createElement('div');
-    this._fill.className = 'fill';
-
-    this._dots = document.createElement('div');
-    this._dots.className = 'dots';
-    for (let i = 0; i < 5; i += 1) {
-      const dot = document.createElement('div');
-      dot.className = 'dot';
-      this._dots.appendChild(dot);
-    }
-
-    this._track.appendChild(this._fill);
-    this._track.appendChild(this._dots);
-    this.shadowRoot.appendChild(this._track);
-
+    this.indeterminate = false;
+    this.value = 0;
+    this.max = 100;
     this.setAttribute('role', 'progressbar');
-    this._syncAria();
-    this._syncFill();
   }
 
-  static get observedAttributes() {
-    return ['value', 'max', 'indeterminate'];
+  firstUpdated() {
+    this._fill = this.shadowRoot.querySelector('.fill');
   }
 
-  /**
-   * @returns {boolean}
-   */
-  get indeterminate() {
-    return this.hasAttribute('indeterminate');
-  }
-
-  /**
-   * @param {boolean} next
-   */
-  set indeterminate(next) {
-    if (next) {
-      this.setAttribute('indeterminate', '');
-    } else {
-      this.removeAttribute('indeterminate');
+  updated(changedProperties) {
+    if (changedProperties.has('value') || changedProperties.has('max') || changedProperties.has('indeterminate')) {
+      this._syncAria();
+      this._syncFill();
     }
   }
 
-  /**
-   * @returns {number}
-   */
-  get value() {
-    const raw = this.getAttribute('value');
-    const parsed = raw == null ? 0 : Number(raw);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-
-  /**
-   * @param {number} next
-   */
-  set value(next) {
-    if (next == null) {
-      this.removeAttribute('value');
-      return;
-    }
-    this.setAttribute('value', String(next));
-  }
-
-  /**
-   * @returns {number}
-   */
-  get max() {
-    const raw = this.getAttribute('max');
-    const parsed = raw == null ? 100 : Number(raw);
-    return Number.isFinite(parsed) && parsed > 0 ? parsed : 100;
-  }
-
-  /**
-   * @param {number} next
-   */
-  set max(next) {
-    if (next == null) {
-      this.removeAttribute('max');
-      return;
-    }
-    this.setAttribute('max', String(next));
-  }
-
-  /**
-   * @param {string} _name
-   * @param {string | null} _oldValue
-   * @param {string | null} _newValue
-   */
-  attributeChangedCallback(_name, _oldValue, _newValue) {
-    this._syncAria();
-    this._syncFill();
+  render() {
+    return html`
+      <div class="track">
+        <div class="fill"></div>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    `;
   }
 
   _syncFill() {

@@ -1,14 +1,27 @@
+import { css, unsafeCSS } from 'lit';
 import DiscoScrollView from './disco-scroll-view.js';
-import flipViewCss from './disco-flip-view.scss';
+import flipViewStyles from './disco-flip-view.scss';
 
 /**
  * Flip-style view that pages children horizontally or vertically with loop overscroll support.
  * @extends DiscoScrollView
  */
 class DiscoFlipView extends DiscoScrollView {
+  static styles = [
+    DiscoScrollView.styles,
+    css`${unsafeCSS(flipViewStyles)}`
+  ];
+
+  static get properties() {
+    return {
+      ...super.properties,
+      overscrollMode: { type: String, reflect: true, attribute: 'overscroll-mode' }
+    };
+  }
+
   constructor() {
     super();
-    this.loadStyle(flipViewCss, this.shadowRoot);
+    this.overscrollMode = '';
     // Force horizontal direction by default
     if (!this.hasAttribute('direction')) this.setAttribute('direction', 'horizontal');
 
@@ -18,15 +31,9 @@ class DiscoFlipView extends DiscoScrollView {
     this._lastPageSize = 0;
   }
 
-  static get observedAttributes() {
-    return ['direction', 'overscroll-mode'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (super.attributeChangedCallback) {
-      super.attributeChangedCallback(name, oldValue, newValue);
-    }
-    if (name === 'overscroll-mode') {
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has('overscrollMode')) {
       this._loopInitialized = false;
       this._updateChildrenLayout();
     }

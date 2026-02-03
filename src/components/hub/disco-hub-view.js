@@ -1,14 +1,19 @@
+import { css, unsafeCSS } from 'lit';
 import DiscoFlipView from '../disco-flip-view.js';
 import DiscoAnimations from '../animations/disco-animations.js';
-import hubViewCss from './disco-hub-view.scss';
+import hubViewStyles from './disco-hub-view.scss';
 
 /**
  * A Hub-specific flip view that defaults to looping and stop snapping.
  */
 class DiscoHubView extends DiscoFlipView {
+  static styles = [
+    DiscoFlipView.styles,
+    css`${unsafeCSS(hubViewStyles)}`
+  ];
+
   constructor() {
     super();
-    this.loadStyle(hubViewCss, this.shadowRoot);
     this._boundHubUpdate = this._updateChildrenLayout.bind(this);
   }
 

@@ -1,3 +1,4 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoUIElement from './disco-ui-element.js';
 import buttonStyles from './disco-button.scss';
 
@@ -6,22 +7,19 @@ import buttonStyles from './disco-button.scss';
  * @extends DiscoUIElement
  */
 class DiscoButton extends DiscoUIElement {
-  /**
-   * @constructor
-   */
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(buttonStyles, this.shadowRoot);
+  static styles = css`${unsafeCSS(buttonStyles)}`;
 
-    const button = document.createElement('button');
-    button.className = 'button';
-    button.type = 'button';
-    const slot = document.createElement('slot');
-    button.appendChild(slot);
-    this.shadowRoot.appendChild(button);
+  firstUpdated() {
+    this._button = this.shadowRoot.querySelector('.button');
+    this.enableTilt({ selector: '.button' });
+  }
 
-    this.enableTilt({ selector: 'button' });
+  render() {
+    return html`
+      <button class="button" type="button">
+        <slot></slot>
+      </button>
+    `;
   }
 }
 

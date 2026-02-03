@@ -41,11 +41,15 @@ const examplesDistAliasPlugin = () => {
 
 export default defineConfig({
   plugins: [cssInlinePlugin(), examplesDistAliasPlugin()],
+  esbuild: {
+    target: 'es2020'
+  },
   server: {
     port: 3000,
     open: '/examples/index.html'
   },
   build: {
+    target: 'es2020',
     rollupOptions: {
       input: {
         discoui: path.resolve(__dirname, 'src/index.js'),

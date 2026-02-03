@@ -1,6 +1,7 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoScrollView from '../disco-scroll-view.js';
-import listViewStyles from './disco-list-view.scss';
 import './disco-list-item.js';
+import listViewStyles from './disco-list-view.scss';
 
 /**
  * @typedef {object} DiscoListItemClickDetail
@@ -13,64 +14,65 @@ import './disco-list-item.js';
  * Disco list view with static and dynamic item support.
  */
 class DiscoListView extends DiscoScrollView {
+  static styles = [
+    DiscoScrollView.styles,
+    css`${unsafeCSS(listViewStyles)}`
+  ];
+
+  static get properties() {
+    return {
+      ...super.properties,
+      items: { type: Array },
+      itemClickEnabled: { type: Boolean, attribute: 'item-click-enabled' },
+      selectionMode: { type: String, attribute: 'selection-mode' }
+    };
+  }
+
   constructor() {
     super();
-    this.loadStyle(listViewStyles, this.shadowRoot);
+    this.items = [];
+    this.itemClickEnabled = false;
+    this.selectionMode = 'none';
 
     if (this.hasAttribute('direction')) {
       this.removeAttribute('direction');
     }
 
-    this._items = [];
-    this._list = document.createElement('div');
-    this._list.className = 'list';
-
-    this._slot = this.shadowRoot.querySelector('slot') || document.createElement('slot');
-    this._slot.addEventListener('slotchange', () => this._syncStaticVisibility());
-    if (!this._slot.isConnected) {
-      this._wrapper.appendChild(this._slot);
-    }
-    this._wrapper.insertBefore(this._list, this._slot);
-
     this.setAttribute('role', 'list');
-    this.addEventListener('click', (event) => this._handleClick(event));
-    this.addEventListener('keydown', (event) => this._handleKeydown(event));
-    this.addEventListener('keyup', (event) => this._handleKeyup(event));
   }
 
-  /**
-   * @returns {unknown[]}
-   */
-  get items() {
-    return this._items;
+  render() {
+    return html`
+      <div class="scroll-content">
+        <div class="list"></div>
+        <slot @slotchange=${this._syncStaticVisibility}></slot>
+      </div>
+    `;
   }
 
-  /**
-   * @param {unknown[]} value
-   */
-  set items(value) {
-    this._items = Array.isArray(value) ? value : [];
+  firstUpdated() {
+    super.firstUpdated();
+    this._list = this.shadowRoot.querySelector('.list');
+    this._slot = this.shadowRoot.querySelector('slot');
     this._renderDynamic();
   }
 
-  /**
-   * @returns {boolean}
-   */
-  get itemClickEnabled() {
-    return this.hasAttribute('item-click-enabled') || this.hasAttribute('is-item-click-enabled');
+  updated(changedProperties) {
+    super.updated(changedProperties);
+    if (changedProperties.has('items')) {
+      this._items = this.items; // Sync public property to private property
+      this._renderDynamic();
+    }
+    if (changedProperties.has('itemClickEnabled') || changedProperties.has('selectionMode')) {
+      this._syncItemInteractivity();
+    }
   }
 
-  /**
-   * @param {boolean} value
-   */
-  set itemClickEnabled(value) {
-    if (value) {
-      this.setAttribute('item-click-enabled', '');
-    } else {
-      this.removeAttribute('item-click-enabled');
-      this.removeAttribute('is-item-click-enabled');
-    }
-    this._syncItemInteractivity();
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('click', (event) => this._handleClick(event));
+    this.addEventListener('keydown', (event) => this._handleKeydown(event));
+    this.addEventListener('keyup', (event) => this._handleKeyup(event));
   }
 
   /**

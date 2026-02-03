@@ -13,6 +13,18 @@ class DiscoPage extends DiscoUIElement {
     this.loadStyle(pageStyles);
   }
 
+  createRenderRoot() {
+    return this;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
   // Methods for the Frame to call
   /**
    * @typedef {object} DiscoPageAnimationOptions

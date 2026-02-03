@@ -1,13 +1,18 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoUIElement from './disco-ui-element.js';
-import styles from './disco-scroll-view.scss';
+import scrollViewStyles from './disco-scroll-view.scss';
 
 /**
  * Scroll view with touch/mouse momentum, overscroll, and nested scrolling support.
  * @extends DiscoUIElement
  */
 class DiscoScrollView extends DiscoUIElement {
-    static get observedAttributes() {
-        return ['direction'];
+    static styles = css`${unsafeCSS(scrollViewStyles)}`;
+
+    static get properties() {
+        return {
+            direction: { type: String, reflect: true }
+        };
     }
 
     /**
@@ -15,13 +20,8 @@ class DiscoScrollView extends DiscoUIElement {
      */
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-        this.loadStyle(styles, this.shadowRoot);
 
-        this._wrapper = document.createElement('div');
-        this._wrapper.className = 'scroll-content';
-        this._wrapper.appendChild(document.createElement('slot'));
-        this.shadowRoot.appendChild(this._wrapper);
+        this.direction = 'both';
 
         // State
         this._isDragging = false;
@@ -84,26 +84,28 @@ class DiscoScrollView extends DiscoUIElement {
     }
 
     connectedCallback() {
+        super.connectedCallback();
         this._updateMetrics();
     }
 
     disconnectedCallback() {
+        super.disconnectedCallback();
         this._resizeObserver.disconnect();
         this._mutationObserver.disconnect();
         this._stopAnimation();
     }
 
-
-    get direction() {
-        return this.getAttribute('direction') || 'both';
+    firstUpdated() {
+        this._wrapper = this.shadowRoot.querySelector('.scroll-content');
+        this._updateMetrics();
     }
 
-    set direction(val) {
-        if (!val || val === 'both') {
-            this.removeAttribute('direction');
-            return;
-        }
-        this.setAttribute('direction', val);
+    render() {
+        return html`
+            <div class="scroll-content">
+                <slot></slot>
+            </div>
+        `;
     }
 
     /**

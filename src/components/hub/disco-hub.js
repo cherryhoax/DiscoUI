@@ -1,63 +1,72 @@
+import { html, css, unsafeCSS, LitElement } from 'lit';
 import DiscoPage from '../disco-page.js';
-import hubCss from './disco-hub.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 import './disco-hub-view.js';
+import hubStyles from './disco-hub.scss';
 
 /**
  * A Windows Phone 8.1 / Hub style Hub page.
  * Features a large title, background with parallax, and horizontal scrolling sections.
  */
 class DiscoHub extends DiscoPage {
-    /**
-     * @param {string} [header]
-     */
-    constructor(header = 'DISCO') {
+    static styles = css`${unsafeCSS(hubStyles)}`;
+
+    static get properties() {
+        return {
+            header: { type: String },
+            background: { type: String }
+        };
+    }
+
+    constructor() {
         super();
-        this.header = header;
-        this.attachShadow({ mode: 'open' });
-        this.loadStyle(hubCss, this.shadowRoot);
-
-        this._container = document.createElement('div');
-        this._container.className = 'hub-shell';
-        this.shadowRoot.appendChild(this._container);
-
-        this._backgroundClip = document.createElement('div');
-        this._backgroundClip.className = 'hub-background-clip';
-        this.shadowRoot.insertBefore(this._backgroundClip, this._container);
-
-        this._background = document.createElement('div');
-        this._background.className = 'hub-background';
-        this._backgroundClip.appendChild(this._background);
-
-        this.render();
+        this.header = 'DISCO';
+        this.background = '';
     }
 
-    static get observedAttributes() {
-        return ['header', 'background'];
+    // Override parent's light DOM to use shadow DOM for this component
+    // Call LitElement's implementation directly to properly handle styles
+    createRenderRoot() {
+        return LitElement.prototype.createRenderRoot.call(this);
     }
 
-    /**
-     * @param {string} name
-     * @param {string | null} _oldValue
-     * @param {string | null} newValue
-     */
-    attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === 'header' && newValue != null) {
-            this.header = newValue;
-            this.render();
-        }
-        if (name === 'background' && newValue != null) {
-            this._background.style.backgroundImage = `url(${newValue})`;
+    updated(changedProperties) {
+        if (changedProperties.has('background') && this._background) {
+            this._background.style.backgroundImage = this.background ? `url(${this.background})` : '';
         }
     }
 
-    /**
-     * @param {DiscoPageAnimationOptions} [options]
-     * @returns {Promise<void>}
-     */
+    connectedCallback() {
+        super.connectedCallback();
+    }
+
+    firstUpdated() {
+        this._container = this.shadowRoot.querySelector('.hub-shell');
+        this._header = this.shadowRoot.querySelector('.hub-header');
+        this._background = this.shadowRoot.querySelector('.hub-background');
+        this._viewport = this.shadowRoot.querySelector('#viewport');
+        this.setupParallax();
+    }
+
+    render() {
+        return html`
+            <div class="hub-background-clip">
+                <div class="hub-background"></div>
+            </div>
+            <div class="hub-shell">
+                <div class="hub-header">
+                    <h1 class="hub-title">${this.header}</h1>
+                </div>
+                <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal">
+                    <slot></slot>
+                </disco-hub-view>
+            </div>
+        `;
+    }
+
     async animateInFn(options = { direction: 'forward' }) {
         this.setAttribute('data-animating', '');
-        const viewport = this.shadowRoot?.getElementById('viewport');
+        const viewport = this._viewport;
         if (viewport) viewport.setAttribute('data-animating', '');
         const sections = Array.from(this.querySelectorAll('disco-hub-section'));
         sections.forEach((section) => section.setAttribute('data-animating', ''));
@@ -106,13 +115,9 @@ class DiscoHub extends DiscoPage {
         }
     }
 
-    /**
-     * @param {DiscoPageAnimationOptions} [options]
-     * @returns {Promise<void>}
-     */
     async animateOutFn(options = { direction: 'forward' }) {
         this.setAttribute('data-animating', '');
-        const viewport = this.shadowRoot?.getElementById('viewport');
+        const viewport = this._viewport;
         if (viewport) viewport.setAttribute('data-animating', '');
         const sections = Array.from(this.querySelectorAll('disco-hub-section'));
         sections.forEach((section) => section.setAttribute('data-animating', ''));
@@ -122,25 +127,8 @@ class DiscoHub extends DiscoPage {
         sections.forEach((section) => section.removeAttribute('data-animating'));
     }
 
-    connectedCallback() {
-        this.setupParallax();
-    }
-
-    render() {
-        if (!this.shadowRoot || !this._container) return;
-        this._container.innerHTML = `
-            <div class="hub-header">
-                <h1 class="hub-title">${this.header}</h1>
-            </div>
-            <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal">
-                <slot></slot>
-            </disco-hub-view>
-        `;
-        this._header = this._container.querySelector('.hub-header')
-    }
-
     setupParallax() {
-        const viewport = this.shadowRoot.getElementById('viewport');
+        const viewport = this._viewport;
         if (!viewport) return;
         const updateParallax = () => {
             const items = Array.from(this.querySelectorAll('disco-hub-section'));
@@ -177,18 +165,6 @@ if (window.CSS && CSS.registerProperty) {
             inherits: false,
             initialValue: '0px'
         });
-        /* CSS.registerProperty({
-             name: '--bg-pos-x',
-             syntax: '<percentage>',
-             inherits: false,
-             initialValue: '0%'
-         });
-         CSS.registerProperty({
-             name: '--bg-animate-offset',
-             syntax: '<number>',
-             inherits: false,
-             initialValue: '0'
-         });*/
     } catch (e) {
         // Property already registered or error
     }

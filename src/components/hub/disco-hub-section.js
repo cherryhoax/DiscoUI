@@ -1,59 +1,41 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoUIElement from '../disco-ui-element.js';
-import sectionCss from './disco-hub-section.scss';
+import hubSectionStyles from './disco-hub-section.scss';
 
 /**
  * A section within a DiscoHub.
  */
 class DiscoHubSection extends DiscoUIElement {
-    /**
-     * @param {string} [header]
-     */
-    constructor(header = '') {
+    static styles = css`${unsafeCSS(hubSectionStyles)}`;
+
+    static get properties() {
+        return {
+            header: { type: String },
+            width: { type: String }
+        };
+    }
+
+    constructor() {
         super();
-        this.header = header;
-        this.attachShadow({ mode: 'open' });
-        this.loadStyle(sectionCss, this.shadowRoot);
-
-        this._container = document.createElement('div');
-        this._container.className = 'section-root';
-        this.shadowRoot.appendChild(this._container);
+        this.header = '';
+        this.width = '';
     }
 
-    static get observedAttributes() {
-        return ['header', 'width'];
-    }
-
-    /**
-     * @param {string} name
-     * @param {string | null} _oldValue
-     * @param {string | null} newValue
-     */
-    attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === 'header' && newValue != null) {
-            this.header = newValue;
-            this.render();
+    updated(changedProperties) {
+        if (changedProperties.has('width')) {
+            this.style.width = this.width || '';
         }
-        if (name === 'width') {
-            if (newValue != null) {
-                this.style.width = newValue;
-            } else {
-                this.style.width = '';
-            }
-        }
-    }
-
-    connectedCallback() {
-        this.render();
     }
 
     render() {
-        if (!this.shadowRoot || !this._container) return;
-        this._container.innerHTML = `
-            <div class="section-header">
-                <h2 class="section-title">${this.header}</h2>
-            </div>
-            <div class="section-content">
-                <slot></slot>
+        return html`
+            <div class="section-root">
+                <div class="section-header">
+                    <h2 class="section-title">${this.header}</h2>
+                </div>
+                <div class="section-content">
+                    <slot></slot>
+                </div>
             </div>
         `;
     }

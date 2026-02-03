@@ -25,7 +25,8 @@
   "license": "ISC",
   "dependencies": {
     "@fontsource/open-sans": "^5.2.7",
-    "b-spline": "^2.0.2"
+    "b-spline": "^2.0.2",
+    "lit": "^3.3.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.1",

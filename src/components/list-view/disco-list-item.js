@@ -1,3 +1,4 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoUIElement from '../disco-ui-element.js';
 import listItemStyles from './disco-list-item.scss';
 
@@ -5,26 +6,32 @@ import listItemStyles from './disco-list-item.scss';
  * Disco list item wrapper.
  */
 class DiscoListItem extends DiscoUIElement {
+  static styles = css`${unsafeCSS(listItemStyles)}`;
+
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(listItemStyles, this.shadowRoot);
-
-    const container = document.createElement('div');
-    container.className = 'item';
-    const slot = document.createElement('slot');
-    container.appendChild(slot);
-    this.shadowRoot.appendChild(container);
     this.setAttribute('role', 'listitem');
+  }
 
+  firstUpdated() {
+    this._item = this.shadowRoot.querySelector('.item');
     this.enableTilt({ selector: '.item' });
   }
+
+  render() {
+    return html`
+      <div class="item">
+        <slot></slot>
+      </div>
+    `;
+  }
+
   get direction() {
     return 'vertical';
   }
 
   set direction(val) {
-    return
+    return;
   }
 }
 

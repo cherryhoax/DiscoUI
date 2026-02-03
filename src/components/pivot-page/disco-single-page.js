@@ -1,47 +1,51 @@
+import { html, css, unsafeCSS, LitElement } from 'lit';
 import DiscoPage from '../disco-page.js';
-import singlePageCss from './disco-single-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
+import singlePageStyles from './disco-single-page.scss';
 
 /**
  * Single pivot-style page with one header and one content slot.
  */
 class DiscoSinglePage extends DiscoPage {
-    /**
-     * @param {string} [appTitle]
-     * @param {string} [header]
-     */
-    constructor(appTitle = 'DISCO APP', header = 'DETAILS') {
+    static styles = css`${unsafeCSS(singlePageStyles)}`;
+
+    static get properties() {
+        return {
+            appTitle: { type: String, attribute: 'app-title' },
+            header: { type: String }
+        };
+    }
+
+    constructor() {
         super();
-        this.appTitle = appTitle;
-        this.header = header;
-        this.attachShadow({ mode: 'open' });
-        this.loadStyle(singlePageCss, this.shadowRoot);
-        this._container = document.createElement('div');
-        this._container.className = 'single-shell';
-        this.shadowRoot.appendChild(this._container);
-        this.render();
+        this.appTitle = 'DISCO APP';
+        this.header = 'DETAILS';
     }
 
-    static get observedAttributes() {
-        return ['app-title', 'header'];
+    firstUpdated() {
+        this._container = this.shadowRoot.querySelector('.single-shell');
     }
 
-    /**
-     * @param {string} name
-     * @param {string | null} _oldValue
-     * @param {string | null} newValue
-     */
-    attributeChangedCallback(name, _oldValue, newValue) {
-        if (name === 'app-title') {
-            this.appTitle = newValue || 'DISCO APP';
-            const el = this.shadowRoot?.querySelector('.app-title');
-            if (el) el.textContent = this.appTitle;
-        }
-        if (name === 'header') {
-            this.header = newValue || 'DETAILS';
-            const el = this.shadowRoot?.querySelector('.header-item');
-            if (el) el.textContent = this.header;
-        }
+    // Override parent's light DOM to use shadow DOM for this component
+    // Call LitElement's implementation directly to properly handle styles
+    createRenderRoot() {
+        return LitElement.prototype.createRenderRoot.call(this);
+    }
+
+    render() {
+        return html`
+            <div class="single-shell">
+                <div class="single-root">
+                    <div class="app-title">${this.appTitle}</div>
+                    <div class="header-strip">
+                        <div class="header-item">${this.header}</div>
+                    </div>
+                    <div class="content-viewport">
+                        <slot></slot>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     /**
@@ -49,9 +53,9 @@ class DiscoSinglePage extends DiscoPage {
     * @returns {Promise<void>}
     */
     async animateInFn(options = { direction: 'forward' }) {
-        const appTitle = this._container.querySelector('.app-title');
-        const headerStrip = this._container.querySelector('.header-strip');
-        const viewport = this._container.querySelector('.content-viewport');
+        const appTitle = this.shadowRoot?.querySelector('.app-title');
+        const headerStrip = this.shadowRoot?.querySelector('.header-strip');
+        const viewport = this.shadowRoot?.querySelector('.content-viewport');
         const slot = viewport ? viewport.querySelector('slot') : null;
         const viewportChildren = slot
             ? slot.assignedElements({ flatten: true })
@@ -84,9 +88,9 @@ class DiscoSinglePage extends DiscoPage {
     * @returns {Promise<void>}
     */
     async animateOutFn(options = { direction: 'forward' }) {
-        const appTitle = this._container.querySelector('.app-title');
-        const headerStrip = this._container.querySelector('.header-strip');
-        const viewport = this._container.querySelector('.content-viewport');
+        const appTitle = this.shadowRoot?.querySelector('.app-title');
+        const headerStrip = this.shadowRoot?.querySelector('.header-strip');
+        const viewport = this.shadowRoot?.querySelector('.content-viewport');
         const slot = viewport ? viewport.querySelector('slot') : null;
         const viewportChildren = slot
             ? slot.assignedElements({ flatten: true })
@@ -111,24 +115,6 @@ class DiscoSinglePage extends DiscoPage {
         });
 
         await DiscoAnimations.animateAll(animationItems);
-    }
-
-    /**
-     * @returns {void}
-     */
-    render() {
-        if (!this.shadowRoot || !this._container) return;
-        this._container.innerHTML = `
-      <div class="single-root">
-        <div class="app-title">${this.appTitle}</div>
-        <div class="header-strip">
-          <div class="header-item">${this.header}</div>
-        </div>
-        <div class="content-viewport">
-          <slot></slot>
-        </div>
-      </div>
-    `;
     }
 }
 
