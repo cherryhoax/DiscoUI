@@ -57,10 +57,45 @@ class DiscoHub extends DiscoPage {
         if (viewport) viewport.setAttribute('data-animating', '');
         const sections = Array.from(this.querySelectorAll('disco-hub-section'));
         sections.forEach((section) => section.setAttribute('data-animating', ''));
-        await DiscoAnimations.animationSet.page.in(this, options);
-        this.removeAttribute('data-animating');
-        if (viewport) viewport.removeAttribute('data-animating');
-        sections.forEach((section) => section.removeAttribute('data-animating'));
+        try {
+            const scrollPromise = viewport && typeof viewport.animateIntroScroll === 'function'
+                ? viewport.animateIntroScroll(-200, 0, 900)
+                : Promise.resolve();
+            const pagePromise = options.direction === 'forward'
+                ? DiscoAnimations.animate(
+                    this,
+                    [
+                        {
+                            opacity: 1,
+                            transformOrigin: 'left center',
+                            transform: `translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                        },
+                        {
+                            transform: `translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                        },
+                        {
+                            opacity: 1,
+                            transformOrigin: 'left center',
+                            transform: `translateX(0px) rotateY(0deg) translateX(0px)`
+                        }
+                    ],
+                    {
+                        duration: 600,
+                        easing: DiscoAnimations.easeOutQuart,
+                        spline: true,
+                        fill: 'forwards'
+                    }
+                ).finished
+                : DiscoAnimations.animationSet.page.in(this, options);
+            await Promise.all([
+                pagePromise,
+                scrollPromise
+            ]);
+        } finally {
+            this.removeAttribute('data-animating');
+            if (viewport) viewport.removeAttribute('data-animating');
+            sections.forEach((section) => section.removeAttribute('data-animating'));
+        }
     }
 
     /**
@@ -89,7 +124,7 @@ class DiscoHub extends DiscoPage {
             <div class="hub-header">
                 <h1 class="hub-title">${this.header}</h1>
             </div>
-            <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal" data-debug-overflow>
+            <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal">
                 <slot></slot>
             </disco-hub-view>
         `;

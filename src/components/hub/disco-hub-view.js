@@ -92,13 +92,26 @@ class DiscoHubView extends DiscoFlipView {
     const viewportSize = direction === 'horizontal' ? (this.clientWidth || 1) : (this.clientHeight || 1);
     const peek = Math.max(0, viewportSize - pageSize);
     const wrapThreshold = (span / 2) + peek;
+    const isAnimating = this.hasAttribute('data-animating');
+    const showIndices = isAnimating && count > 2 ? new Set([count - 1, 0, 1]) : null;
 
     nodes.forEach((node, i) => {
-      const rawOffset = i * pageSize - virtual;
-      let offset = ((rawOffset % span) + span) % span;
+      if (showIndices && !showIndices.has(i)) {
+        node.style.visibility = 'hidden';
+        node.style.pointerEvents = 'none';
+        return;
+      }
 
-      if (offset > wrapThreshold) {
-        offset -= span;
+      node.style.visibility = '';
+      node.style.pointerEvents = '';
+      const rawOffset = i * pageSize - virtual;
+      let offset = rawOffset;
+
+      if (!(isAnimating && count <= 2 && virtual < 0)) {
+        offset = ((rawOffset % span) + span) % span;
+        if (offset > wrapThreshold) {
+          offset -= span;
+        }
       }
 
       const zIndex = 100000 - (Math.round(Math.abs(offset)) * 10) - i;
@@ -109,6 +122,33 @@ class DiscoHubView extends DiscoFlipView {
       } else {
         node.style.transform = `translate3d(0, ${offset}px, 0)`;
       }
+    });
+  }
+
+  /**
+   * @param {number} from
+   * @param {number} to
+   * @param {number} [duration=480]
+   * @returns {Promise<void>}
+   */
+  animateIntroScroll(from, to, duration = 480) {
+    return new Promise((resolve) => {
+      const start = performance.now();
+      const delta = to - from;
+      const tick = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = from + (delta * eased);
+        this.scrollLeft = value;
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          this.scrollLeft = to;
+          resolve();
+        }
+      };
+      this.scrollLeft = from;
+      requestAnimationFrame(tick);
     });
   }
 }
