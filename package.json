@@ -10,7 +10,10 @@
     "watch": "npx vite",
     "types": "npx tsc -p tsconfig.types.json",
     "start": "npm run dev",
-    "test": "echo \"No tests specified\" && exit 0"
+    "test": "npm run test:unit",
+    "test:unit": "npx vitest run",
+    "test:unit:watch": "npx vitest",
+    "test:e2e": "npx playwright test"
   },
   "keywords": [
     "web-components",
@@ -25,8 +28,11 @@
     "b-spline": "^2.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.1",
+    "jsdom": "^28.0.0",
     "sass": "^1.97.3",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   }
 }
