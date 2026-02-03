@@ -372,6 +372,7 @@ class DiscoScrollView extends DiscoUIElement {
         this._overscrollX = overscrollX;
         this._overscrollY = overscrollY;
         this._renderOverscroll(overscrollX, overscrollY);
+        this._emitScroll();
     }
 
     /**
@@ -579,6 +580,7 @@ class DiscoScrollView extends DiscoUIElement {
         this._overscrollX = 0;
         this._overscrollY = 0;
         this._renderOverscroll(0, 0);
+        this._emitScroll();
     }
 
     _launchMomentum() {
@@ -638,6 +640,7 @@ class DiscoScrollView extends DiscoUIElement {
             this._stopAnimation();
             if (this._targetX !== null) this.scrollLeft = this._targetX;
             if (this._targetY !== null) this.scrollTop = this._targetY;
+            this._emitScroll();
             return;
         }
 
@@ -677,6 +680,7 @@ class DiscoScrollView extends DiscoUIElement {
         if (!this._snapBackActiveX) this._overscrollX = overscrollX;
         if (!this._snapBackActiveY) this._overscrollY = overscrollY;
         this._renderOverscroll(this._overscrollX, this._overscrollY);
+        this._emitScroll();
 
         // If momentum hits an edge, allow a visible bounce before snapping back
         if (overscrollX !== 0 || overscrollY !== 0) {
@@ -727,10 +731,16 @@ class DiscoScrollView extends DiscoUIElement {
             } else {
                 nativeScrollTo.call(this, x, y);
             }
+            this._emitScroll();
             return;
         }
         this.scrollLeft = x;
         this.scrollTop = y;
+        this._emitScroll();
+    }
+
+    _emitScroll() {
+        this.dispatchEvent(new Event('scroll', { bubbles: true, composed: true }));
     }
 
     _hasSnapPoints() {

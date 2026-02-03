@@ -123,6 +123,9 @@ class DiscoHubView extends DiscoFlipView {
         node.style.transform = `translate3d(0, ${offset}px, 0)`;
       }
     });
+
+    if (!this._suppressScrollEmit && this._emitScroll) this._emitScroll();
+
   }
 
   /**
@@ -135,6 +138,7 @@ class DiscoHubView extends DiscoFlipView {
     return new Promise((resolve) => {
       const start = performance.now();
       const delta = to - from;
+      this._suppressScrollEmit = true;
       const tick = (now) => {
         const t = Math.min(1, (now - start) / duration);
         const eased = 1 - Math.pow(1 - t, 3);
@@ -144,6 +148,7 @@ class DiscoHubView extends DiscoFlipView {
           requestAnimationFrame(tick);
         } else {
           this.scrollLeft = to;
+          this._suppressScrollEmit = false;
           resolve();
         }
       };
@@ -151,6 +156,7 @@ class DiscoHubView extends DiscoFlipView {
       requestAnimationFrame(tick);
     });
   }
+
 }
 
 customElements.define('disco-hub-view', DiscoHubView);

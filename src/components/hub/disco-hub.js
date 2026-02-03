@@ -21,9 +21,13 @@ class DiscoHub extends DiscoPage {
         this._container.className = 'hub-shell';
         this.shadowRoot.appendChild(this._container);
 
+        this._backgroundClip = document.createElement('div');
+        this._backgroundClip.className = 'hub-background-clip';
+        this.shadowRoot.insertBefore(this._backgroundClip, this._container);
+
         this._background = document.createElement('div');
         this._background.className = 'hub-background';
-        this.shadowRoot.insertBefore(this._background, this._container);
+        this._backgroundClip.appendChild(this._background);
 
         this.render();
     }
@@ -134,36 +138,24 @@ class DiscoHub extends DiscoPage {
     setupParallax() {
         const viewport = this.shadowRoot.getElementById('viewport');
         if (!viewport) return;
-        const slot = viewport.shadowRoot?.querySelector('slot') || null;
-        viewport.addEventListener('scroll', () => {
-            const items = slot?.assignedElements().filter(el => el.tagName.toLowerCase().includes('hub-section')) || [];
+        const updateParallax = () => {
+            const items = Array.from(this.querySelectorAll('disco-hub-section'));
             if (items.length === 0) return;
             const firstItem = items[0];
-            const lastItem = items[items.length - 1];
+            const pageWidth = firstItem.offsetWidth || viewport.clientWidth || 1;
+            const totalPages = Math.max(1, items.length);
+            const scrollLeft = viewport.scrollLeft;
 
-            const start = firstItem.offsetLeft;
-            const end = lastItem.offsetLeft;
-            const totalScrollableDistance = end - start;
-            const scrollLeft = viewport.scrollLeft - start;
-            var scrollPercent = scrollLeft / totalScrollableDistance;
-            var scrollFirst = viewport.scrollLeft / firstItem.offsetWidth;
-            scrollPercent = scrollPercent < 0 ? (1 - scrollFirst) * -1 : scrollPercent;
-/*
-            if (viewport.scrollLeft < ghostLeft.offsetWidth) {
-                const ghostPercent = (viewport.scrollLeft - ghostLeft.offsetLeft) / ghostLeft.offsetWidth;
-                this._background.style.backgroundPositionX = `calc(${(1 - ghostPercent) * 100}vw)`;
-            } else if (viewport.scrollLeft > lastItem.offsetLeft) {
-                const ghostPercent = (viewport.scrollLeft - ghostRight.offsetLeft) / ghostRight.offsetWidth;
-                this._background.style.backgroundPositionX = `calc(${(1 - ghostPercent) * 100}vw)`;
-            } else {
-                this._background.style.backgroundPositionX = `0vw`;
-            }*/
+            const perPageShift = (window.innerWidth || viewport.clientWidth || 1) / totalPages;
+            const pageProgress = scrollLeft / pageWidth;
+            const bgOffset = -(pageProgress * perPageShift);
+            this._background.style.left = `${bgOffset}px`;
 
-            this._background.style.left = `${-Math.min(Math.max(scrollPercent * 100, 0), 100)}%`;
-            //scroll header
-            this._header.style.setProperty('--translate-x', `${-scrollPercent * 200}px`);
-
-        }, { passive: true });
+            const scrollMax = Math.max(1, (pageWidth * totalPages) - pageWidth);
+            const progress = scrollLeft / scrollMax;
+            this._header.style.setProperty('--translate-x', `${-progress * 200}px`);
+        };
+        viewport.addEventListener('scroll', updateParallax, { passive: true });
     }
 }
 

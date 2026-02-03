@@ -190,6 +190,7 @@ class DiscoListView extends DiscoScrollView {
     this._handleClick({ composedPath: () => [listItem] });
   }
 
+
   _getTemplate() {
     return this.querySelector('template[disco-list-template]') || this.querySelector('template');
   }

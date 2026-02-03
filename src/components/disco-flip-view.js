@@ -115,7 +115,6 @@ class DiscoFlipView extends DiscoScrollView {
       if (this._loopVirtualX !== val) {
         this._loopVirtualX = val;
         this._renderLoop();
-        this.dispatchEvent(new Event('scroll'));
       }
     } else {
       super.scrollLeft = val;
@@ -134,7 +133,6 @@ class DiscoFlipView extends DiscoScrollView {
       if (this._loopVirtualY !== val) {
         this._loopVirtualY = val;
         this._renderLoop();
-        this.dispatchEvent(new Event('scroll'));
       }
     } else {
       super.scrollTop = val;
@@ -176,6 +174,8 @@ class DiscoFlipView extends DiscoScrollView {
         node.style.transform = `translate3d(0, ${offset}px, 0)`;
       }
     });
+
+    if (this._emitScroll) this._emitScroll();
 
     // We also need to "fake" the scrollLeft/Top getters? Done.
   }
