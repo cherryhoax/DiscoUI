@@ -1,3 +1,4 @@
+import { css, unsafeCSS } from 'lit';
 import DiscoUIElement from './disco-ui-element.js';
 import frameStyles from './disco-frame.scss';
 
@@ -6,9 +7,12 @@ import frameStyles from './disco-frame.scss';
  * @extends DiscoUIElement
  */
 class DiscoFrame extends DiscoUIElement {
+  static styles = css`
+    ${unsafeCSS(frameStyles)}
+  `;
+
   constructor() {
     super();
-    this.loadStyle(frameStyles);
     this.history = [];
     this.historyIndex = -1;
     this._historyKey = this.getAttribute('history-key') || `disco-frame-${DiscoFrame._nextId++}`;
@@ -18,6 +22,7 @@ class DiscoFrame extends DiscoUIElement {
   }
 
   connectedCallback() {
+    super.connectedCallback();
     if (this._historyEnabled && !this._historyListenerAttached && typeof window !== 'undefined') {
       window.addEventListener('popstate', this._onPopState);
       this._historyListenerAttached = true;
@@ -25,6 +30,7 @@ class DiscoFrame extends DiscoUIElement {
   }
 
   disconnectedCallback() {
+    super.disconnectedCallback();
     if (this._historyListenerAttached && typeof window !== 'undefined') {
       window.removeEventListener('popstate', this._onPopState);
       this._historyListenerAttached = false;

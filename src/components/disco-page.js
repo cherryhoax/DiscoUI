@@ -1,3 +1,4 @@
+import { css, unsafeCSS } from 'lit';
 import DiscoUIElement from './disco-ui-element.js';
 import pageStyles from './disco-page.scss';
 import DiscoAnimations from './animations/disco-animations.js';
@@ -8,10 +9,9 @@ import DiscoAnimations from './animations/disco-animations.js';
  * @extends DiscoUIElement
  */
 class DiscoPage extends DiscoUIElement {
-  constructor() {
-    super();
-    this.loadStyle(pageStyles);
-  }
+  static styles = css`
+    ${unsafeCSS(pageStyles)}
+  `;
 
   // Methods for the Frame to call
   /**

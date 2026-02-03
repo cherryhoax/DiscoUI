@@ -1,3 +1,4 @@
+import { html, css, unsafeCSS } from 'lit';
 import DiscoUIElement from './disco-ui-element.js';
 import splashCss from './disco-splash.scss';
 
@@ -6,29 +7,18 @@ import splashCss from './disco-splash.scss';
  * @extends DiscoUIElement
  */
 class DiscoSplash extends DiscoUIElement {
+  static properties = {
+    logo: { type: String, reflect: true },
+    _logoNode: { type: Object, state: true }
+  };
+
+  static styles = css`
+    ${unsafeCSS(splashCss)}
+  `;
+
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.loadStyle(splashCss, this.shadowRoot);
-    this._container = document.createElement('div');
-    this.shadowRoot.appendChild(this._container);
-    this.render();
-  }
-
-  /**
-   * @returns {string[]}
-   */
-  static get observedAttributes() {
-    return ['logo'];
-  }
-
-  /**
-   * @param {string} _name
-   * @param {string | null} _oldValue
-   * @param {string | null} _newValue
-   */
-  attributeChangedCallback(_name, _oldValue, _newValue) {
-    this.render();
+    this._logoNode = null;
   }
 
   /**
@@ -36,7 +26,6 @@ class DiscoSplash extends DiscoUIElement {
    */
   set logoNode(node) {
     this._logoNode = node;
-    this.render();
   }
 
   /**
@@ -46,45 +35,34 @@ class DiscoSplash extends DiscoUIElement {
     return this._logoNode;
   }
 
+  render() {
+    return html`
+      <div class="splash">
+        ${this._renderLogo()}
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  _renderLogo() {
+    if (this._logoNode instanceof HTMLElement) {
+      return html`${this._logoNode}`;
+    } else if (this.logo) {
+      return html`<img src="${this.logo}" width="80" height="80" alt="App logo" />`;
+    }
+    return html``;
+  }
+
   /**
    * Dismiss splash with fade-out.
    */
   dismiss() {
-    if (!this.shadowRoot) return;
-    const host = /** @type {HTMLElement} */ (this.shadowRoot.host);
-    host.style.opacity = '0';
-    setTimeout(() => host.remove(), 400);
-  }
-
-  /**
-   * Render splash content.
-   */
-  render() {
-    if (!this.shadowRoot) return;
-    if (!this._container) return;
-    this._container.innerHTML = '';
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'splash';
-    const logoPath = this.getAttribute('logo');
-
-    if (this._logoNode instanceof HTMLElement) {
-      wrapper.appendChild(this._logoNode);
-    } else if (logoPath) {
-      const img = document.createElement('img');
-      img.src = logoPath;
-      img.width = 80;
-      img.height = 80;
-      img.alt = 'App logo';
-      wrapper.appendChild(img);
-    }
-
-    const dots = document.createElement('div');
-    dots.className = 'dots';
-    dots.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-    wrapper.appendChild(dots);
-
-    this._container.appendChild(wrapper);
+    this.style.opacity = '0';
+    setTimeout(() => this.remove(), 400);
   }
 }
 
