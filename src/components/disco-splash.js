@@ -1,5 +1,7 @@
 import DiscoUIElement from './disco-ui-element.js';
 import splashCss from './disco-splash.scss';
+import DiscoAnimations from './animations/disco-animations.js';
+import './disco-progress-bar.js';
 
 /**
  * Splash screen element shown while the app is starting.
@@ -12,23 +14,36 @@ class DiscoSplash extends DiscoUIElement {
     this.loadStyle(splashCss, this.shadowRoot);
     this._container = document.createElement('div');
     this.shadowRoot.appendChild(this._container);
+    this._introPlayed = false;
     this.render();
+  }
+
+  connectedCallback() {
+    if (this._introPlayed) return;
+    this._introPlayed = true;
+    requestAnimationFrame(() => {
+      DiscoAnimations.animationSet.splash.in(this);
+    });
   }
 
   /**
    * @returns {string[]}
    */
   static get observedAttributes() {
-    return ['logo'];
+    return ['logo', 'color', 'show-progress', 'progress-color'];
   }
 
   /**
-   * @param {string} _name
+   * @param {string} name
    * @param {string | null} _oldValue
-   * @param {string | null} _newValue
+   * @param {string | null} newValue
    */
-  attributeChangedCallback(_name, _oldValue, _newValue) {
-    this.render();
+  attributeChangedCallback(name, _oldValue, newValue) {
+    if (name === 'color') {
+      this.style.backgroundColor = newValue || '';
+    } else {
+      this.render();
+    }
   }
 
   /**
@@ -52,8 +67,10 @@ class DiscoSplash extends DiscoUIElement {
   dismiss() {
     if (!this.shadowRoot) return;
     const host = /** @type {HTMLElement} */ (this.shadowRoot.host);
-    host.style.opacity = '0';
-    setTimeout(() => host.remove(), 400);
+    (async () => {
+      await DiscoAnimations.animationSet.splash.out(host);
+      host.remove();
+    })();
   }
 
   /**
@@ -73,16 +90,21 @@ class DiscoSplash extends DiscoUIElement {
     } else if (logoPath) {
       const img = document.createElement('img');
       img.src = logoPath;
-      img.width = 80;
-      img.height = 80;
+      img.width = 120;
+      img.height = 120;
       img.alt = 'App logo';
       wrapper.appendChild(img);
     }
 
-    const dots = document.createElement('div');
-    dots.className = 'dots';
-    dots.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-    wrapper.appendChild(dots);
+    if (this.hasAttribute('show-progress')) {
+      const doc = this.ownerDocument || document;
+      const progress = doc.createElement('disco-progress-bar');
+      progress.className = 'splash-progress';
+      progress.setAttribute('indeterminate', '');
+      const progressColor = this.getAttribute('progress-color') || '#fff';
+      progress.style.setProperty('--disco-accent', progressColor);
+      this._container.appendChild(progress);
+    }
 
     this._container.appendChild(wrapper);
   }

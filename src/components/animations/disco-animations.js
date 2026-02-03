@@ -135,6 +135,59 @@ const animationSet = {
         }
 
     },
+    splash: {
+        /**
+         * @param {Element} target
+         * @returns {Promise<void>}
+         */
+        in: async (target) => {
+            const animation = DiscoAnimations.animate(
+                target,
+                [
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                    },
+                    {
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                    }
+                ],
+                {
+                    duration: 300,
+                    easing: DiscoAnimations.easeOutQuart,
+                    spline: true,
+                    fill: 'forwards'
+                }
+            );
+            await animation.finished;
+        },
+
+        /**
+         * @param {Element} target
+         * @returns {Promise<void>}
+         */
+        out: async (target) => {
+            const animation = DiscoAnimations.animate(
+                target,
+                [
+                    { opacity: 1 },
+                    { opacity: 0 }
+                ],
+                {
+                    duration: 150,
+                    easing: DiscoAnimations.easeInQuad,
+                    fill: 'forwards'
+                }
+            );
+            await animation.finished;
+        }
+    },
     hub: {
         /**
          * @param {Element} target

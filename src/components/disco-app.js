@@ -8,12 +8,21 @@ import './disco-splash.js';
  */
 
 /**
+ * @typedef {Object} DiscoSplashConfig
+ * @property {SplashMode} [mode]
+ * @property {string | null} [color]
+ * @property {string | HTMLElement | null} [icon]
+ * @property {boolean} [showProgress]
+ * @property {string | null} [progressColor]
+ */
+
+/**
  * @typedef {Object} DiscoAppConfig
  * @property {string} [accent]
  * @property {'dark' | 'light' | 'auto'} [theme]
  * @property {string | null} [font]
  * @property {string | HTMLElement | null} [icon]
- * @property {SplashMode} [splash]
+ * @property {DiscoSplashConfig | SplashMode} [splash]
  */
 
 const injectThemeStyles = (() => {
@@ -89,7 +98,16 @@ class DiscoApp {
     this.theme = config.theme || attrTheme || 'dark';
     this.font = config.font || attrFont || null;
     this.icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
-    this.splashMode = config.splash || 'auto';
+
+    // Normalize splash config
+    let splashConfig = { mode: 'auto', color: null, icon: null, showProgress: true, progressColor: '#fff' };
+    if (typeof config.splash === 'string') {
+      splashConfig.mode = config.splash;
+    } else if (typeof config.splash === 'object' && config.splash !== null) {
+      splashConfig = { ...splashConfig, ...config.splash };
+    }
+
+    this.splashConfig = splashConfig;
     this.splashState = { setup: false, ready: false };
     /** @type {DiscoSplashElement | null} */
     this.splash = null;
@@ -114,6 +132,12 @@ class DiscoApp {
     this.rootFrame = frame;
     this.splash = this.buildSplash();
 
+    // Ensure all pages are hidden initially
+    Array.from(this.rootFrame.children).forEach((page) => {
+      page.setAttribute('hidden', '');
+      page.setAttribute('aria-hidden', 'true');
+    });
+
     // Add to DOM as siblings
     document.body.appendChild(this.rootFrame);
     this.rootFrame.setAttribute('disco-launched', 'true');
@@ -121,10 +145,10 @@ class DiscoApp {
       document.body.appendChild(this.splash);
     }
 
-    if (this.splash && this.splashMode === 'auto') {
+    if (this.splash && this.splashConfig.mode === 'auto') {
       requestAnimationFrame(() => {
-        this.signalSetup();
-        this.signalReady();
+        this.setupSplash();
+        this.dismissSplash();
       });
     }
   }
@@ -133,28 +157,46 @@ class DiscoApp {
    * @returns {DiscoSplashElement | null}
    */
   buildSplash() {
-    if (this.splashMode === 'none') return null;
-    // If no icon and no accent, skip splash entirely.
-    if (!this.icon && !this.accent) return null;
+    const { mode, color, icon, showProgress, progressColor } = this.splashConfig;
+
+    if (mode === 'none') return null;
+    // If no icon (configured in splash or global) and no accent, we can still show splash if specifically requested, but standard logic was:
+    const effectiveIcon = icon || this.icon;
+    if (!effectiveIcon && !this.accent && !color) return null;
 
     /** @type {DiscoSplashElement} */
     const splash = /** @type {DiscoSplashElement} */ (
       /** @type {HTMLElement} */ (document.createElement('disco-splash'))
     );
-    if (typeof this.icon === 'string') {
-      splash.setAttribute('logo', this.icon);
-    } else if (this.icon instanceof HTMLElement) {
-      splash.logoNode = this.icon;
+
+    // Apply color (background)
+    // If explicit color is set, use it. Otherwise, disco-splash uses var(--disco-accent) by default via CSS.
+    if (color) {
+      splash.setAttribute('color', color);
     }
+
+    // Apply Icon
+    if (typeof effectiveIcon === 'string') {
+      splash.setAttribute('logo', effectiveIcon);
+    } else if (effectiveIcon instanceof HTMLElement) {
+      splash.logoNode = effectiveIcon;
+    }
+
+    // Apply Progress
+    if (showProgress) {
+      splash.setAttribute('show-progress', '');
+      splash.setAttribute('progress-color', progressColor || '#fff');
+    }
+
     return splash;
   }
 
-  signalSetup() {
+  setupSplash() {
     this.splashState.setup = true;
     this.maybeDismissSplash();
   }
 
-  signalReady() {
+  dismissSplash() {
     this.splashState.ready = true;
     this.maybeDismissSplash();
   }

@@ -31,10 +31,18 @@ class DiscoProgressBar extends DiscoUIElement {
     this._track.appendChild(this._fill);
     this._track.appendChild(this._dots);
     this.shadowRoot.appendChild(this._track);
+    this._pendingSync = false;
+  }
 
+  connectedCallback() {
     this.setAttribute('role', 'progressbar');
     this._syncAria();
     this._syncFill();
+    if (this._pendingSync) {
+      this._pendingSync = false;
+      this._syncAria();
+      this._syncFill();
+    }
   }
 
   static get observedAttributes() {
@@ -105,6 +113,10 @@ class DiscoProgressBar extends DiscoUIElement {
    * @param {string | null} _newValue
    */
   attributeChangedCallback(_name, _oldValue, _newValue) {
+    if (!this.isConnected) {
+      this._pendingSync = true;
+      return;
+    }
     this._syncAria();
     this._syncFill();
   }

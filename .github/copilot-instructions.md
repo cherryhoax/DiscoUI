@@ -12,7 +12,8 @@
 - Theme is driven by attributes (`disco-theme`, `disco-accent`, `disco-font`) and CSS custom properties.
 - Keep frame/page transitions via `frame.navigate()` so animations run.
 
-## JSDoc and types
+## Documentation and Types
+- **CRITICAL**: If you change code, you MUST update the corresponding `d.ts`, JSDoc, and Markdown documentation in `docs/`.
 - Add JSDoc annotations to all public classes and methods.
 - Use JSDoc typedefs for config objects (e.g., `DiscoAppConfig`).
 - Keep types compatible with `npm run types` (tsconfig.types.json).

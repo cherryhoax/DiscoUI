@@ -8,7 +8,12 @@ const launchDemo = async () => {
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
     accent: document.documentElement.getAttribute('disco-accent') || '#D80073',
     font: document.documentElement.getAttribute('disco-font') || null,
-    splash: 'none'
+    splash: {
+      mode: 'manual',
+      color: '#008a00', // Custom dark background
+      icon: '../assets/dui.svg',
+      showProgress: true
+    }
   });
 
   const frame = document.getElementById('componentsFrame');
@@ -178,7 +183,17 @@ const launchDemo = async () => {
   }
 
   app.launch(frame);
-  await frame.navigate(homePage);
+  
+  // Simulate manual splash loading (1s - 6s)
+  app.setupSplash();
+  const delay = Math.floor(Math.random() * 5000) + 1000;
+  setTimeout(async () => {
+    app.dismissSplash();
+    console.log(`Splash dismissed after ${delay}ms`);
+    // Wait for fast fade (150ms) + small buffer
+    await new Promise((r) => setTimeout(r, 200));
+    await frame.navigate(homePage);
+  }, delay);
 };
 
 DiscoApp.ready(launchDemo);
