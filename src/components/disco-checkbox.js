@@ -1,6 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import checkboxStyles from './disco-checkbox.scss';
 
+/**
+ * Checkbox control element for Disco UI.
+ * @extends DiscoUIElement
+ */
 class DiscoCheckbox extends DiscoUIElement {
   /**
    * @constructor

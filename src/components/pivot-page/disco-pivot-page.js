@@ -3,6 +3,10 @@ import pivotPageCss from './disco-pivot-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 import '../disco-flip-view.js';
 
+/**
+ * Pivot-style page with header strip and flip-view content.
+ * @extends DiscoPage
+ */
 class DiscoPivotPage extends DiscoPage {
   /**
    * @typedef {object} DiscoPageAnimationOptions

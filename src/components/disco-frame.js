@@ -1,6 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import frameStyles from './disco-frame.scss';
 
+/**
+ * Frame container for Disco UI pages. Manages navigation history and page transitions.
+ * @extends DiscoUIElement
+ */
 class DiscoFrame extends DiscoUIElement {
   constructor() {
     super();

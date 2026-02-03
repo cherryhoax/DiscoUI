@@ -1,3 +1,6 @@
+/**
+ * Example demo loader used by the examples page.
+ */
 let DiscoAppModule;
 try {
   console.log('Trying to load from ./dist/index.js');

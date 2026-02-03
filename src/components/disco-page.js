@@ -2,6 +2,11 @@ import DiscoUIElement from './disco-ui-element.js';
 import pageStyles from './disco-page.scss';
 import DiscoAnimations from './animations/disco-animations.js';
 
+/**
+ * Base page class for Disco UI frames.
+ * Provides default animateIn/animateOut behavior.
+ * @extends DiscoUIElement
+ */
 class DiscoPage extends DiscoUIElement {
   constructor() {
     super();

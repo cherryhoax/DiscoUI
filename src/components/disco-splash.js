@@ -1,6 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import splashCss from './disco-splash.scss';
 
+/**
+ * Splash screen element shown while the app is starting.
+ * @extends DiscoUIElement
+ */
 class DiscoSplash extends DiscoUIElement {
   constructor() {
     super();

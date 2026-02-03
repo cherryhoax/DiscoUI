@@ -1,6 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import buttonStyles from './disco-button.scss';
 
+/**
+ * A clickable Disco UI button element.
+ * @extends DiscoUIElement
+ */
 class DiscoButton extends DiscoUIElement {
   /**
    * @constructor

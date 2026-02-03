@@ -51,7 +51,10 @@ const injectFontStyles = (() => {
 injectThemeStyles();
 injectFontStyles();
 
-// App-level orchestrator for Disco UI themes and boot flow.
+/**
+ * App-level orchestrator for Disco UI themes and boot flow.
+ * @public
+ */
 class DiscoApp {
   /**
    * Run a callback once the DOM is ready.

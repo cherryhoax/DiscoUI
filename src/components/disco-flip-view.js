@@ -1,6 +1,10 @@
 import DiscoScrollView from './disco-scroll-view.js';
 import flipViewCss from './disco-flip-view.scss';
 
+/**
+ * Flip-style view that pages children horizontally or vertically with loop overscroll support.
+ * @extends DiscoScrollView
+ */
 class DiscoFlipView extends DiscoScrollView {
   constructor() {
     super();

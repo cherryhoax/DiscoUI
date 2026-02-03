@@ -1,6 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import styles from './disco-scroll-view.scss';
 
+/**
+ * Scroll view with touch/mouse momentum, overscroll, and nested scrolling support.
+ * @extends DiscoUIElement
+ */
 class DiscoScrollView extends DiscoUIElement {
     static get observedAttributes() {
         return ['direction'];

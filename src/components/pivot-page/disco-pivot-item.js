@@ -1,6 +1,10 @@
 import DiscoUIElement from '../disco-ui-element.js';
 import itemCss from './disco-pivot-item.scss';
 
+/**
+ * An item used within a pivot page.
+ * @extends DiscoUIElement
+ */
 class DiscoPivotItem extends DiscoUIElement {
   /**
    * @constructor

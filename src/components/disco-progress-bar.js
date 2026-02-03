@@ -1,6 +1,10 @@
 import DiscoUIElement from './disco-ui-element.js';
 import progressBarStyles from './disco-progress-bar.scss';
 
+/**
+ * Progress bar element with determinate and indeterminate modes.
+ * @extends DiscoUIElement
+ */
 class DiscoProgressBar extends DiscoUIElement {
   /**
    * @constructor
