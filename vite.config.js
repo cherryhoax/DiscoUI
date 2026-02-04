@@ -24,14 +24,14 @@ const examplesDistAliasPlugin = () => {
     },
     transformIndexHtml(html) {
       if (!isServe) return html;
-      return html.replace('./dist/discoui.preload.css', '/src/preload.scss');
+      return html.replace('./dist/discoui.css', '/src/preload.scss');
     },
     resolveId(source, importer) {
       if (!isServe || !importer) return null;
       if (source === './dist/index.js' && importer.endsWith('/examples/index.js')) {
         return path.resolve(__dirname, 'src/index.js');
       }
-      if (source === './dist/discoui.js' && importer.endsWith('/examples/index.js')) {
+      if (source === './dist/discoui.mjs' && importer.endsWith('/examples/index.js')) {
         return path.resolve(__dirname, 'src/index.js');
       }
       return null;

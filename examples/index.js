@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp } from './dist/discoui.js';
+import { DiscoApp } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -11,7 +11,7 @@ const launchDemo = async () => {
     splash: {
       mode: 'manual',
       color: '#008a00', // Custom dark background
-      icon: '../assets/dui.svg',
+      icon: './favicon.svg',
       showProgress: true
     }
   });

@@ -13,7 +13,7 @@ npm install discoui
 ```javascript
 /* main.js */
 import { DiscoApp } from 'discoui';
-// Ensure dist/discoui.preload.css is loaded in your HTML head to prevent FOUC
+// Ensure dist/discoui.css is loaded in your HTML head to prevent FOUC
 ```
 
 2. Setup your `index.html`.
@@ -22,7 +22,7 @@ import { DiscoApp } from 'discoui';
 <!DOCTYPE html>
 <html disco-theme="dark" disco-accent="#d80073">
 <head>
-    <link rel="stylesheet" href="node_modules/discoui/dist/discoui.preload.css">
+    <link rel="stylesheet" href="node_modules/discoui/dist/discoui.css">
 </head>
 <body>
     <disco-frame id="appFrame">
