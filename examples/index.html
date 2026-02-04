@@ -5,322 +5,158 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Disco Components</title>
-    <link rel="stylesheet" href="./dist/discoui.css" />
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        * {
+            user-select: none;
+            user-drag: none;
+            -webkit-user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        #disco-device {
+            width: 600px;
+            height: 1100px;
+            display: block;
+            background-image: url('./disco-device.svg');
+            position: absolute;
+        }
+
+        #disco-device .back-hit {
+            position: absolute;
+            left: 86.5px;
+            top: 950px;
+            width: 34px;
+            height: 34px;
+            background: transparent;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        #disco-device .home-hit {
+            position: absolute;
+            left: 283px;
+            top: 950px;
+            width: 34px;
+            height: 34px;
+            background: transparent;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        #disco-device iframe {
+            position: absolute;
+            left: 53.9px;
+            top: 93.9px;
+            width: 492.1px;
+            height: 820.2px;
+            filter: brightness(1.1) contrast(0.9);
+        }
+
+        body.fullscreen-iframe #disco-device {
+            width: 100vw;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transform: none !important;
+            background-image: none;
+        }
+
+        body.fullscreen-iframe #disco-device .back-hit,
+        body.fullscreen-iframe #disco-device .home-hit {
+            display: none;
+        }
+
+        body.fullscreen-iframe #fullscreenIframe {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            border: 0;
+            filter: none;
+            z-index: 10;
+        }
+
+        .fullscreen-link {
+            position: absolute;
+            left: 50%;
+            bottom: 16px;
+            transform: translateX(-50%);
+            padding: 10px 16px;
+            background: #2b2b2b;
+            color: #fff;
+            text-decoration: none;
+            border: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            z-index: 11;
+        }
+
+        .fullscreen-link:hover {
+            background: #3a3a3a;
+        }
+    </style>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
 </head>
 
 <body>
-    <disco-frame id="componentsFrame">
-        <disco-single-page id="componentsHome" app-title="DISCO UI" header="components">
-            <disco-list-view id="componentsList" selection-mode="none" item-click-enabled>
-                <template disco-list-template>
-                    <div class="setting-title" data-bind="Title"></div>
-                    <div class="setting-description" data-bind="Description"></div>
-                </template>
-            </disco-list-view>
-        </disco-single-page>
-        <disco-pivot-page id="componentsPivot" app-title="DISCO UI">
-            <disco-pivot-item header="Overview">
-                <div class="setting-title">Pivot</div>
-                <div class="setting-description">Swipe between tabs</div>
-            </disco-pivot-item>
-            <disco-pivot-item header="List">
-                <disco-list-view selection-mode="none">
-                    <disco-list-item>
-                        <div class="setting-title">First item</div>
-                        <div class="setting-description">simple list content</div>
-                    </disco-list-item>
-                    <disco-list-item>
-                        <div class="setting-title">Second item</div>
-                        <div class="setting-description">more content</div>
-                    </disco-list-item>
-                </disco-list-view>
-            </disco-pivot-item>
-            <disco-pivot-item header="List 2">
-                <disco-list-view selection-mode="none">
-                    <disco-list-item>
-                        <div class="setting-title">First item</div>
-                        <div class="setting-description">simple list content</div>
-                    </disco-list-item>
-                    <disco-list-item>
-                        <div class="setting-title">Second item</div>
-                        <div class="setting-description">more content</div>
-                    </disco-list-item>
-                </disco-list-view>
-            </disco-pivot-item>
-        </disco-pivot-page>
-        <disco-hub-page id="componentsHub" header="discohub :)">
-            <disco-hub-section header="featured">
-                <disco-list-view selection-mode="none">
-                    <disco-list-item>
-                        <div class="setting-title">Hero</div>
-                        <div class="setting-description">hub section content</div>
-                    </disco-list-item>
-                </disco-list-view>
-            </disco-hub-section>
-            <disco-hub-section header="updates">
-                <disco-list-view selection-mode="none">
-                    <disco-list-item>
-                        <div class="setting-title">Update 1</div>
-                        <div class="setting-description">latest changes</div>
-                    </disco-list-item>
-                    <disco-list-item>
-                        <div class="setting-title">Update 2</div>
-                        <div class="setting-description">more changes</div>
-                    </disco-list-item>
-                </disco-list-view>
-            </disco-hub-section>
-        </disco-hub-page> <disco-single-page id="componentsCheckbox" app-title="DISCO UI" header="checkbox">
-            <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
-                <disco-checkbox id="cbDefault">Key press</disco-checkbox>
-                <disco-checkbox id="cbChecked" checked>Lock and unlock</disco-checkbox>
-                <disco-checkbox id="cbDisabled" disabled>Disabled</disco-checkbox>
-            </div>
-        </disco-single-page> <disco-single-page id="componentsProgress" app-title="DISCO UI" header="progress-bar">
-            <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
-                <disco-progress-bar id="progressDeterminate" value="25" max="100"></disco-progress-bar>
-                <div style="display:flex; gap:8px;">
-                    <disco-button id="incProgress">Advance</disco-button>
-                    <disco-button id="toggleIndeterminate">Toggle Indeterminate</disco-button>
-                </div>
-                <disco-progress-bar id="progressIndeterminate" indeterminate></disco-progress-bar>
-            </div>
-        </disco-single-page>
-        <disco-single-page id="componentsButton" app-title="DISCO UI" header="button">
-            <disco-button id="homeButton">Navigate</disco-button>
-        </disco-single-page>
-        <disco-pivot-page id="componentsScrollView" app-title="DISCO UI">
-            <style>
-                .scroll-demo {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 16px;
-                }
-
-                .scroll-demo__caption {
-                    margin: 0 0 8px 0;
-                }
-
-                .scroll-demo__frame {
-                    width: 200px;
-                    height: 200px;
-                    background: #222;
-                }
-
-                .scroll-demo__content {
-                    padding: 5px;
-                    color: white;
-                    line-height: 1.4;
-                }
-
-                .scroll-demo__snap {
-                    width: 200px;
-                    height: 200px;
-                    background: #222;
-                }
-
-                .scroll-demo__tiles {
-                    display: flex;
-                    width: max-content;
-                }
-
-                .scroll-demo__tile {
-                    background: #2b2b2b;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    scroll-snap-align: start;
-
-                    &:nth-child(1) {
-                        background: #d80073;
-                    }
-
-                    &:nth-child(2) {
-                        background: #0050ef;
-                    }
-
-                    &:nth-child(3) {
-                        background: #00c300;
-                    }
-                }
-            </style>
-            <disco-pivot-item header="free">
-                <div class="scroll-demo">
-                    <div>
-                        <p class="scroll-demo__caption">Dimensions: 200x200</p>
-                        <disco-scroll-view class="scroll-demo__frame" direction="vertical">
-                            <div class="scroll-demo__content">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-                                incididunt ut
-                                labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                                ullamco
-                                laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                                in
-                                voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </div>
-                        </disco-scroll-view>
-                    </div>
-                    <div>
-                        <disco-button id="stressScrollButton">Open Stress Test Page</disco-button>
-                    </div>
-                    <div>
-                        <disco-button id="stressNativeScrollButton">Open Stress Test Page (Native HTML5
-                            Scroll)</disco-button>
-                    </div>
-                </div>
-            </disco-pivot-item>
-            <disco-pivot-item header="snap align">
-                <div class="scroll-demo">
-                    <div>
-                        <p class="scroll-demo__caption">Scroll snap tiles (vertical)</p>
-                        <disco-scroll-view class="scroll-demo__snap">
-                            <div class="scroll-demo__tiles" style="flex-direction: column">
-                                <div class="scroll-demo__tile">Tile 1</div>
-                                <div class="scroll-demo__tile">Tile 2</div>
-                                <div class="scroll-demo__tile">Tile 3</div>
-                            </div>
-                        </disco-scroll-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">Scroll snap tiles (horizontal)</p>
-                        <disco-scroll-view class="scroll-demo__snap">
-                            <div class="scroll-demo__tiles">
-                                <div class="scroll-demo__tile">Tile 1</div>
-                                <div class="scroll-demo__tile">Tile 2</div>
-                                <div class="scroll-demo__tile">Tile 3</div>
-                            </div>
-                        </disco-scroll-view>
-                    </div>
-                </div>
-            </disco-pivot-item>
-            <disco-pivot-item header="snap stop">
-                <div class="scroll-demo">
-                    <div>
-                        <p class="scroll-demo__caption">Scroll snap tiles (vertical, snap stop)</p>
-                        <disco-flip-view class="scroll-demo__snap" snap-mode="stop" direction="vertical">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">Scroll snap tiles (horizontal, snap stop)</p>
-                        <disco-flip-view class="scroll-demo__snap" snap-mode="stop">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                </div>
-            </disco-pivot-item>
-        </disco-pivot-page>
-        <disco-pivot-page id="componentsFlipView" app-title="DISCO UI" header="flip-view">
-            <style>
-                .scroll-demo {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 16px;
-                }
-
-                .scroll-demo__caption {
-                    margin: 0 0 8px 0;
-                }
-
-                .scroll-demo__snap {
-                    width: 200px;
-                    height: 200px;
-                    background: #222;
-                }
-
-                .scroll-demo__tiles {
-                    display: flex;
-                    width: max-content;
-                }
-
-                .scroll-demo__tile {
-                    background: #2b2b2b;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    scroll-snap-align: start;
-                    min-width: 200px;
-                    min-height: 200px;
-
-                    &:nth-child(1) {
-                        background: #d80073;
-                    }
-
-                    &:nth-child(2) {
-                        background: #0050ef;
-                    }
-
-                    &:nth-child(3) {
-                        background: #00c300;
-                    }
-                }
-            </style>
-            <disco-pivot-item header="horizontal">
-                <div class="scroll-demo">
-                    <div>
-                        <p class="scroll-demo__caption">standard</p>
-                        <disco-flip-view class="scroll-demo__snap">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">strict snap</p>
-                        <disco-flip-view class="scroll-demo__snap" snap-mode="strict">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">loop</p>
-                        <disco-flip-view class="scroll-demo__snap" overscroll-mode="loop">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                </div>
-            </disco-pivot-item>
-            <disco-pivot-item header="vertical">
-                <div class="scroll-demo">
-                    <div>
-                        <p class="scroll-demo__caption">standard</p>
-                        <disco-flip-view class="scroll-demo__snap" direction="vertical">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">strict snap</p>
-                        <disco-flip-view class="scroll-demo__snap" direction="vertical" snap-mode="strict">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                    <div>
-                        <p class="scroll-demo__caption">loop</p>
-                        <disco-flip-view class="scroll-demo__snap" direction="vertical" overscroll-mode="loop">
-                            <div class="scroll-demo__tile">Tile 1</div>
-                            <div class="scroll-demo__tile">Tile 2</div>
-                            <div class="scroll-demo__tile">Tile 3</div>
-                        </disco-flip-view>
-                    </div>
-                </div>
-            </disco-pivot-item>
-        </disco-pivot-page>
-    </disco-frame>
-    <script type="module" src="./index.js"></script>
+    <div id="disco-device">
+        <button class="back-hit" aria-label="Back"></button>
+        <button class="home-hit" aria-label="Home"></button>
+        <iframe id="fullscreenIframe" src="./device.html" frameborder="0"></iframe>
+    </div>
+    <button class="fullscreen-link" id="fullscreenToggle">Click here for full screen experience</button>
+    <script>
+        //set scale of app inside iframe to 1.025 window.app.scale=1.025
+        const iframe = document.querySelector('#disco-device iframe');
+        const backButton = document.querySelector('#disco-device .back-hit');
+        const homeButton = document.querySelector('#disco-device .home-hit');
+        const fullscreenToggle = document.getElementById('fullscreenToggle');
+        iframe.onload = () => {
+            iframe.contentWindow.app.scale = 1.025;
+        };
+        backButton.addEventListener('click', () => {
+            if (iframe.contentWindow && iframe.contentWindow.history) {
+                iframe.contentWindow.history.back();
+            }
+        });
+        homeButton.addEventListener('click', () => {
+            const frame = iframe.contentWindow?.frame;
+            const homePage = iframe.contentWindow?.homePage;
+            if (frame && homePage) {
+                frame.navigate(homePage);
+            }
+        });
+        fullscreenToggle.addEventListener('click', () => {
+            const isFullscreen = document.body.classList.toggle('fullscreen-iframe');
+            fullscreenToggle.textContent = isFullscreen
+                ? 'Exit full screen'
+                : 'Click here for full screen experience';
+        });
+        //keep device in center and scale on window resize
+        function resize() {
+            const device = document.getElementById('disco-device');
+            const scale = Math.min(window.innerWidth / 600, window.innerHeight / 1100, .75);
+            device.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            device.style.left = '50%';
+            device.style.top = '50%';
+        }
+        window.addEventListener('resize', resize);
+        resize();
+    </script>
 </body>
 
 </html>

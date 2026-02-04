@@ -21,6 +21,7 @@ const launchDemo = async () => {
   if (!frame) return;
   window.frame = frame;
   const homePage = document.getElementById('componentsHome');
+  window.homePage = homePage;
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');
   const checkboxPage = document.getElementById('componentsCheckbox');
