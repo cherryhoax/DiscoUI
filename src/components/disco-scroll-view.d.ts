@@ -8,12 +8,14 @@ export default class DiscoScrollView extends DiscoUIElement {
   /**
    * The current scroll position X
    */
-  scrollLeft: number;
+  get scrollLeft(): number;
+  set scrollLeft(value: number);
 
   /**
    * The current scroll position Y
    */
-  scrollTop: number;
+  get scrollTop(): number;
+  set scrollTop(value: number);
 
   /**
    * The maximum scroll position X
@@ -28,5 +30,7 @@ export default class DiscoScrollView extends DiscoUIElement {
   /**
    * Scrolls to a specific position
    */
+  scrollTo(options?: ScrollToOptions): void;
+  scrollTo(x: number, y: number): void;
   scrollTo(x: number, y: number, animate?: boolean): void;
 }
