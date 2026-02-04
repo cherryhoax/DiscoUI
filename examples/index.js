@@ -187,14 +187,12 @@ const launchDemo = async () => {
 
   // Simulate manual splash loading (1s - 6s)
   app.setupSplash();
-  const delay = Math.floor(Math.random() * 5000) + 1000;
   setTimeout(async () => {
     app.dismissSplash();
-    console.log(`Splash dismissed after ${delay}ms`);
     // Wait for fast fade (150ms) + small buffer
     await new Promise((r) => setTimeout(r, 200));
     await frame.navigate(homePage);
-  }, delay);
+  }, 1000);
 };
 
 DiscoApp.ready(launchDemo);

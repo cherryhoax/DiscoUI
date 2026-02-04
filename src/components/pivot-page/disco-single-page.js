@@ -96,7 +96,6 @@ class DiscoSinglePage extends DiscoPage {
         });
 
         await DiscoAnimations.animateAll(animationItems);
-        console.log('Single page animate in complete');
     }
 
     /**

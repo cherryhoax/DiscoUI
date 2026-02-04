@@ -60,7 +60,6 @@ class DiscoPage extends DiscoUIElement {
    * @returns {Promise<void>}
    */
   async animateOutFn(options = { direction: 'forward' }) {
-    console.log("base animate out")
     const animation = DiscoAnimations.animate(
       this,
       [{ opacity: 1 }, { opacity: 0 }],

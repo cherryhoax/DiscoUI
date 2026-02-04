@@ -441,7 +441,6 @@ class DiscoPivotPage extends DiscoPage {
         const detail = /** @type {{ index: number, targetX?: number }} */ ((/** @type {CustomEvent} */(e)).detail || { index: 0 });
         isSnapping = true;
         const idx = detail.index;
-        // console.log(`Snap target index: ${idx} (raw)`);
         const count = items().length || 1;
         const normalizedTarget = ((idx % count) + count) % count;
         
