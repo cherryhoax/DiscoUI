@@ -831,10 +831,9 @@ class DiscoScrollView extends DiscoUIElement {
 
                 if (snapX || snapY) {
                     this._snapBack(snapX, snapY, false);
+                    this._stopAnimation();
+                    return;
                 }
-
-                this._rafId = requestAnimationFrame(this._update);
-                return;
             }
         }
 
