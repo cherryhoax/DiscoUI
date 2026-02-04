@@ -480,6 +480,17 @@ class DiscoFlipView extends DiscoScrollView {
     try { this.releasePointerCapture(e.pointerId); } catch (err) { }
     this._removePointerListeners();
 
+    if (this._handoffSnap) {
+      this._handoffSnap = false;
+      this._velocity.x = 0;
+      this._velocity.y = 0;
+      this._overscrollX = 0;
+      this._overscrollY = 0;
+      this._renderOverscroll(0, 0);
+      this._snapToNearestPage();
+      return;
+    }
+
     const overscrollX = Math.abs(this._overscrollX) > 1;
     const overscrollY = Math.abs(this._overscrollY) > 1;
 

@@ -229,6 +229,9 @@ class DiscoScrollView extends DiscoUIElement {
         parent._handoffAxis = isHorizontalMove ? 'horizontal' : 'vertical';
         parent._handoffOrigin = { x: parent.scrollLeft, y: parent.scrollTop };
         parent._handoffDirection = { x: Math.sign(moveDx), y: Math.sign(moveDy) };
+        if (typeof parent._snapToNearestPage === 'function') {
+            parent._handoffSnap = true;
+        }
         this._handoffToTarget(e, parent);
     }
 
