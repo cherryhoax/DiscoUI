@@ -2,6 +2,8 @@
 
 - [Frame (disco-frame)](frame.md)
 - [Page (disco-page)](page.md)
+- [App (DiscoApp)](app.md)
+- [App Delegate (DiscoAppDelegate)](app-delegate.md)
 - [Pivot (disco-pivot-page)](pivot.md)
 - [Hub (disco-hub)](hub.md)
 - [List View (disco-list-view)](list-view.md)

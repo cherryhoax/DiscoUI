@@ -146,11 +146,11 @@ class DiscoHub extends DiscoPage {
             const items = Array.from(this.querySelectorAll('disco-hub-section'));
             if (items.length === 0) return;
             const firstItem = items[0];
-            const pageWidth = firstItem.offsetWidth || viewport.clientWidth || 1;
+            const pageWidth = viewport.clientWidth;
             const totalPages = Math.max(1, items.length);
             const scrollLeft = viewport.scrollLeft;
 
-            const perPageShift = (window.innerWidth || viewport.clientWidth || 1) / totalPages;
+            const perPageShift = viewport.clientWidth;
             const pageProgress = scrollLeft / pageWidth;
             const bgOffset = -(pageProgress * perPageShift);
             this._background.style.left = `${bgOffset}px`;

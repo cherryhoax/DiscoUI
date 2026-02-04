@@ -7,14 +7,15 @@ disco-frame {
   visibility: hidden;
   left: 0;
   top: 0;
-  width: 100vw;
-  height: 100vh;
+  width: var(--disco-vw);
+  height: var(--disco-vh);
   font-family: var(--disco-font);
-  background-color: var(--disco-bg);
+  background-color: var(--disco-background);
   perspective-origin: center;
   perspective: var(--disco-perspective);
+  zoom: var(--disco-scale);
 
-  > *[hidden] {
+  >*[hidden] {
     display: none !important;
   }
 

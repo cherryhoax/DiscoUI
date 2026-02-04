@@ -15,6 +15,7 @@ const launchDemo = async () => {
       showProgress: true
     }
   });
+  window.app = app;
 
   const frame = document.getElementById('componentsFrame');
   if (!frame) return;
@@ -163,7 +164,7 @@ const launchDemo = async () => {
   }
 
   // Stress content population logic moved to populateStressContent() and called via loadPage options
-  
+
   // Progress controls
   const inc = document.getElementById('incProgress');
   const toggle = document.getElementById('toggleIndeterminate');
@@ -183,7 +184,7 @@ const launchDemo = async () => {
   }
 
   app.launch(frame);
-  
+
   // Simulate manual splash loading (1s - 6s)
   app.setupSplash();
   const delay = Math.floor(Math.random() * 5000) + 1000;

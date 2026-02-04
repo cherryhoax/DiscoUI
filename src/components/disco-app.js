@@ -25,6 +25,7 @@ import './disco-splash.js';
  * @property {DiscoSplashConfig | SplashMode} [splash]
  */
 
+
 const injectThemeStyles = (() => {
   let injected = false;
   return () => {
@@ -94,10 +95,10 @@ class DiscoApp {
     const attrAccent = root.getAttribute('disco-accent');
     const attrFont = root.getAttribute('disco-font');
 
-    this.accent = config.accent || attrAccent || '#D80073'; // Classic WP Magenta
-    this.theme = config.theme || attrTheme || 'dark';
-    this.font = config.font || attrFont || null;
-    this.icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
+    this._accent = config.accent || attrAccent || '#D80073'; // Classic WP Magenta
+    this._theme = config.theme || attrTheme || 'dark';
+    this._font = config.font || attrFont || null;
+    this._icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
 
     // Normalize splash config
     let splashConfig = { mode: 'auto', color: null, icon: null, showProgress: true, progressColor: '#fff' };
@@ -118,11 +119,196 @@ class DiscoApp {
 
   initTheme() {
     const root = document.documentElement;
-    root.setAttribute('disco-theme', this.theme);
-    root.setAttribute('disco-accent', this.accent);
-    if (this.font) {
-      root.setAttribute('disco-font', this.font);
+    root.setAttribute('disco-theme', this._theme);
+    root.setAttribute('disco-accent', this._accent);
+    if (this._font) {
+      root.setAttribute('disco-font', this._font);
     }
+  }
+
+  /**
+   * @returns {CSSStyleDeclaration | null}
+   */
+  #getRootStyles() {
+    if (typeof document === 'undefined') return null;
+    return getComputedStyle(document.documentElement);
+  }
+
+  /**
+   * @param {string} name
+   * @param {string} [fallback]
+   * @returns {string}
+   */
+  #readVar(name, fallback) {
+    const styles = this.#getRootStyles();
+    if (!styles) return '';
+    const value = styles.getPropertyValue(name).trim();
+    if (value) return value;
+    if (fallback) return styles.getPropertyValue(fallback).trim();
+    return '';
+  }
+
+  /**
+   * @param {string} color
+   * @returns {string}
+   */
+  #normalizeColor(color) {
+    const value = color.trim();
+    if (!value) return '';
+    const normalized = value.replace(/\s+/g, ' ').toLowerCase();
+    if (normalized === 'rgb(0 0 0)' || normalized === 'rgb(0, 0, 0)') return 'black';
+    if (normalized === 'rgb(255 255 255)' || normalized === 'rgb(255, 255, 255)') return 'white';
+    const rgbMatch = normalized.match(/^rgba?\(([^)]+)\)$/);
+    if (!rgbMatch) return value;
+    const parts = rgbMatch[1]
+      .split(/[,\s]+/)
+      .filter(Boolean)
+      .slice(0, 3)
+      .map((part) => Number.parseFloat(part));
+    if (parts.length < 3 || parts.some((part) => Number.isNaN(part))) return value;
+    const toHex = (num) => {
+      const clamped = Math.min(255, Math.max(0, Math.round(num)));
+      return clamped.toString(16).padStart(2, '0');
+    };
+    return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`;
+  }
+
+  /**
+   * Computed background color from `:root`.
+   * @returns {string}
+   */
+  get background() {
+    return this.#normalizeColor(this.#readVar('--disco-background'));
+  }
+
+  /**
+   * Computed foreground color from `:root`.
+   * @returns {string}
+   */
+  get foreground() {
+    return this.#normalizeColor(this.#readVar('--disco-foreground'));
+  }
+
+  /**
+   * Computed accent color from `:root`.
+   * @returns {string}
+   */
+  get accent() {
+    return this.#readVar('--disco-accent');
+  }
+
+  /**
+   * @param {string | null} value
+   */
+  set accent(value) {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    if (!value) {
+      this._accent = '';
+      root.removeAttribute('disco-accent');
+      return;
+    }
+    this._accent = value;
+    root.setAttribute('disco-accent', value);
+  }
+
+  /**
+   * Computed font family from `:root`.
+   * @returns {string}
+   */
+  get font() {
+    return this.#readVar('--disco-font');
+  }
+
+  /**
+   * @param {string | null} value
+   */
+  set font(value) {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    if (!value) {
+      this._font = null;
+      root.removeAttribute('disco-font');
+      return;
+    }
+    this._font = value;
+    root.setAttribute('disco-font', value);
+  }
+
+  /**
+   * Computed theme value from `:root`.
+   * @returns {string}
+   */
+  get theme() {
+    return this.#readVar('--disco-theme');
+  }
+
+  /**
+   * @param {'dark' | 'light' | 'auto' | string | null} value
+   */
+  set theme(value) {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    if (!value) {
+      this._theme = '';
+      root.removeAttribute('disco-theme');
+      return;
+    }
+    this._theme = value;
+    root.setAttribute('disco-theme', value);
+  }
+
+  /**
+   * Computed scale value from `:root`.
+   * @returns {number}
+   */
+  get scale() {
+    const value = this.#readVar('--disco-scale');
+    const parsed = Number.parseFloat(value);
+    return Number.isNaN(parsed) ? 0.8 : parsed;
+  }
+
+  /**
+   * @param {string | number | null} value
+   */
+  set scale(value) {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    if (value === null || value === undefined || value === '') {
+      this._scale = 0.8;
+      root.setAttribute('disco-scale', String(0.8));
+      return;
+    }
+    this._scale = String(value);
+    root.setAttribute('disco-scale', String(value));
+  }
+
+  /**
+   * Computed layout width (viewport width divided by scale).
+   * @returns {number}
+   */
+  get width() {
+    if (typeof window === 'undefined') return 0;
+    const scale = this.scale || 1;
+    return window.innerWidth / scale;
+  }
+
+  /**
+   * Computed layout height (viewport height divided by scale).
+   * @returns {number}
+   */
+  get height() {
+    if (typeof window === 'undefined') return 0;
+    const scale = this.scale || 1;
+    return window.innerHeight / scale;
+  }
+
+  /**
+   * Computed perspective depth based on layout width.
+   * @returns {string}
+   */
+  get perspective() {
+    return `${this.width * 4}px`;
   }
 
   /**
@@ -161,8 +347,8 @@ class DiscoApp {
 
     if (mode === 'none') return null;
     // If no icon (configured in splash or global) and no accent, we can still show splash if specifically requested, but standard logic was:
-    const effectiveIcon = icon || this.icon;
-    if (!effectiveIcon && !this.accent && !color) return null;
+    const effectiveIcon = icon || this._icon;
+    if (!effectiveIcon && !this._accent && !color) return null;
 
     /** @type {DiscoSplashElement} */
     const splash = /** @type {DiscoSplashElement} */ (
@@ -215,4 +401,105 @@ class DiscoApp {
   }
 }
 
+/**
+ * Read-only delegate for app-level layout and theme values.
+ * @public
+ */
+class DiscoAppDelegate {
+  /**
+   * @returns {CSSStyleDeclaration | null}
+   */
+  static #getRootStyles() {
+    if (typeof document === 'undefined') return null;
+    return getComputedStyle(document.documentElement);
+  }
+
+  /**
+   * @param {string} name
+   * @returns {string}
+   */
+  static #readVar(name) {
+    const styles = this.#getRootStyles();
+    if (!styles) return '';
+    return styles.getPropertyValue(name).trim();
+  }
+
+  /**
+   * @param {string} color
+   * @returns {string}
+   */
+  static #normalizeColor(color) {
+    const value = color.trim();
+    if (!value) return '';
+    const normalized = value.replace(/\s+/g, ' ').toLowerCase();
+    if (normalized === 'rgb(0 0 0)' || normalized === 'rgb(0, 0, 0)') return 'black';
+    if (normalized === 'rgb(255 255 255)' || normalized === 'rgb(255, 255, 255)') return 'white';
+    const rgbMatch = normalized.match(/^rgba?\(([^)]+)\)$/);
+    if (!rgbMatch) return value;
+    const parts = rgbMatch[1]
+      .split(/[,\s]+/)
+      .filter(Boolean)
+      .slice(0, 3)
+      .map((part) => Number.parseFloat(part));
+    if (parts.length < 3 || parts.some((part) => Number.isNaN(part))) return value;
+    const toHex = (num) => {
+      const clamped = Math.min(255, Math.max(0, Math.round(num)));
+      return clamped.toString(16).padStart(2, '0');
+    };
+    return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`;
+  }
+
+  /** @returns {'black' | 'white' | string} */
+  static get background() {
+    return this.#normalizeColor(this.#readVar('--disco-background'));
+  }
+
+  /** @returns {'black' | 'white' | string} */
+  static get foreground() {
+    return this.#normalizeColor(this.#readVar('--disco-foreground'));
+  }
+
+  /** @returns {string} */
+  static get accent() {
+    return this.#readVar('--disco-accent');
+  }
+
+  /** @returns {string} */
+  static get font() {
+    return this.#readVar('--disco-font');
+  }
+
+  /** @returns {string} */
+  static get theme() {
+    return this.#readVar('--disco-theme');
+  }
+
+  /** @returns {number} */
+  static get scale() {
+    const value = this.#readVar('--disco-scale');
+    const parsed = Number.parseFloat(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  /** @returns {number} */
+  static get width() {
+    if (typeof window === 'undefined') return 0;
+    const scale = this.scale || 1;
+    return window.innerWidth / scale;
+  }
+
+  /** @returns {number} */
+  static get height() {
+    if (typeof window === 'undefined') return 0;
+    const scale = this.scale || 1;
+    return window.innerHeight / scale;
+  }
+
+  /** @returns {string} */
+  static get perspective() {
+    return `${this.width * 4}px`;
+  }
+}
+
+export { DiscoAppDelegate };
 export default DiscoApp;

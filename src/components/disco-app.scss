@@ -1,16 +1,19 @@
 :root {
-	--disco-bg: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
+	--disco-background: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
 	transition: --disco-theme 250ms ease-in-out;
-	--disco-fg: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
+	--disco-foreground: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
 	--disco-accent: attr(disco-accent type(<color>), #d80073);
 	--disco-font: attr(disco-font raw-string, 'Open Sans', sans-serif);
 	--disco-theme: 0;
-	--disco-perspective: 1000px;
+	--disco-perspective: calc(100vw / (attr(disco-scale number, .8)) * 4);
+	--disco-scale: attr(disco-scale number, .8);
+	--disco-vw: calc(100vw / var(--disco-scale));
+	--disco-vh: calc(100vh / var(--disco-scale));
 	--disco-page-in-ease: var(--disco-ease-out-quart, ease-out);
 	--disco-page-out-ease: var(--disco-ease-out-quad, ease-in);
 	font-family: var(--disco-font, 'Open Sans', sans-serif);
-	background-color: var(--disco-bg);
-	color: var(--disco-fg);
+	background-color: var(--disco-background);
+	color: var(--disco-foreground);
 }
 
 * {

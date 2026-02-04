@@ -115,7 +115,7 @@ class DiscoHubView extends DiscoFlipView {
         }
       }
 
-      if (isAnimating && i === count - 1 && offset > 0) {
+      if (isAnimating && count > 2 && i === count - 1 && offset > 0) {
         offset -= span;
       }
 

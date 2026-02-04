@@ -1,8 +1,8 @@
 @use '../disco-ui-element.scss' as ui;
 
 :host {
-    background-color: var(--disco-bg);
-    color: var(--disco-fg);
+    background-color: var(--disco-background);
+    color: var(--disco-foreground);
     overflow: hidden;
     display: flex;
     flex-direction: column;

@@ -1,4 +1,4 @@
-export { default as DiscoApp } from './components/disco-app.js';
+export { default as DiscoApp, DiscoAppDelegate } from './components/disco-app.js';
 export { default as DiscoFrame } from './components/disco-frame.js';
 export { default as DiscoSplash } from './components/disco-splash.js';
 export { default as DiscoPage } from './components/disco-page.js';
@@ -29,8 +29,8 @@ const applyInitialThemeStyles = () => {
 	const bg = `rgb(${255 * themeValue} ${255 * themeValue} ${255 * themeValue})`;
 	const fg = `rgb(${255 - 255 * themeValue} ${255 - 255 * themeValue} ${255 - 255 * themeValue})`;
 	root.style.setProperty('--disco-theme', String(themeValue));
-	root.style.setProperty('--disco-bg', bg);
-	root.style.setProperty('--disco-fg', fg);
+	root.style.setProperty('--disco-background', bg);
+	root.style.setProperty('--disco-foreground', fg);
 	root.style.backgroundColor = bg;
 	root.style.color = fg;
 };

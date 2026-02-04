@@ -1,5 +1,6 @@
 import animationsCss from './disco-animations.scss';
 import bspline from 'b-spline';
+import { DiscoAppDelegate } from '../disco-app.js';
 
 if (typeof document !== 'undefined') {
     const style = document.createElement('style');
@@ -43,10 +44,10 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                        transform: `translateX(${DiscoAppDelegate.width / 8}px) rotateY(80deg) translateX(${DiscoAppDelegate.width / 5}px)`
                     },
                     {
-                        transform: `translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                        transform: `translateX(${DiscoAppDelegate.width / 16}px) rotateY(40deg) translateX(${DiscoAppDelegate.width / 8}px)`
                     },
                     {
                         opacity: 1,
@@ -66,7 +67,7 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
+                        transform: `translateX(${-DiscoAppDelegate.width / 2}px) rotateY(-180deg) translateX(0px)`
                     },
                     {
                         opacity: 1,
@@ -101,7 +102,7 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `translateX(${-window.innerWidth / 2}px) rotateY(-180deg) translateX(0px)`
+                        transform: `translateX(${-DiscoAppDelegate.width / 2}px) rotateY(-180deg) translateX(0px)`
                     }
                 ],
                 {
@@ -121,7 +122,7 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `translateX(${window.innerWidth / 8}px) rotateY(90deg) translateX(${window.innerWidth / 5}px)`
+                        transform: `translateX(${DiscoAppDelegate.width / 8}px) rotateY(90deg) translateX(${DiscoAppDelegate.width / 5}px)`
                     }
                 ],
                 {
@@ -147,15 +148,15 @@ const animationSet = {
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
+                        transform: `perspective(${DiscoAppDelegate.perspective}) translateX(${DiscoAppDelegate.width / 8}px) rotateY(80deg) translateX(${DiscoAppDelegate.width / 5}px)`
                     },
                     {
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
+                        transform: `perspective(${DiscoAppDelegate.perspective}) translateX(${DiscoAppDelegate.width / 16}px) rotateY(40deg) translateX(${DiscoAppDelegate.width / 8}px)`
                     },
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `perspective(${DiscoAnimations.perspective()}) translateX(0px) rotateY(0deg) translateX(0px)`
+                        transform: `perspective(${DiscoAppDelegate.perspective}) translateX(0px) rotateY(0deg) translateX(0px)`
                     }
                 ],
                 {
@@ -202,31 +203,13 @@ const animationSet = {
             const animation = DiscoAnimations.animate(
                 target,
                 [
-                    /*     {
-                        opacity: 1,
-                        transformOrigin: 'left center',
-                        transform: `translateX(${window.innerWidth / 8}px) rotateY(80deg) translateX(${window.innerWidth / 5}px)`
-                    },
-                    {
-                        transform: `translateX(${window.innerWidth / 16}px) rotateY(40deg) translateX(${window.innerWidth / 8}px)`
-                    },
                     {
                         opacity: 1,
                         transformOrigin: 'left center',
-                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
-                    }*/
-                    {
-                        opacity: 1,
-                        transformOrigin: 'left center',
-                        transform: `translateX(-400px) translateZ(-2000px) translateX(${window.innerWidth / 8}px) rotateY(120deg) translateX(${window.innerWidth / 5}px)`
-
-                        //transform: `translateZ(-1800px) translateX(-400px) rotateY(90deg)`
+                        transform: `translateX(-400px) translateZ(-2000px) translateX(${DiscoAppDelegate.width / 8}px) rotateY(120deg) translateX(${DiscoAppDelegate.width / 5}px)`
                     },
                     {
-                       //opacity: 1,
-                        //transformOrigin: 'left center',
-                        //transform: `translateZ(-900px) translateX(-50px) rotateY(45deg)`
-                        transform: `translateX(0px) translateZ(-750px) translateX(${window.innerWidth / 16}px) rotateY(60deg) translateX(${window.innerWidth / 8}px)`
+                        transform: `translateX(0px) translateZ(-750px) translateX(${DiscoAppDelegate.width / 16}px) rotateY(60deg) translateX(${DiscoAppDelegate.width / 8}px)`
                     },
                     {
                         opacity: 1,
@@ -383,7 +366,6 @@ const DiscoAnimations = {
         easeInOutCirc: (t) => cubicBezierAt(t, 0.785, 0.135, 0.15, 0.86),
         easeInOutBack: (t) => cubicBezierAt(t, 0.68, -0.55, 0.265, 1.55)
     },
-    perspective: () => window.innerWidth * 4 + "px",
 
     /**
      * @param {number} p0

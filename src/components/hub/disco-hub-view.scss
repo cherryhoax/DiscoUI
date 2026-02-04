@@ -19,8 +19,8 @@
 }
 
 :host([direction='horizontal']) ::slotted(disco-hub-section) {
-  width: calc(100vw - 50px);
-  min-width: calc(100vw - 50px);
+  width: calc(var(--disco-vw) - 50px);
+  min-width: calc(var(--disco-vw) - 50px);
   max-width: none;
   box-sizing: border-box;
   flex: 0 0 auto;

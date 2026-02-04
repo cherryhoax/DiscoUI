@@ -1,4 +1,4 @@
-export { default as DiscoApp } from './components/disco-app.js';
+export { default as DiscoApp, DiscoAppDelegate } from './components/disco-app.js';
 export { default as DiscoFrame } from './components/disco-frame.js';
 export { default as DiscoSplash } from './components/disco-splash.js';
 export { default as DiscoPage } from './components/disco-page.js';

@@ -67,7 +67,6 @@ declare const DiscoAnimations: {
   easeInOutExpo: string;
   easeInOutCirc: string;
   easeInOutBack: string;
-  perspective: string;
   splineBasisPoint: (p0: number, p1: number, p2: number, p3: number, t: number) => number;
   buildClampedKnots: (pointCount: number, degree: number) => number[];
   normalizeOffsets: (keyframes: DiscoKeyframe[]) => number[];

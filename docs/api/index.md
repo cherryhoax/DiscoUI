@@ -4,7 +4,8 @@ This section collects the public APIs exposed by DiscoUI.
 
 ## Core
 
-- [DiscoApp](../components/splash.md#on-discoapp)
+- [DiscoApp](../components/app.md)
+- [DiscoAppDelegate](../components/app-delegate.md)
 - [DiscoFrame](../components/frame.md)
 - [DiscoPage](../components/page.md)
 - [DiscoUIElement](../components/ui-element.md)

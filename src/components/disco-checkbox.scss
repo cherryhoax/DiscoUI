@@ -7,7 +7,7 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: var(--disco-fg);
+    color: var(--disco-foreground);
     font-size: 16px;
 }
 
@@ -22,8 +22,8 @@
 .box {
     width: 22px;
     height: 22px;
-    border: 2px solid var(--disco-fg);
-    background-color: var(--disco-bg);
+    border: 2px solid var(--disco-foreground);
+    background-color: var(--disco-background);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -34,8 +34,8 @@
     content: '';
     width: 10px;
     height: 6px;
-    border-left: 2px solid var(--disco-fg);
-    border-bottom: 2px solid var(--disco-fg);
+    border-left: 2px solid var(--disco-foreground);
+    border-bottom: 2px solid var(--disco-foreground);
     transform: rotate(-45deg);
     opacity: 0;
 }

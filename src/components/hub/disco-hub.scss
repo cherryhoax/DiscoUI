@@ -8,8 +8,8 @@
     position: relative;
     overflow: visible;
     user-select: none;
-    background-color: var(--disco-bg, #000);
-    color: var(--disco-fg, #fff);
+    background-color: var(--disco-background, #000);
+    color: var(--disco-foreground, #fff);
 }
 
 :host([data-animating]) {
