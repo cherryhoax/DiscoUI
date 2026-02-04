@@ -3,6 +3,7 @@ import styles from './disco-scroll-view.scss';
 
 /**
  * Scroll view with touch/mouse momentum, overscroll, and nested scrolling support.
+ * Snap-back speed scales with release velocity for a more responsive bounce.
  * @extends DiscoUIElement
  */
 class DiscoScrollView extends DiscoUIElement {
@@ -46,6 +47,10 @@ class DiscoScrollView extends DiscoUIElement {
         this._snapBackVY = 0;
         this._springK = 180;
         this._springC = 27;
+        this._snapBackMaxScale = 3.0;
+        this._snapBackSpeedMax = 1200; // px/sec
+        this._snapBackSpeedX = 0;
+        this._snapBackSpeedY = 0;
         this._momentumVX = 0;
         this._momentumVY = 0;
         this._bounceVelocityThreshold = 80; // px/sec
@@ -533,6 +538,9 @@ class DiscoScrollView extends DiscoUIElement {
         const overscrollX = Math.abs(this._overscrollX) > 1;
         const overscrollY = Math.abs(this._overscrollY) > 1;
 
+        this._snapBackSpeedX = Math.abs(this._velocity.x * 1000);
+        this._snapBackSpeedY = Math.abs(this._velocity.y * 1000);
+
         if (overscrollX || overscrollY) {
             if (overscrollX && overscrollY) {
                 this._snapBack(true, true);
@@ -567,6 +575,9 @@ class DiscoScrollView extends DiscoUIElement {
         const overscrollX = Math.abs(this._overscrollX) > 1;
         const overscrollY = Math.abs(this._overscrollY) > 1;
 
+        this._snapBackSpeedX = Math.abs(this._velocity.x * 1000);
+        this._snapBackSpeedY = Math.abs(this._velocity.y * 1000);
+
         if (overscrollX || overscrollY) {
             this._velocity.x = 0;
             this._velocity.y = 0;
@@ -574,6 +585,17 @@ class DiscoScrollView extends DiscoUIElement {
         }
 
         this._stopAnimation();
+    }
+
+    /**
+     * @param {number} speedPxPerSec
+     * @returns {number}
+     */
+    _getSnapBackScale(speedPxPerSec) {
+        const capped = Math.max(0, Math.min(speedPxPerSec, this._snapBackSpeedMax));
+        const t = this._snapBackSpeedMax === 0 ? 0 : (capped / this._snapBackSpeedMax);
+        const curved = t * t;
+        return 1 + curved * (this._snapBackMaxScale - 1);
     }
 
     _snapBack(snapX = true, snapY = true, stopMomentum = true) {
@@ -600,6 +622,15 @@ class DiscoScrollView extends DiscoUIElement {
             return;
         }
 
+        const speedX = snapX
+            ? (stopMomentum ? this._snapBackSpeedX : Math.abs(this._momentumVX))
+            : 0;
+        const speedY = snapY
+            ? (stopMomentum ? this._snapBackSpeedY : Math.abs(this._momentumVY))
+            : 0;
+        const scaleX = this._getSnapBackScale(speedX);
+        const scaleY = this._getSnapBackScale(speedY);
+
         this._snapBackStart = performance.now();
         this._snapBackLast = this._snapBackStart;
         this._snapBackVX = 0;
@@ -612,7 +643,9 @@ class DiscoScrollView extends DiscoUIElement {
             let doneY = !snapY;
 
             if (snapX) {
-                const ax = (-this._springK * this._overscrollX) - (this._springC * this._snapBackVX);
+                const springKX = this._springK * scaleX;
+                const springCX = this._springC * (1 + (scaleX - 1) * 0.55);
+                const ax = (-springKX * this._overscrollX) - (springCX * this._snapBackVX);
                 this._snapBackVX += ax * dt;
                 this._overscrollX += this._snapBackVX * dt;
                 if (Math.abs(this._overscrollX) < 0.5 && Math.abs(this._snapBackVX) < 0.02) {
@@ -623,7 +656,9 @@ class DiscoScrollView extends DiscoUIElement {
             }
 
             if (snapY) {
-                const ay = (-this._springK * this._overscrollY) - (this._springC * this._snapBackVY);
+                const springKY = this._springK * scaleY;
+                const springCY = this._springC * (1 + (scaleY - 1) * 0.55);
+                const ay = (-springKY * this._overscrollY) - (springCY * this._snapBackVY);
                 this._snapBackVY += ay * dt;
                 this._overscrollY += this._snapBackVY * dt;
                 if (Math.abs(this._overscrollY) < 0.5 && Math.abs(this._snapBackVY) < 0.02) {

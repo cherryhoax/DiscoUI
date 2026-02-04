@@ -1,5 +1,9 @@
 import DiscoUIElement from './disco-ui-element.js';
 
+/**
+ * Scroll view with momentum and overscroll.
+ * Snap-back speed scales with release velocity for a more responsive bounce.
+ */
 export default class DiscoScrollView extends DiscoUIElement {
   /**
    * The current scroll position X
