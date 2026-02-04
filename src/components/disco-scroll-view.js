@@ -151,9 +151,45 @@ class DiscoScrollView extends DiscoUIElement {
 
     /**
      * @param {PointerEvent} e
-     * @param {DiscoScrollView} parent
+     * @param {boolean} isHorizontalMove
+     * @param {number} moveDx
+     * @param {number} moveDy
+     * @returns {DiscoScrollView | null}
      */
-    _handoffToParent(e, parent) {
+    _getScrollableAncestorForHandoff(e, isHorizontalMove, moveDx, moveDy) {
+        if (!e || typeof e.composedPath !== 'function') return null;
+        const path = e.composedPath();
+        let seenSelf = false;
+        for (const node of path) {
+            if (node === this) {
+                seenSelf = true;
+                continue;
+            }
+            if (!seenSelf) continue;
+            if (!(node instanceof DiscoScrollView)) continue;
+            if (!this._canScrollInAxis(node, isHorizontalMove)) continue;
+
+            const atHorizontalEdge =
+                (node.scrollLeft <= 0 && moveDx > 0) ||
+                (node.scrollLeft >= node.maxScrollLeft && moveDx < 0);
+            const atVerticalEdge =
+                (node.scrollTop <= 0 && moveDy > 0) ||
+                (node.scrollTop >= node.maxScrollTop && moveDy < 0);
+
+            if ((isHorizontalMove && atHorizontalEdge) || (!isHorizontalMove && atVerticalEdge)) {
+                continue;
+            }
+
+            return node;
+        }
+        return null;
+    }
+
+    /**
+     * @param {PointerEvent} e
+     * @param {DiscoScrollView} target
+     */
+    _handoffToTarget(e, target) {
         this._cancelDrag();
         try { this.releasePointerCapture(e.pointerId); } catch (err) { }
         this._virtualX = this.scrollLeft;
@@ -177,8 +213,39 @@ class DiscoScrollView extends DiscoUIElement {
             buttons: e.buttons
         });
 
-        parent.dispatchEvent(cloneEvent('pointerdown'));
-        parent.dispatchEvent(cloneEvent('pointermove'));
+        target.dispatchEvent(cloneEvent('pointerdown'));
+        target.dispatchEvent(cloneEvent('pointermove'));
+    }
+
+    /**
+     * @param {PointerEvent} e
+     * @param {DiscoScrollView} parent
+     * @param {boolean} isHorizontalMove
+     * @param {number} moveDx
+     * @param {number} moveDy
+     */
+    _handoffToParent(e, parent, isHorizontalMove, moveDx, moveDy) {
+        parent._handoffChild = this;
+        parent._handoffAxis = isHorizontalMove ? 'horizontal' : 'vertical';
+        parent._handoffOrigin = { x: parent.scrollLeft, y: parent.scrollTop };
+        parent._handoffDirection = { x: Math.sign(moveDx), y: Math.sign(moveDy) };
+        this._handoffToTarget(e, parent);
+    }
+
+    /**
+     * @param {PointerEvent} e
+     * @param {DiscoScrollView} child
+     */
+    _handoffToChild(e, child) {
+        this._clearHandoff();
+        this._handoffToTarget(e, child);
+    }
+
+    _clearHandoff() {
+        this._handoffChild = null;
+        this._handoffAxis = null;
+        this._handoffOrigin = null;
+        this._handoffDirection = null;
     }
 
     /**
@@ -317,6 +384,27 @@ class DiscoScrollView extends DiscoUIElement {
             (this.scrollTop <= 0 && moveDy > 0) ||
             (this.scrollTop >= this.maxScrollTop && moveDy < 0);
 
+        if (this._handoffChild && this._handoffAxis) {
+            const axis = this._handoffAxis;
+            const handoffDir = axis === 'horizontal'
+                ? this._handoffDirection?.x
+                : this._handoffDirection?.y;
+            const currentDir = axis === 'horizontal'
+                ? Math.sign(moveDx)
+                : Math.sign(moveDy);
+            const origin = this._handoffOrigin || { x: 0, y: 0 };
+            if (handoffDir && currentDir && currentDir === -handoffDir) {
+                const atOrPastOrigin = axis === 'horizontal'
+                    ? (handoffDir > 0 ? this.scrollLeft >= origin.x : this.scrollLeft <= origin.x)
+                    : (handoffDir > 0 ? this.scrollTop >= origin.y : this.scrollTop <= origin.y);
+                if (atOrPastOrigin) {
+                    const child = this._handoffChild;
+                    this._handoffToChild(e, child);
+                    return;
+                }
+            }
+        }
+
         const overscrollMode = (this.getAttribute('overscroll-mode') || '').toLowerCase();
         const loopEnabled = overscrollMode === 'loop';
         const shouldHandoff = !loopEnabled && (
@@ -326,9 +414,9 @@ class DiscoScrollView extends DiscoUIElement {
         );
 
         if (shouldHandoff) {
-            const parent = this._getParentScrollViewFromEvent(e);
-            if (parent && this._canScrollInAxis(parent, isHorizontalMove)) {
-                this._handoffToParent(e, parent);
+            const parent = this._getScrollableAncestorForHandoff(e, isHorizontalMove, moveDx, moveDy);
+            if (parent) {
+                this._handoffToParent(e, parent, isHorizontalMove, moveDx, moveDy);
                 return;
             }
         }
@@ -433,6 +521,7 @@ class DiscoScrollView extends DiscoUIElement {
         this._isDragging = false;
         this._isPreDragging = false;
         this._nestedScrollView = null;
+        this._clearHandoff();
         try { this.releasePointerCapture(e.pointerId); } catch (err) { }
         this._removePointerListeners();
         this._virtualX = this.scrollLeft;
@@ -466,6 +555,7 @@ class DiscoScrollView extends DiscoUIElement {
         this._isDragging = false;
         this._isPreDragging = false;
         this._nestedScrollView = null;
+        this._clearHandoff();
         try { this.releasePointerCapture(e.pointerId); } catch (err) { }
         this._removePointerListeners();
         this._virtualX = this.scrollLeft;
