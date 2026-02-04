@@ -54,14 +54,14 @@ class DiscoScrollView extends DiscoUIElement {
         this._momentumVX = 0;
         this._momentumVY = 0;
         this._bounceVelocityThreshold = 80; // px/sec
-        this._minBounce = 20; // px
+        this._minBounce = 5; // px
 
         // Animation target
         this._targetX = null;
         this._targetY = null;
         this._amplitudeX = 0;
         this._amplitudeY = 0;
-        this._timeConstant = 217; // ms
+        this._timeConstant = 400; // ms
         this._timestampStart = 0;
 
         this._nestedScrollView = null;
@@ -485,7 +485,7 @@ class DiscoScrollView extends DiscoUIElement {
         const maxX = Math.max(0, this.maxScrollLeft);
         const maxY = Math.max(0, this.maxScrollTop);
 
-        const clampedX = Math.max(0, Math.min(x, maxX));
+        const clampedX = Math.max(0, Math.min(x, maxX))
         const clampedY = Math.max(0, Math.min(y, maxY));
 
         let overscrollX = (clampedX - x) * resistance;
@@ -780,7 +780,7 @@ class DiscoScrollView extends DiscoUIElement {
         const scrollX = this._targetX - this._amplitudeX * Math.exp(delta);
         const scrollY = this._targetY - this._amplitudeY * Math.exp(delta);
 
-        const overscroll = this._computeOverscroll(scrollX, scrollY, 0.2);
+        const overscroll = this._computeOverscroll(scrollX, scrollY, 1.5);
         let { clampedX, clampedY, overscrollX, overscrollY } = overscroll;
 
         const maxX = Math.max(0, this.maxScrollLeft);
@@ -819,7 +819,7 @@ class DiscoScrollView extends DiscoUIElement {
             const snapX = overscrollX !== 0 && !this._snapBackActiveX;
             const snapY = overscrollY !== 0 && !this._snapBackActiveY;
 
-            if (elapsed > timeConstant * 1.2) {
+            if (elapsed > timeConstant * .45) {
                 if (snapX) {
                     this._targetX = clampedX;
                     this._amplitudeX = 0;
