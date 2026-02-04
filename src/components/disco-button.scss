@@ -4,12 +4,6 @@
   display: inline-block;
 }
 
-:host([data-pressed]) {
-  .button {
-    background-color: var(--disco-accent);
-  }
-}
-
 .button {
   @include ui.disco-tilt;
   display: inline-flex;
@@ -19,14 +13,16 @@
   min-height: 40px;
   border: 2px solid var(--disco-foreground);
   background-color: var(--disco-background);
-  color: #fff;
+  color: var(--disco-foreground);
   font-size: 16px;
   letter-spacing: 0.02em;
   text-transform: none;
   box-sizing: border-box;
   outline: none;
+
   &[data-pressed] {
     background-color: var(--disco-accent);
+    color: white;
   }
 }
 

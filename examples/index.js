@@ -82,19 +82,28 @@ const launchDemo = async () => {
 
   const list = homePage.querySelector('#componentsList');
   if (list) {
-    list.items = [
-      { id: 'pivot', Title: 'Pivot' },
-      { id: 'hub', Title: 'Hub' },
-      { id: 'progress', Title: 'Progress Bar' },
-      { id: 'checkbox', Title: 'Checkbox' },
-      { id: 'button', Title: 'Button' },
-      { id: 'scrollview', Title: 'Scroll View' },
-      { id: 'flipview', Title: 'Flip View' }
+    const getTheme = () => document.documentElement.getAttribute('disco-theme') || 'dark';
+    const listItems = [
+      { id: 'toggle-theme', Title: 'Toggle Theme', Description: `current theme: ${getTheme()}` },
+      { id: 'pivot', Title: 'Pivot', Description: '' },
+      { id: 'hub', Title: 'Hub', Description: '' },
+      { id: 'progress', Title: 'Progress Bar', Description: '' },
+      { id: 'checkbox', Title: 'Checkbox', Description: '' },
+      { id: 'button', Title: 'Button', Description: '' },
+      { id: 'scrollview', Title: 'Scroll View', Description: '' },
+      { id: 'flipview', Title: 'Flip View', Description: '' }
     ];
+    list.items = listItems;
 
     list.addEventListener('itemselect', async (event) => {
       const detail = event.detail;
       const id = detail?.data?.id;
+      if (id === 'toggle-theme') {
+        const nextTheme = getTheme() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('disco-theme', nextTheme);
+        listItems[0].Description = `current theme: ${nextTheme}`;
+        list.items = [...listItems];
+      }
       if (id === 'pivot') {
         frame.navigate(pivotPage);
       }

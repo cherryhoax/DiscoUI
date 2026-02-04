@@ -19,7 +19,7 @@ if (typeof document !== 'undefined') {
 
 /**
  * @typedef {Object} DiscoKeyframe
- * @property {number} [offset]
+                    fill: 'none'
  */
 
 /**
@@ -38,6 +38,7 @@ const animationSet = {
          * @returns {Promise<void>}
          */
         in: async (target, options = { direction: 'forward' }) => {
+            target.getAnimations().forEach((anim) => anim.cancel());
             const animation = options.direction === 'forward' ? DiscoAnimations.animate(
                 target,
                 [
@@ -59,7 +60,7 @@ const animationSet = {
                     duration: 300,
                     easing: DiscoAnimations.easeOutQuart,
                     spline: true,
-                    fill: 'forwards'
+                    fill: 'none'
                 }
             ) : DiscoAnimations.animate(
                 target,
@@ -79,7 +80,7 @@ const animationSet = {
                     duration: 300,
                     easing: DiscoAnimations.easeOutQuart,
                     spline: true,
-                    fill: 'forwards'
+                    fill: 'none'
                 }
             );
             await animation.finished;
@@ -128,11 +129,15 @@ const animationSet = {
                 {
                     duration: 150,
                     easing: DiscoAnimations.easeInQuad,
-                    fill: 'forwards',
+                    fill: 'none',
                     spline: true
                 }
             );
             await animation.finished;
+            if (options.direction !== 'forward' && target instanceof HTMLElement) {
+                target.style.visibility = 'hidden';
+                target.style.opacity = '';
+            }
         }
 
     },
@@ -163,7 +168,7 @@ const animationSet = {
                     duration: 300,
                     easing: DiscoAnimations.easeOutQuart,
                     spline: true,
-                    fill: 'forwards'
+                    fill: 'none'
                 }
             );
             await animation.finished;
@@ -221,7 +226,7 @@ const animationSet = {
                     duration: 600,
                     easing: DiscoAnimations.easeOutQuart,
                     spline: true,
-                    fill: 'forwards'
+                    fill: 'none'
                 }
             );
             await animation.finished;
@@ -233,7 +238,7 @@ const animationSet = {
          * @param {DiscoPageAnimationOptions} [options]
          * @returns {Promise<void>}
          */
-        in: async (targets, options = { direction: 'forward' }) => {
+        in: async (targets, options = { direction: 'none' }) => {
             const items = Array.isArray(targets) ? targets : [];
             const animationItems = items
                 .filter((target) => target)

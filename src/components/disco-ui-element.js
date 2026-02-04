@@ -94,7 +94,7 @@ class DiscoUIElement extends HTMLElement {
     const upHandler = () => {
       this.setPressed(target, false);
 
-      target.style.transform = ` translateZ(0px) rotateX(0deg) rotateY(0deg)`;
+      target.style.transform = `translateZ(0px) rotateX(0deg) rotateY(0deg)`;
     };
 
     const keyDownHandler = (event) => {

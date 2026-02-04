@@ -12,31 +12,6 @@ export { default as DiscoAnimations } from './components/animations/disco-animat
 export { default as DiscoList } from './components/list-view/index.js';
 export { default as DiscoHub } from './components/hub/index.js';
 
-const applyInitialThemeStyles = () => {
-	if (typeof document === 'undefined') return;
-	const root = document.documentElement;
-	const themeAttr = (root.getAttribute('disco-theme') || 'dark').toLowerCase();
-	let themeValue = 0;
-	if (themeAttr === 'light') {
-		themeValue = 1;
-	} else if (themeAttr === 'auto') {
-		const prefersLight = typeof window !== 'undefined'
-			&& typeof window.matchMedia === 'function'
-			&& window.matchMedia('(prefers-color-scheme: light)').matches;
-		themeValue = prefersLight ? 1 : 0;
-	}
-
-	const bg = `rgb(${255 * themeValue} ${255 * themeValue} ${255 * themeValue})`;
-	const fg = `rgb(${255 - 255 * themeValue} ${255 - 255 * themeValue} ${255 - 255 * themeValue})`;
-	root.style.setProperty('--disco-theme', String(themeValue));
-	root.style.setProperty('--disco-background', bg);
-	root.style.setProperty('--disco-foreground', fg);
-	root.style.backgroundColor = bg;
-	root.style.color = fg;
-};
-
-applyInitialThemeStyles();
-
 /**
  * Public exports for DiscoUI.
  */
