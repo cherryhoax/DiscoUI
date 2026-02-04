@@ -2,8 +2,8 @@
   "name": "discoui",
   "version": "1.0.0",
   "description": "Custom elements with vanilla JS, Shadow DOM, and SCSS",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/discoui.mjs",
+  "types": "src/index.d.ts",
   "scripts": {
     "dev": "npx vite",
     "build": "npx vite build",
