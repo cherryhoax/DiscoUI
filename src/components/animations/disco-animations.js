@@ -9,6 +9,18 @@ if (typeof document !== 'undefined') {
 }
 
 /**
+ * @param {Element} target
+ * @returns {void}
+ */
+const resetAnimation = (target) => {
+    if (!(target instanceof Element)) return;
+    if (target instanceof HTMLElement) {
+        target.style.visibility = '';
+    }
+    target.getAnimations().forEach((anim) => anim.cancel());
+};
+
+/**
  * @typedef {Object} DiscoSplineOptions
  * @property {number} [steps]
  * @property {string[]} [props]
@@ -38,7 +50,7 @@ const animationSet = {
          * @returns {Promise<void>}
          */
         in: async (target, options = { direction: 'forward' }) => {
-            target.getAnimations().forEach((anim) => anim.cancel());
+            resetAnimation(target);
             const animation = options.direction === 'forward' ? DiscoAnimations.animate(
                 target,
                 [
@@ -84,6 +96,7 @@ const animationSet = {
                 }
             );
             await animation.finished;
+            resetAnimation(target);
         },
 
         /**
@@ -129,15 +142,12 @@ const animationSet = {
                 {
                     duration: 150,
                     easing: DiscoAnimations.easeInQuad,
-                    fill: 'none',
+                    fill: 'forwards',
                     spline: true
                 }
             );
             await animation.finished;
-            if (options.direction !== 'forward' && target instanceof HTMLElement) {
-                target.style.visibility = 'hidden';
-                target.style.opacity = '';
-            }
+            target.style.visibility = 'hidden';
         }
 
     },

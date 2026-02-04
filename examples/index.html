@@ -129,9 +129,7 @@
             iframe.contentWindow.app.scale = 1.025;
         };
         backButton.addEventListener('click', () => {
-            if (iframe.contentWindow && iframe.contentWindow.history) {
-                iframe.contentWindow.history.back();
-            }
+            iframe.contentWindow.frame.goBack();
         });
         homeButton.addEventListener('click', () => {
             const frame = iframe.contentWindow?.frame;
