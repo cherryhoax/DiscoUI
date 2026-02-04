@@ -327,7 +327,7 @@ class DiscoScrollView extends DiscoUIElement {
 
         if (shouldHandoff) {
             const parent = this._getParentScrollViewFromEvent(e);
-            if (parent) {
+            if (parent && this._canScrollInAxis(parent, isHorizontalMove)) {
                 this._handoffToParent(e, parent);
                 return;
             }

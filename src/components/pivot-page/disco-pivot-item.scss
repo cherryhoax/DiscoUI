@@ -7,10 +7,31 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
   box-sizing: border-box;
-  overflow-y: auto;
-  padding: 0 20px;
   display: block;
   * {
     transform-style: preserve-3d;
   }
+}
+
+.pivot-item-content {
+  height: 100%;
+  width: 100%;
+}
+
+.pivot-item-scrollview,
+.pivot-item-plain-content {
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
+.pivot-item-plain-content {
+  box-sizing: border-box;
+  padding: 0 20px;
+}
+
+.pivot-item-scroll-content {
+  box-sizing: border-box;
+  min-height: 100%;
+  padding: 0 20px 120px;
 }

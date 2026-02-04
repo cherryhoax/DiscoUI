@@ -3,6 +3,10 @@
 
 @include scroll.disco-scroll-view-base;
 
+:host .scroll-content {
+  padding-bottom: 120px;
+  box-sizing: border-box;
+}
 
 .list {
   display: block;

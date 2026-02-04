@@ -25,5 +25,7 @@ A complex page type that implements the "Pivot" navigation pattern (horizontally
 
 Represents a single tab/section within the pivot.
 
+By default, the item content is wrapped in a vertical scroll view with extra bottom padding for breathing room. If the only child is a `<disco-scroll-view>` or `<disco-list-view>`, the wrapper is disabled and scrolling is delegated to that child.
+
 **Attributes:**
 - `header`: The title of the tab shown in the pivot header strip.
