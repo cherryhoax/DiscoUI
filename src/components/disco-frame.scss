@@ -14,6 +14,7 @@ disco-frame {
   perspective-origin: center;
   perspective: var(--disco-perspective);
   zoom: var(--disco-scale);
+  box-sizing: border-box;
 
   >*[hidden] {
     display: none !important;

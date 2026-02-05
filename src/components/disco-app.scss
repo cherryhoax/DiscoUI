@@ -1,5 +1,6 @@
 :root {
 	--disco-background: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
+	--disco-background-rgb: calc(255 * var(--disco-theme)), calc(255 * var(--disco-theme)), calc(255 * var(--disco-theme));
 	transition: --disco-theme 250ms ease-in-out;
 	--disco-foreground: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
 	--disco-accent: attr(disco-accent type(<color>), #d80073);
