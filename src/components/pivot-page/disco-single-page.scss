@@ -1,12 +1,13 @@
 @use '../disco-ui-element.scss' as ui;
+@use '../disco-page.scss' as page;
 
 :host {
+    @include page.disco-page-base;
     background-color: var(--disco-background);
     color: var(--disco-foreground);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: 100%;
     perspective: var(--disco-perspective);
 
     * {
@@ -89,5 +90,5 @@
 .single-page-scroll-content {
     box-sizing: border-box;
     min-height: 100%;
-    padding: 0 20px 120px;
+    padding: 0 20px calc(120px + var(--disco-inset-bottom) + var(--disco-inset-top));
 }

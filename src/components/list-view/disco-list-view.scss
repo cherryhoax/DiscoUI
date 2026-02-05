@@ -4,7 +4,7 @@
 @include scroll.disco-scroll-view-base;
 
 :host .scroll-content {
-  padding-bottom: 120px;
+  padding-bottom: calc(120px + var(--disco-inset-bottom) + var(--disco-inset-top));
   box-sizing: border-box;
 }
 

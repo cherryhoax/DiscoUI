@@ -1,10 +1,12 @@
+@use '../disco-page.scss' as page;
+
 :host {
+  @include page.disco-page-base;
   background-color: var(--disco-background);
   color: var(--disco-foreground);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100%;
   /* Ensure host is 100% height */
 }
 

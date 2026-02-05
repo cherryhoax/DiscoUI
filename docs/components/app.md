@@ -8,7 +8,11 @@ App-level orchestrator for themes, splash flow, and navigation startup.
 import { DiscoApp } from 'discoui';
 
 DiscoApp.ready(() => {
-  const app = new DiscoApp({ splash: 'auto' });
+  const app = new DiscoApp({
+    splash: 'auto',
+    statusBarColor: 'black',
+    navBarColor: 'rgba(0, 0, 0, 0.5)'
+  });
   const frame = document.getElementById('appFrame');
   app.launch(frame);
 });
@@ -34,3 +38,24 @@ These properties let you read the current theme values and update them at runtim
 - `width` (number, read-only): The layout width, computed as `window.innerWidth / scale`.
 - `height` (number, read-only): The layout height, computed as `window.innerHeight / scale`.
 - `perspective` (string, read-only): Perspective depth computed from the layout width.
+
+### Safe area insets
+
+Use `disco-inset-*` attributes on `<html>` or the helper to define safe area insets (values in px).
+
+```html
+<html
+  disco-inset-top="47"
+  disco-inset-bottom="34"
+  disco-inset-left="0"
+  disco-inset-right="0">
+```
+
+```javascript
+app.setInsets({ top: 47, bottom: 34, left: 0, right: 0 });
+```
+
+Inset bar colors can be provided through app options or root attributes:
+
+- `statusBarColor`: Background color for the top inset bar. Attribute: `disco-status-bar-color`.
+- `navBarColor`: Background color for the bottom inset bar. Attribute: `disco-nav-bar-color`.

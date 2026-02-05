@@ -23,6 +23,8 @@ import './disco-splash.js';
  * @property {string | null} [font]
  * @property {string | HTMLElement | null} [icon]
  * @property {DiscoSplashConfig | SplashMode} [splash]
+ * @property {string | null} [statusBarColor]
+ * @property {string | null} [navBarColor]
  */
 
 
@@ -94,11 +96,15 @@ class DiscoApp {
     const attrTheme = root.getAttribute('disco-theme');
     const attrAccent = root.getAttribute('disco-accent');
     const attrFont = root.getAttribute('disco-font');
+    const attrStatusBarColor = root.getAttribute('disco-status-bar-color');
+    const attrNavBarColor = root.getAttribute('disco-nav-bar-color');
 
     this._accent = config.accent || attrAccent || '#D80073'; // Classic WP Magenta
     this._theme = config.theme || attrTheme || 'dark';
     this._font = config.font || attrFont || null;
     this._icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
+    this._statusBarColor = config.statusBarColor ?? attrStatusBarColor ?? null;
+    this._navBarColor = config.navBarColor ?? attrNavBarColor ?? null;
 
     // Normalize splash config
     let splashConfig = { mode: 'auto', color: null, icon: null, showProgress: true, progressColor: '#fff' };
@@ -115,6 +121,7 @@ class DiscoApp {
     injectThemeStyles();
     injectFontStyles();
     this.initTheme();
+    this.initInsets();
   }
 
   initTheme() {
@@ -124,6 +131,37 @@ class DiscoApp {
     if (this._font) {
       root.setAttribute('disco-font', this._font);
     }
+  }
+
+  initInsets() {
+    const root = document.documentElement;
+    if (this._statusBarColor) {
+      root.setAttribute('disco-status-bar-color', this._statusBarColor);
+    }
+    if (this._navBarColor) {
+      root.setAttribute('disco-nav-bar-color', this._navBarColor);
+    }
+  }
+
+  /**
+   * Set safe area inset values (in px).
+   * @param {{ top?: number | string | null, right?: number | string | null, bottom?: number | string | null, left?: number | string | null }} insets
+   */
+  setInsets(insets = {}) {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const { top, right, bottom, left } = insets;
+    const applyInset = (name, value) => {
+      if (value === null || value === undefined || value === '') {
+        root.removeAttribute(name);
+        return;
+      }
+      root.setAttribute(name, String(value));
+    };
+    applyInset('disco-inset-top', top);
+    applyInset('disco-inset-right', right);
+    applyInset('disco-inset-bottom', bottom);
+    applyInset('disco-inset-left', left);
   }
 
   /**

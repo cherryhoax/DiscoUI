@@ -50,3 +50,7 @@ await frame.goBack();
 
 - `history-key`: Unique key for History API state (default: auto-generated).
 - `disable-history`: If present, disables integration with browser History API.
+
+## Safe Area Insets
+
+`<disco-frame>` respects the `disco-inset-top` and `disco-inset-bottom` values defined on the root and adds padding so page content stays inside the safe area.

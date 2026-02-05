@@ -125,9 +125,6 @@
         const backButton = document.querySelector('#disco-device .back-hit');
         const homeButton = document.querySelector('#disco-device .home-hit');
         const fullscreenToggle = document.getElementById('fullscreenToggle');
-        iframe.onload = () => {
-            iframe.contentWindow.app.scale = 1.025;
-        };
         backButton.addEventListener('click', () => {
             iframe.contentWindow.frame.goBack();
         });

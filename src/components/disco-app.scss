@@ -4,6 +4,15 @@
 	--disco-foreground: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
 	--disco-accent: attr(disco-accent type(<color>), #d80073);
 	--disco-font: attr(disco-font raw-string, 'Open Sans', sans-serif);
+	--disco-inset-top: calc(attr(disco-inset-top number, 0) * 1px);
+	--disco-inset-right: calc(attr(disco-inset-right number, 0) * 1px);
+	--disco-inset-bottom: calc(attr(disco-inset-bottom number, 0) * 1px);
+	--disco-inset-left: calc(attr(disco-inset-left number, 0) * 1px);
+	--disco-status-bar-background: attr(disco-status-bar-color type(<color>), var(--disco-background));
+	--disco-nav-bar-background: attr(
+		disco-nav-bar-color type(<color>),
+		color-mix(in srgb, var(--disco-background) 50%, transparent)
+	);
 	--disco-theme: 0;
 	--disco-perspective: calc(100vw / (attr(disco-scale number, .8)) * 4);
 	--disco-scale: attr(disco-scale number, .8);

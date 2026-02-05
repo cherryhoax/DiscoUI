@@ -15,6 +15,8 @@ const launchDemo = async () => {
       showProgress: true
     }
   });
+  app.scale = 1.025;
+  app.setInsets({ top: 30, bottom: 50, left: 0, right: 0 });
   window.app = app;
 
   const frame = document.getElementById('componentsFrame');

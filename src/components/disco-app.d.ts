@@ -16,6 +16,8 @@ export type DiscoAppConfig = {
   font?: string | null;
   icon?: string | HTMLElement | null;
   splash?: DiscoSplashConfig | 'none' | 'auto' | 'manual';
+  statusBarColor?: string | null;
+  navBarColor?: string | null;
 };
 
 export default class DiscoApp {
@@ -32,6 +34,12 @@ export default class DiscoApp {
   set font(value: string | null);
   get theme(): string;
   set theme(value: 'dark' | 'light' | 'auto' | string | null);
+  setInsets(insets?: {
+    top?: number | string | null;
+    right?: number | string | null;
+    bottom?: number | string | null;
+    left?: number | string | null;
+  }): void;
   get scale(): number;
   set scale(value: string | number | null);
   /** Layout width (viewport width divided by scale). */

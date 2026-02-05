@@ -9,6 +9,7 @@ disco-frame {
   top: 0;
   width: var(--disco-vw);
   height: var(--disco-vh);
+  box-sizing: border-box;
   font-family: var(--disco-font);
   background-color: var(--disco-background);
   perspective-origin: center;

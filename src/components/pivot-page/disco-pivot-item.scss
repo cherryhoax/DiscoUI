@@ -33,5 +33,5 @@
 .pivot-item-scroll-content {
   box-sizing: border-box;
   min-height: 100%;
-  padding: 0 20px 120px;
+  padding: 0 20px calc(120px + var(--disco-inset-bottom) + var(--disco-inset-top));
 }
