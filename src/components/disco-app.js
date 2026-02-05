@@ -311,10 +311,11 @@ class DiscoApp {
    * @param {number} right - Right inset in pixels
    */
   setInset(top, bottom, left, right) {
-    this._insetTop = top;
-    this._insetBottom = bottom;
-    this._insetLeft = left;
-    this._insetRight = right;
+    // Validate inputs
+    this._insetTop = Math.max(0, Number(top) || 0);
+    this._insetBottom = Math.max(0, Number(bottom) || 0);
+    this._insetLeft = Math.max(0, Number(left) || 0);
+    this._insetRight = Math.max(0, Number(right) || 0);
     
     if (this.rootFrame) {
       this._updateInsetBars();
@@ -327,7 +328,7 @@ class DiscoApp {
   _updateInsetBars() {
     if (!this.rootFrame) return;
 
-    // Set inset attributes on frame
+    // Set inset attributes on frame for reference
     this.rootFrame.setAttribute('disco-inset-top', String(this._insetTop));
     this.rootFrame.setAttribute('disco-inset-bottom', String(this._insetBottom));
     this.rootFrame.setAttribute('disco-inset-left', String(this._insetLeft));
@@ -339,11 +340,9 @@ class DiscoApp {
     this.rootFrame.style.paddingLeft = `${this._insetLeft}px`;
     this.rootFrame.style.paddingRight = `${this._insetRight}px`;
 
-    // Remove existing inset bars
-    const existingStatusBar = this.rootFrame.querySelector('.disco-inset-status-bar');
-    const existingNavBar = this.rootFrame.querySelector('.disco-inset-nav-bar');
-    if (existingStatusBar) existingStatusBar.remove();
-    if (existingNavBar) existingNavBar.remove();
+    // Remove existing inset bars in a single query
+    const existingBars = this.rootFrame.querySelectorAll('.disco-inset-status-bar, .disco-inset-nav-bar');
+    existingBars.forEach(bar => bar.remove());
 
     // Create status bar if top inset is not 0
     if (this._insetTop > 0) {
