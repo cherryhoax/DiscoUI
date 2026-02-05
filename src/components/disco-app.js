@@ -23,6 +23,12 @@ import './disco-splash.js';
  * @property {string | null} [font]
  * @property {string | HTMLElement | null} [icon]
  * @property {DiscoSplashConfig | SplashMode} [splash]
+ * @property {number} [insetTop]
+ * @property {number} [insetBottom]
+ * @property {number} [insetLeft]
+ * @property {number} [insetRight]
+ * @property {string} [statusBarColor]
+ * @property {string} [navBarColor]
  */
 
 
@@ -94,11 +100,25 @@ class DiscoApp {
     const attrTheme = root.getAttribute('disco-theme');
     const attrAccent = root.getAttribute('disco-accent');
     const attrFont = root.getAttribute('disco-font');
+    const attrInsetTop = root.getAttribute('disco-inset-top');
+    const attrInsetBottom = root.getAttribute('disco-inset-bottom');
+    const attrInsetLeft = root.getAttribute('disco-inset-left');
+    const attrInsetRight = root.getAttribute('disco-inset-right');
 
     this._accent = config.accent || attrAccent || '#D80073'; // Classic WP Magenta
     this._theme = config.theme || attrTheme || 'dark';
     this._font = config.font || attrFont || null;
     this._icon = config.icon || null; // Optional splash foreground (URL or HTMLElement)
+
+    // Inset values
+    this._insetTop = config.insetTop ?? (attrInsetTop ? parseFloat(attrInsetTop) : 0);
+    this._insetBottom = config.insetBottom ?? (attrInsetBottom ? parseFloat(attrInsetBottom) : 0);
+    this._insetLeft = config.insetLeft ?? (attrInsetLeft ? parseFloat(attrInsetLeft) : 0);
+    this._insetRight = config.insetRight ?? (attrInsetRight ? parseFloat(attrInsetRight) : 0);
+
+    // Inset bar colors
+    this._statusBarColor = config.statusBarColor || 'var(--disco-background)';
+    this._navBarColor = config.navBarColor || 'rgba(var(--disco-background-rgb), 0.8)';
 
     // Normalize splash config
     let splashConfig = { mode: 'auto', color: null, icon: null, showProgress: true, progressColor: '#fff' };
@@ -284,6 +304,79 @@ class DiscoApp {
   }
 
   /**
+   * Set safe area insets
+   * @param {number} top - Top inset in pixels
+   * @param {number} bottom - Bottom inset in pixels
+   * @param {number} left - Left inset in pixels
+   * @param {number} right - Right inset in pixels
+   */
+  setInset(top, bottom, left, right) {
+    this._insetTop = top;
+    this._insetBottom = bottom;
+    this._insetLeft = left;
+    this._insetRight = right;
+    
+    if (this.rootFrame) {
+      this._updateInsetBars();
+    }
+  }
+
+  /**
+   * @private
+   */
+  _updateInsetBars() {
+    if (!this.rootFrame) return;
+
+    // Set inset attributes on frame
+    this.rootFrame.setAttribute('disco-inset-top', String(this._insetTop));
+    this.rootFrame.setAttribute('disco-inset-bottom', String(this._insetBottom));
+    this.rootFrame.setAttribute('disco-inset-left', String(this._insetLeft));
+    this.rootFrame.setAttribute('disco-inset-right', String(this._insetRight));
+
+    // Set padding on frame
+    this.rootFrame.style.paddingTop = `${this._insetTop}px`;
+    this.rootFrame.style.paddingBottom = `${this._insetBottom}px`;
+    this.rootFrame.style.paddingLeft = `${this._insetLeft}px`;
+    this.rootFrame.style.paddingRight = `${this._insetRight}px`;
+
+    // Remove existing inset bars
+    const existingStatusBar = this.rootFrame.querySelector('.disco-inset-status-bar');
+    const existingNavBar = this.rootFrame.querySelector('.disco-inset-nav-bar');
+    if (existingStatusBar) existingStatusBar.remove();
+    if (existingNavBar) existingNavBar.remove();
+
+    // Create status bar if top inset is not 0
+    if (this._insetTop > 0) {
+      const statusBar = document.createElement('div');
+      statusBar.className = 'disco-inset-status-bar';
+      statusBar.style.position = 'absolute';
+      statusBar.style.top = '0';
+      statusBar.style.left = '0';
+      statusBar.style.right = '0';
+      statusBar.style.height = `${this._insetTop}px`;
+      statusBar.style.backgroundColor = this._statusBarColor;
+      statusBar.style.zIndex = '10000';
+      statusBar.style.pointerEvents = 'none';
+      this.rootFrame.insertBefore(statusBar, this.rootFrame.firstChild);
+    }
+
+    // Create nav bar if bottom inset is not 0
+    if (this._insetBottom > 0) {
+      const navBar = document.createElement('div');
+      navBar.className = 'disco-inset-nav-bar';
+      navBar.style.position = 'absolute';
+      navBar.style.bottom = '0';
+      navBar.style.left = '0';
+      navBar.style.right = '0';
+      navBar.style.height = `${this._insetBottom}px`;
+      navBar.style.backgroundColor = this._navBarColor;
+      navBar.style.zIndex = '10000';
+      navBar.style.pointerEvents = 'none';
+      this.rootFrame.appendChild(navBar);
+    }
+  }
+
+  /**
    * Computed layout width (viewport width divided by scale).
    * @returns {number}
    */
@@ -327,6 +420,10 @@ class DiscoApp {
     // Add to DOM as siblings
     document.body.appendChild(this.rootFrame);
     this.rootFrame.setAttribute('disco-launched', 'true');
+    
+    // Update inset bars
+    this._updateInsetBars();
+    
     if (this.splash) {
       document.body.appendChild(this.splash);
     }

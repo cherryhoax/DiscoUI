@@ -16,6 +16,12 @@ export type DiscoAppConfig = {
   font?: string | null;
   icon?: string | HTMLElement | null;
   splash?: DiscoSplashConfig | 'none' | 'auto' | 'manual';
+  insetTop?: number;
+  insetBottom?: number;
+  insetLeft?: number;
+  insetRight?: number;
+  statusBarColor?: string;
+  navBarColor?: string;
 };
 
 export default class DiscoApp {
@@ -24,6 +30,7 @@ export default class DiscoApp {
   static ready(callback: () => void): void;
   setupSplash(): void;
   dismissSplash(): void;
+  setInset(top: number, bottom: number, left: number, right: number): void;
   get background(): 'black' | 'white' | string;
   get foreground(): 'black' | 'white' | string;
   get accent(): string;

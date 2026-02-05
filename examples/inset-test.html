@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" 
+      disco-theme="dark" 
+      disco-accent="#D80073"
+      disco-inset-top="47"
+      disco-inset-bottom="34"
+      disco-inset-left="0"
+      disco-inset-right="0">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disco UI - Inset Test</title>
+    <link rel="stylesheet" href="./dist/discoui.css" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <style>
+        .test-content {
+            padding: 20px;
+            color: var(--disco-foreground);
+        }
+        .inset-info {
+            background: rgba(216, 0, 115, 0.2);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .inset-info h2 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+        }
+        .inset-info p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <disco-frame id="testFrame">
+        <disco-single-page id="homePage" app-title="INSET TEST" header="Safe Area Insets">
+            <div class="test-content">
+                <div class="inset-info">
+                    <h2>Current Inset Values</h2>
+                    <p>Top: <strong id="topValue">47px</strong></p>
+                    <p>Bottom: <strong id="bottomValue">34px</strong></p>
+                    <p>Left: <strong id="leftValue">0px</strong></p>
+                    <p>Right: <strong id="rightValue">0px</strong></p>
+                </div>
+                
+                <div class="inset-info">
+                    <h2>Status Bar (Top)</h2>
+                    <p>Should be visible with background color</p>
+                    <p>Height: 47px</p>
+                </div>
+                
+                <div class="inset-info">
+                    <h2>Navigation Bar (Bottom)</h2>
+                    <p>Should be visible with semi-transparent background</p>
+                    <p>Height: 34px</p>
+                </div>
+
+                <disco-button id="changeInsetBtn">Change Insets (60, 40, 10, 10)</disco-button>
+                <disco-button id="resetInsetBtn" style="margin-top: 8px;">Reset Insets (0, 0, 0, 0)</disco-button>
+            </div>
+        </disco-single-page>
+    </disco-frame>
+
+    <script type="module">
+        import DiscoApp from './dist/discoui.mjs';
+
+        DiscoApp.ready(() => {
+            const frame = document.getElementById('testFrame');
+            const app = new DiscoApp({
+                theme: 'dark',
+                accent: '#D80073'
+            });
+
+            app.launch(frame);
+            frame.navigate(document.getElementById('homePage'));
+
+            // Button handlers
+            document.getElementById('changeInsetBtn').addEventListener('click', () => {
+                app.setInset(60, 40, 10, 10);
+                document.getElementById('topValue').textContent = '60px';
+                document.getElementById('bottomValue').textContent = '40px';
+                document.getElementById('leftValue').textContent = '10px';
+                document.getElementById('rightValue').textContent = '10px';
+            });
+
+            document.getElementById('resetInsetBtn').addEventListener('click', () => {
+                app.setInset(0, 0, 0, 0);
+                document.getElementById('topValue').textContent = '0px';
+                document.getElementById('bottomValue').textContent = '0px';
+                document.getElementById('leftValue').textContent = '0px';
+                document.getElementById('rightValue').textContent = '0px';
+            });
+        });
+    </script>
+</body>
+
+</html>
