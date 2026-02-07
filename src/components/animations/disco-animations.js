@@ -94,7 +94,7 @@ const animationSet = {
                     {
                         duration,
                         easing: 'linear',
-                        fill: 'forwards'
+                        fill: 'none'
                     }
                 );
                 animation.pause();
@@ -109,6 +109,7 @@ const animationSet = {
                 await animation.finished;
                 target.style.visibility = 'hidden';
                 cache.delete(target);
+                resetAnimation(target);
             }
         },
         /**
@@ -189,7 +190,7 @@ const animationSet = {
                 {
                     duration: 150,
                     easing: DiscoAnimations.easeInQuad,
-                    fill: 'forwards',
+                    fill: 'none',
                     spline: true
                 }
             ) : DiscoAnimations.animate(
@@ -209,7 +210,7 @@ const animationSet = {
                 {
                     duration: 150,
                     easing: DiscoAnimations.easeInQuad,
-                    fill: 'forwards',
+                    fill: 'none',
                     spline: true
                 }
             );
@@ -265,7 +266,7 @@ const animationSet = {
                 {
                     duration: 50,
                     easing: DiscoAnimations.easeInQuad,
-                    fill: 'forwards'
+                    fill: 'none'
                 }
             );
             await animation.finished;
@@ -307,6 +308,7 @@ const animationSet = {
                 }
             );
             await animation.finished;
+            resetAnimation(target);
         }
     },
     list: {

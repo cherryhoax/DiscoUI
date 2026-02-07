@@ -211,6 +211,9 @@ class DiscoFrame extends DiscoUIElement {
    */
   _setPageVisibility(page, isVisible) {
     if (isVisible) {
+      if (page instanceof HTMLElement) {
+        page.style.visibility = '';
+      }
       page.removeAttribute('hidden');
       page.removeAttribute('aria-hidden');
       if ('inert' in page) {
