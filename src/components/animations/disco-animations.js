@@ -78,31 +78,28 @@ const animationSet = {
             if (!animation) {
                 resetAnimation(target);
                 animation = DiscoAnimations.animate(
-                    target,
-                    [
-                        {
-                            opacity: 1,
-                            transformOrigin: 'left center',
-                            transform: `translateX(0px) rotateY(0deg) translateX(0px)`
-                        },
-                        {
-                            opacity: 1,
-                            transformOrigin: 'left center',
-                            transform: `translateX(${DiscoAppDelegate.width / 8}px) rotateY(90deg) translateX(${DiscoAppDelegate.width / 8}px)`
-                        }
-                    ],
+                target,
+                [
                     {
-                        duration,
-                        easing: 'linear',
-                        fill: 'none'
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `translateX(0px) rotateY(0deg) translateX(0px)`
+                    },
+                    {
+                        opacity: 1,
+                        transformOrigin: 'left center',
+                        transform: `translateX(${DiscoAppDelegate.width / 8}px) rotateY(90deg) translateX(${DiscoAppDelegate.width / 5}px)`
                     }
-                );
+                ],
+                {
+                    duration: 150,
+                    easing: DiscoAnimations.easeInQuad,
+                    fill: 'none',
+                    spline: true
+                });
                 animation.pause();
                 cache.set(target, animation);
             }
-
-            animation.currentTime = progress * duration;
-            animation.pause();
 
             if (completeAnim) {
                 animation.play();
@@ -110,6 +107,9 @@ const animationSet = {
                 target.style.visibility = 'hidden';
                 cache.delete(target);
                 resetAnimation(target);
+            } else {
+                animation.currentTime = progress * duration;
+                animation.pause();
             }
         },
         /**

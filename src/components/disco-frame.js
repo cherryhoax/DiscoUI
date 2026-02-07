@@ -141,6 +141,7 @@ class DiscoFrame extends DiscoUIElement {
    * @returns {Promise<void>}
    */
   async predictiveBackCancel() {
+    return
     if (!this._predictiveActive) return;
     const current = this.history[this.historyIndex];
     const previous = this.history[this.historyIndex - 1];
