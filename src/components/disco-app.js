@@ -363,19 +363,21 @@ class DiscoApp {
     });
 
     if (this.splash) {
-        this.rootFrame.style.visibility = 'hidden';
-    }
-
-    // Add to DOM as siblings
-    document.body.appendChild(this.rootFrame);
-    this.rootFrame.setAttribute('disco-launched', 'true');
-    if (this.splash) {
       document.body.appendChild(this.splash);
+      // Remove frame from DOM entirely while splash is showing to prevent paint flashes
+      if (this.rootFrame.parentNode) {
+        this.rootFrame.remove();
+      }
+    } else {
+      // No splash, ensuring frame is in DOM
+      if (!this.rootFrame.parentNode) {
+        document.body.appendChild(this.rootFrame);
+      }
+      this.rootFrame.setAttribute('disco-launched', 'true');
     }
 
     if (this.splash && this.splashConfig.mode === 'auto') {
       requestAnimationFrame(() => {
-        this.setupSplash();
         this.dismissSplash();
       });
     }
@@ -420,30 +422,42 @@ class DiscoApp {
   }
 
   setupSplash() {
-    this.splashState.setup = true;
-    this.maybeDismissSplash();
+    // Deprecated: No-op
   }
 
-  dismissSplash() {
-    this.splashState.ready = true;
-    this.maybeDismissSplash();
-  }
-
-  maybeDismissSplash() {
-    if (!this.splash) return;
-    const { setup, ready } = this.splashState;
-    if (setup && ready) {
-      if (this.rootFrame) {
-          this.rootFrame.style.visibility = '';
-      }
-      if (typeof this.splash.dismiss === 'function') {
-        this.splash.dismiss();
-      } else {
-        this.splash.remove();
-      }
-      this.splash = null;
+  async dismissSplash() {
+    if (!this.splash) {
+        // If no splash, ensure frame is just visible (fallback)
+        if (this.rootFrame && !this.rootFrame.hasAttribute('disco-launched')) {
+            if (!this.rootFrame.parentNode) {
+                document.body.appendChild(this.rootFrame);
+            }
+            this.rootFrame.setAttribute('disco-launched', 'true');
+        }
+        return;
     }
+
+    // Prepare frame before dismissing splash
+    if (this.rootFrame) {
+        // Ensure frame is in DOM
+        if (!this.rootFrame.parentNode) {
+            document.body.insertBefore(this.rootFrame, this.splash);
+        }
+        // Make it visible (display: flex via css)
+        this.rootFrame.setAttribute('disco-launched', 'true');
+    }
+
+    // Await exit animation
+    if (typeof this.splash.dismiss === 'function') {
+        await this.splash.dismiss();
+    } else {
+        this.splash.remove();
+    }
+    this.splash = null;
   }
+
+  // Deprecated internal method
+  maybeDismissSplash() {}
 }
 
 /**

@@ -198,12 +198,10 @@ const launchDemo = async () => {
   app.launch(frame);
 
   // Simulate manual splash loading (1s - 6s)
-  app.setupSplash();
+  //app.setupSplash();
   setTimeout(async () => {
-    app.dismissSplash();
-    // Wait for fast fade (150ms) + small buffer
-    await new Promise((r) => setTimeout(r, 200));
-    await frame.navigate(homePage);
+    await app.dismissSplash();
+    frame.navigate(homePage);
   }, 1000);
 };
 

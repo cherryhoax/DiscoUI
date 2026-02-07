@@ -63,14 +63,13 @@ class DiscoSplash extends DiscoUIElement {
 
   /**
    * Dismiss splash with fade-out.
+   * @returns {Promise<void>}
    */
-  dismiss() {
+  async dismiss() {
     if (!this.shadowRoot) return;
     const host = /** @type {HTMLElement} */ (this.shadowRoot.host);
-    (async () => {
-      await DiscoAnimations.animationSet.splash.out(host);
-      host.remove();
-    })();
+    await DiscoAnimations.animationSet.splash.out(host);
+    host.remove();
   }
 
   /**

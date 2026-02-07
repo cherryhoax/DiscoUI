@@ -24,6 +24,14 @@
 	color: var(--disco-foreground);
 }
 
+disco-frame {
+	display: none;
+}
+
+disco-frame[disco-launched] {
+	display: flex;
+}
+
 * {
 	user-select: none;
 	-webkit-user-select: none;

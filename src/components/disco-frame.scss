@@ -2,9 +2,8 @@
 
 disco-frame {
   position: fixed;
-  display: flex;
+  display: none;
   flex-direction: column;
-  visibility: hidden;
   left: 0;
   top: 0;
   width: var(--disco-vw);
@@ -21,7 +20,7 @@ disco-frame {
   }
 
   &[disco-launched] {
-    visibility: visible;
+    display: flex;
   }
 
   * {

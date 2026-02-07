@@ -7,3 +7,11 @@ body {
 	background-color: var(--disco-background);
 	color: var(--disco-foreground);
 }
+
+disco-frame {
+	display: none;
+}
+
+disco-frame[disco-launched] {
+	display: flex;
+}
