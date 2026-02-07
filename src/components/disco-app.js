@@ -362,6 +362,10 @@ class DiscoApp {
       page.setAttribute('aria-hidden', 'true');
     });
 
+    if (this.splash) {
+        this.rootFrame.style.visibility = 'hidden';
+    }
+
     // Add to DOM as siblings
     document.body.appendChild(this.rootFrame);
     this.rootFrame.setAttribute('disco-launched', 'true');
@@ -429,6 +433,9 @@ class DiscoApp {
     if (!this.splash) return;
     const { setup, ready } = this.splashState;
     if (setup && ready) {
+      if (this.rootFrame) {
+          this.rootFrame.style.visibility = '';
+      }
       if (typeof this.splash.dismiss === 'function') {
         this.splash.dismiss();
       } else {
