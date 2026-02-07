@@ -16,6 +16,9 @@ const resetAnimation = (target) => {
     if (!(target instanceof Element)) return;
     if (target instanceof HTMLElement) {
         target.style.visibility = '';
+        target.style.opacity = '';
+        target.style.transform = '';
+        target.style.transformOrigin = '';
     }
     target.getAnimations().forEach((anim) => anim.cancel());
 };
@@ -44,6 +47,70 @@ const resetAnimation = (target) => {
 
 const animationSet = {
     page: {
+        /**
+         * Reset inline styles/animations so the element can render immediately.
+         * @param {Element} target
+         * @returns {void}
+         */
+        prepare: (target) => {
+            resetAnimation(target);
+            if (target instanceof Element) {
+                target.querySelectorAll('*').forEach((child) => resetAnimation(child));
+            }
+        },
+        /**
+         * @param {Element} target
+         * @param {number} t
+         * @param {boolean} [completeAnim]
+         * @returns {Promise<void>}
+         */
+        predictiveOut: async (target, t, completeAnim = false) => {
+            const clamp = (value) => Math.min(1, Math.max(0, value));
+            const progress = clamp(typeof t === 'number' ? t : 0);
+            const duration = 150;
+            /** @type {WeakMap<Element, Animation>} */
+            if (!animationSet.page._predictiveOut) {
+                animationSet.page._predictiveOut = new WeakMap();
+            }
+
+            const cache = animationSet.page._predictiveOut;
+            let animation = cache.get(target);
+            if (!animation) {
+                resetAnimation(target);
+                animation = DiscoAnimations.animate(
+                    target,
+                    [
+                        {
+                            opacity: 1,
+                            transformOrigin: 'left center',
+                            transform: `translateX(0px) rotateY(0deg) translateX(0px)`
+                        },
+                        {
+                            opacity: 1,
+                            transformOrigin: 'left center',
+                            transform: `translateX(${DiscoAppDelegate.width / 8}px) rotateY(90deg) translateX(${DiscoAppDelegate.width / 8}px)`
+                        }
+                    ],
+                    {
+                        duration,
+                        easing: 'linear',
+                        fill: 'forwards'
+                    }
+                );
+                animation.pause();
+                cache.set(target, animation);
+            }
+
+            animation.currentTime = progress * duration;
+            animation.pause();
+
+            if (completeAnim) {
+                animation.play();
+                await animation.finished;
+                target.style.visibility = 'hidden';
+                cache.delete(target);
+            }
+        },
         /**
          * @param {Element} target
          * @param {DiscoPageAnimationOptions} [options]

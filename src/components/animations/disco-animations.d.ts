@@ -25,6 +25,7 @@ export interface DiscoPageAnimationOptions {
 export interface PageAnimations {
   in(target: Element, options?: DiscoPageAnimationOptions): Promise<void>;
   out(target: Element, options?: DiscoPageAnimationOptions): Promise<void>;
+  predictiveOut(target: Element, t: number, completeAnim?: boolean): Promise<void>;
 }
 
 export interface ListAnimations {

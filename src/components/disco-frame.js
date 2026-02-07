@@ -1,5 +1,6 @@
 import DiscoUIElement from './disco-ui-element.js';
 import frameStyles from './disco-frame.scss';
+import DiscoAnimations from './animations/disco-animations.js';
 
 /**
  * Frame container for Disco UI pages. Manages navigation history and page transitions.
@@ -15,6 +16,7 @@ class DiscoFrame extends DiscoUIElement {
     this._historyEnabled = !this.hasAttribute('disable-history');
     this._onPopState = this._onPopState.bind(this);
     this._historyListenerAttached = false;
+    this._predictiveActive = false;
   }
 
   connectedCallback() {
@@ -104,6 +106,79 @@ class DiscoFrame extends DiscoUIElement {
       return;
     }
     await this._navigateToIndex(this.historyIndex - 1, 'back', true);
+  }
+
+  /**
+   * @param {number} t
+   * @returns {Promise<void>}
+   */
+  async predictiveBackProgress(t) {
+    if (this.historyIndex <= 0) return;
+    const current = this.history[this.historyIndex];
+    const previous = this.history[this.historyIndex - 1];
+    if (!current || !previous) return;
+
+    this._predictiveActive = true;
+    if (!this.contains(previous)) {
+      if (current && this.contains(current)) {
+        this.insertBefore(previous, current);
+      } else {
+        this.appendChild(previous);
+      }
+    } else if (current && previous.nextSibling !== current) {
+      this.insertBefore(previous, current);
+    }
+    if (DiscoAnimations?.animationSet?.page?.prepare) {
+      DiscoAnimations.animationSet.page.prepare(previous);
+    }
+    this._setPageVisibility(previous, true);
+    if (typeof current.animateOut === 'function') {
+      await DiscoAnimations.animationSet.page.predictiveOut(current, t);
+    }
+  }
+
+  /**
+   * @returns {Promise<void>}
+   */
+  async predictiveBackCancel() {
+    if (!this._predictiveActive) return;
+    const current = this.history[this.historyIndex];
+    const previous = this.history[this.historyIndex - 1];
+    this._predictiveActive = false;
+    if (current && typeof current.animateIn === 'function') {
+      await current.animateIn({ direction: 'back' });
+    }
+    if (previous) {
+      this._setPageVisibility(previous, false);
+    }
+  }
+
+  /**
+   * @returns {Promise<boolean>} true if history handled, false if no history
+   */
+  async predictiveBackCommit() {
+    const current = this.history[this.historyIndex];
+    const previous = this.history[this.historyIndex - 1];
+    if (!current) return false;
+
+    await DiscoAnimations.animationSet.page.predictiveOut(current, 1, true);
+    this._predictiveActive = false;
+
+    if (!previous) {
+      return false;
+    }
+
+    this._setPageVisibility(current, false);
+    if (DiscoAnimations?.animationSet?.page?.prepare) {
+      DiscoAnimations.animationSet.page.prepare(previous);
+    }
+    this._setPageVisibility(previous, true);
+    this._hideInactivePages(previous);
+    this.historyIndex = Math.max(0, this.historyIndex - 1);
+    if (typeof previous.animateIn === 'function') {
+      await previous.animateIn({ direction: 'back' });
+    }
+    return true;
   }
 
   async _transitionTo(page, options) {
