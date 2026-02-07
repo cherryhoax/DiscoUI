@@ -13,7 +13,7 @@ disco-frame {
   background-color: var(--disco-background);
   perspective-origin: center;
   perspective: var(--disco-perspective);
-  zoom: var(--disco-scale);
+  zoom: var(--disco-scale, 0.8);
 
   >*[hidden] {
     display: none !important;

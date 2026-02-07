@@ -25,6 +25,7 @@ import './disco-splash.js';
  * @property {DiscoSplashConfig | SplashMode} [splash]
  * @property {string | null} [statusBarColor]
  * @property {string | null} [navBarColor]
+ * @property {string | number | null} [scale]
  */
 
 
@@ -98,6 +99,7 @@ class DiscoApp {
     const attrFont = root.getAttribute('disco-font');
     const attrStatusBarColor = root.getAttribute('disco-status-bar-color');
     const attrNavBarColor = root.getAttribute('disco-nav-bar-color');
+    const attrScale = root.getAttribute('disco-scale');
 
     this._accent = config.accent || attrAccent || '#D80073'; // Classic WP Magenta
     this._theme = config.theme || attrTheme || 'dark';
@@ -122,6 +124,11 @@ class DiscoApp {
     injectFontStyles();
     this.initTheme();
     this.initInsets();
+    if (config.scale !== undefined && config.scale !== null) {
+      this.scale = config.scale;
+    } else if (attrScale) {
+      this.scale = attrScale;
+    }
   }
 
   initTheme() {

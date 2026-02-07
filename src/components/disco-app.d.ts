@@ -18,6 +18,7 @@ export type DiscoAppConfig = {
   splash?: DiscoSplashConfig | 'none' | 'auto' | 'manual';
   statusBarColor?: string | null;
   navBarColor?: string | null;
+  scale?: string | number | null;
 };
 
 export default class DiscoApp {
