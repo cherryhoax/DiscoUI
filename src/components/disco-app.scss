@@ -9,15 +9,14 @@
 	--disco-inset-bottom: calc(attr(disco-inset-bottom number, 0) * 1px);
 	--disco-inset-left: calc(attr(disco-inset-left number, 0) * 1px);
 	--disco-status-bar-background: attr(disco-status-bar-color type(<color>), var(--disco-background));
-	--disco-nav-bar-background: attr(
-		disco-nav-bar-color type(<color>),
-		color-mix(in srgb, var(--disco-background) 50%, transparent)
-	);
+	--disco-nav-bar-background: attr(disco-nav-bar-color type(<color>),
+			color-mix(in srgb, var(--disco-background) 50%, transparent));
 	--disco-theme: 0;
-	--disco-perspective: calc(100vw / (attr(disco-scale number, .8)) * 4);
 	--disco-scale: attr(disco-scale number, .8);
-	--disco-vw: calc(100vw / var(--disco-scale));
-	--disco-vh: calc(100vh / var(--disco-scale));
+	--disco-perspective: calc(100vw / (var(--disco-scale, 0.8)) * 4);
+
+	--disco-vw: calc(100vw / var(--disco-scale, 0.8));
+	--disco-vh: calc(100vh / var(--disco-scale, 0.8));
 	--disco-page-in-ease: var(--disco-ease-out-quart, ease-out);
 	--disco-page-out-ease: var(--disco-ease-out-quad, ease-in);
 	font-family: var(--disco-font, 'Open Sans', sans-serif);
