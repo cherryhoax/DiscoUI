@@ -135,6 +135,10 @@ class DiscoApp {
     const root = document.documentElement;
     root.setAttribute('disco-theme', this._theme);
     root.setAttribute('disco-accent', this._accent);
+    if (typeof window !== 'undefined') {
+      const ratio = window.devicePixelRatio || 1;
+      root.setAttribute('disco-dpr', String(ratio));
+    }
     if (this._font) {
       root.setAttribute('disco-font', this._font);
     }
@@ -158,6 +162,7 @@ class DiscoApp {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
     const { top, right, bottom, left } = insets;
+    const ratio = typeof window !== 'undefined' && window.devicePixelRatio ? window.devicePixelRatio : 1;
     const applyInset = (name, value) => {
       if (value === null || value === undefined || value === '') {
         root.removeAttribute(name);
@@ -165,6 +170,7 @@ class DiscoApp {
       }
       root.setAttribute(name, String(value));
     };
+    root.setAttribute('disco-dpr', String(ratio));
     applyInset('disco-inset-top', top);
     applyInset('disco-inset-right', right);
     applyInset('disco-inset-bottom', bottom);

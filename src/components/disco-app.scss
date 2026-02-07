@@ -1,24 +1,46 @@
 :root {
-	--disco-background: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
-	transition: --disco-theme 250ms ease-in-out;
-	--disco-foreground: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
-	--disco-accent: attr(disco-accent type(<color>), #d80073);
-	--disco-font: attr(disco-font raw-string, 'Open Sans', sans-serif);
-	--disco-inset-top: calc(attr(disco-inset-top number, 0) * 1px);
-	--disco-inset-right: calc(attr(disco-inset-right number, 0) * 1px);
-	--disco-inset-bottom: calc(attr(disco-inset-bottom number, 0) * 1px);
-	--disco-inset-left: calc(attr(disco-inset-left number, 0) * 1px);
-	--disco-status-bar-background: attr(disco-status-bar-color type(<color>), var(--disco-background));
-	--disco-nav-bar-background: attr(disco-nav-bar-color type(<color>),
-			color-mix(in srgb, var(--disco-background) 50%, transparent));
+	/* Theme + core palette */
 	--disco-theme: 0;
-	--disco-scale: attr(disco-scale number, .8);
-	--disco-perspective: calc(100vw / (var(--disco-scale, 0.8)) * 4);
+	--disco-background: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
+	--disco-foreground: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
+	--disco-accent-attr: attr(disco-accent type(<color>));
+	--disco-accent: var(--disco-accent-attr, #d80073);
+	transition: --disco-theme 250ms ease-in-out;
 
+	/* Typography */
+	--disco-font-attr: attr(disco-font raw-string);
+	--disco-font: var(--disco-font-attr, 'Open Sans', sans-serif);
+
+	/* Insets (system bars / cutout) */
+	--disco-dpr-attr: attr(disco-dpr type(<number>));
+	--disco-dpr: var(--disco-dpr-attr, 1);
+	--disco-inset-top-attr: attr(disco-inset-top type(<number>));
+	--disco-inset-right-attr: attr(disco-inset-right type(<number>));
+	--disco-inset-bottom-attr: attr(disco-inset-bottom type(<number>));
+	--disco-inset-left-attr: attr(disco-inset-left type(<number>));
+	--disco-inset-top: calc((var(--disco-inset-top-attr, 0) / var(--disco-dpr, 1)) * 1px);
+	--disco-inset-right: calc((var(--disco-inset-right-attr, 0) / var(--disco-dpr, 1)) * 1px);
+	--disco-inset-bottom: calc((var(--disco-inset-bottom-attr, 0) / var(--disco-dpr, 1)) * 1px);
+	--disco-inset-left: calc((var(--disco-inset-left-attr, 0) / var(--disco-dpr, 1)) * 1px);
+
+	/* System bar backgrounds */
+	--disco-status-bar-color-attr: attr(disco-status-bar-color type(<color>));
+	--disco-nav-bar-color-attr: attr(disco-nav-bar-color type(<color>));
+	--disco-status-bar-background: var(--disco-status-bar-color-attr, var(--disco-background));
+	--disco-nav-bar-background: var(--disco-nav-bar-color-attr,
+			color-mix(in srgb, var(--disco-background) 50%, transparent));
+
+	/* Layout scaling */
+	--disco-scale-attr: attr(disco-scale type(<number>));
+	--disco-scale: var(--disco-scale-attr, .8);
 	--disco-vw: calc(100vw / var(--disco-scale, 0.8));
 	--disco-vh: calc(100vh / var(--disco-scale, 0.8));
+	--disco-perspective: calc(100vw / (var(--disco-scale, 0.8)) * 4);
+
+	/* Transitions */
 	--disco-page-in-ease: var(--disco-ease-out-quart, ease-out);
 	--disco-page-out-ease: var(--disco-ease-out-quad, ease-in);
+
 	font-family: var(--disco-font, 'Open Sans', sans-serif);
 	background-color: var(--disco-background);
 	color: var(--disco-foreground);
