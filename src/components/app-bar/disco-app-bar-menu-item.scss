@@ -1,0 +1,35 @@
+@use '../disco-ui-element.scss' as ui;
+
+:host {
+  display: block;
+  transform-style: preserve-3d;
+  pointer-events: auto; /* Ensure clickable in overflow:hidden parent */
+}
+
+.menu-item {
+  @include ui.disco-tilt;
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  color: var(--disco-foreground, white);
+  background: transparent;
+  font-size: 30px;
+  font-weight: 300;
+  text-transform: lowercase;
+  user-select: none;
+  transform-style: preserve-3d;
+  
+  &[data-pressed] {
+    /* No color change on press, just tilt */
+  }
+
+  &[data-disabled], &:disabled, &[disabled] {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.menu-label {
+  flex: 1;
+}

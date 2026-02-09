@@ -1,3 +1,5 @@
+import '@olton/metroui/source/icons';
+
 export { default as DiscoApp, DiscoAppDelegate } from './components/disco-app.js';
 export { default as DiscoFrame } from './components/disco-frame.js';
 export { default as DiscoSplash } from './components/disco-splash.js';
@@ -11,6 +13,9 @@ export { default as DiscoPivot } from './components/pivot-page/index.js';
 export { default as DiscoAnimations } from './components/animations/disco-animations.js';
 export { default as DiscoList } from './components/list-view/index.js';
 export { default as DiscoHub } from './components/hub/index.js';
+export { default as DiscoAppBar } from './components/app-bar/disco-app-bar.js';
+export { default as DiscoAppBarIconButton } from './components/app-bar/disco-app-bar-icon-button.js';
+export { default as DiscoAppBarMenuItem } from './components/app-bar/disco-app-bar-menu-item.js';
 
 /**
  * Public exports for DiscoUI.

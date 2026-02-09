@@ -151,6 +151,9 @@ class DiscoPivotPage extends DiscoPage {
         <disco-flip-view class="content-viewport" id="viewport" direction="horizontal" snap-mode="stop" overscroll-mode="loop" scroll-limit="page">
           <slot></slot>
         </disco-flip-view>
+        <div class="pivot-footer">
+          <slot name="footer"></slot>
+        </div>
       </div>
     `;
   }

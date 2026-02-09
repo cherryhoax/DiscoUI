@@ -1,0 +1,91 @@
+@use '../disco-ui-element.scss' as ui;
+
+:host {
+    display: inline-block;
+    vertical-align: top;
+    transform-style: preserve-3d;
+    pointer-events: auto;
+    /* Ensure it captures events even if parent is none */
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 64px;
+    /* allocate width for label */
+    min-height: 48px;
+    transform-style: preserve-3d;
+    @include ui.disco-tilt;
+}
+
+.icon-button {
+    width: 46px;
+    height: 46px;
+    /* Safe default size that fits most icons (approx 42% of button). Overridable. */
+    font-size: var(--disco-icon-size, 20px);
+    border-radius: 50%;
+    border: 2px solid var(--disco-foreground, white);
+    background-color: transparent;
+    /* Usually transparent in App Bar */
+    color: var(--disco-foreground, white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    outline: none;
+    transform-style: preserve-3d;
+
+    /* Icon styling - target the span which will have mif-* classes */
+    span[class*="mif-"] {
+        font-size: 1.2em;
+        /* Scales relative to the button's font-size */
+        line-height: 1;
+        /* Ensure exact centering */
+        display: inline-block;
+        /* Helps with vertical alignment consistency */
+
+        /* Optical adjustments (Visual Corrections) for specific icons */
+        /* Base size is ~20px, adjustments are relative (em) */
+
+        &.mif-search {
+            font-size: 1.5em;
+            transform: scaleX(-1);
+        }
+    }
+
+    .wrapper[data-pressed] & {
+        background-color: var(--disco-accent, #0078d7);
+        border-color: var(--disco-accent, #0078d7);
+        color: white;
+    }
+
+    &:disabled,
+    &[disabled] {
+        opacity: 0.4;
+        pointer-events: none;
+        /* Border color will also fade due to opacity */
+    }
+}
+
+
+.label {
+    margin-top: 6px;
+    font-size: 14px; /* Default size */
+    text-transform: lowercase;
+    text-align: center;
+    color: var(--disco-foreground, white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip; /* Remove ellipsis since we are shrinking text */
+    //max-width: 100%;
+    line-height: 1.2;
+    
+    /* Hidden by default */
+    display: none;
+
+    &.visible {
+        display: block;
+    }
+}

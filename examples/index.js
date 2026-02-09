@@ -6,7 +6,7 @@ import { DiscoApp } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
-    accent: document.documentElement.getAttribute('disco-accent') || '#D80073',
+    accent: document.documentElement.getAttribute('disco-accent') || '#008a00',
     font: document.documentElement.getAttribute('disco-font') || null,
     splash: {
       mode: 'manual',
@@ -16,6 +16,8 @@ const launchDemo = async () => {
     }
   });
   app.scale = 1.025;
+  //REMOVE ME
+  app.scale = 1
   app.setInsets({ top: 30, bottom: 0, left: 0, right: 0 });
   window.app = app;
 
@@ -26,6 +28,7 @@ const launchDemo = async () => {
   window.homePage = homePage;
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');
+  const appBarPage = document.getElementById('componentsAppBar');
   const checkboxPage = document.getElementById('componentsCheckbox');
   const progressPage = document.getElementById('componentsProgress');
   const buttonPage = document.getElementById('componentsButton');
@@ -89,6 +92,7 @@ const launchDemo = async () => {
       { id: 'toggle-theme', Title: 'Toggle Theme', Description: `current theme: ${getTheme()}` },
       { id: 'pivot', Title: 'Pivot', Description: '' },
       { id: 'hub', Title: 'Hub', Description: '' },
+      { id: 'appbar', Title: 'App Bar', Description: '' },
       { id: 'progress', Title: 'Progress Bar', Description: '' },
       { id: 'checkbox', Title: 'Checkbox', Description: '' },
       { id: 'button', Title: 'Button', Description: '' },
@@ -111,6 +115,9 @@ const launchDemo = async () => {
       }
       if (id === 'hub') {
         frame.navigate(hubPage);
+      }
+      if (id === 'appbar') {
+        frame.navigate(appBarPage);
       }
       if (id === 'progress') {
         frame.navigate(progressPage);

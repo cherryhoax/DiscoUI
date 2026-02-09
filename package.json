@@ -26,6 +26,7 @@
   "license": "ISC",
   "dependencies": {
     "@fontsource/open-sans": "^5.2.7",
+    "@olton/metroui": "^5.1.20",
     "b-spline": "^2.0.2",
     "sass": "^1.97.3",
     "vite": "^7.3.1"
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@playwright/test": "^1.58.1",
     "jsdom": "^28.0.0",
+    "less": "^4.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }

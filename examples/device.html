@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Disco Components</title>
     <link rel="stylesheet" href="./dist/discoui.css" />
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v5/css/metro-icons.min.css">
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
 </head>
 
@@ -70,7 +71,26 @@
                     </disco-list-item>
                 </disco-list-view>
             </disco-hub-section>
-        </disco-hub-page> <disco-single-page id="componentsCheckbox" app-title="DISCO UI" header="checkbox">
+        </disco-hub-page>
+        <disco-single-page id="componentsAppBar" app-title="DISCO UI" header="app bar">
+            <div style="display:flex; flex-direction:column; gap:16px;">
+                <div style="font-size: 16px; opacity: 0.9;">
+                    Click the ellipsis (•••) to see the menu with labels and items.
+                </div>
+                <div style="font-size: 14px; opacity: 0.7;">
+                    Icon buttons are always visible, while their labels appear in the menu for accessibility.
+                </div>
+            </div>
+            <disco-app-bar mode="compact" opacity="0.9">
+                <disco-app-bar-icon-button icon="voicemail" label="voicemail"></disco-app-bar-icon-button>
+                <disco-app-bar-icon-button icon="dialpad" label="keypad"></disco-app-bar-icon-button>
+                <disco-app-bar-icon-button icon="addressbook" label="phone book"></disco-app-bar-icon-button>
+                <disco-app-bar-icon-button icon="search" label="search"></disco-app-bar-icon-button>
+                <disco-app-bar-menu-item label="settings"></disco-app-bar-menu-item>
+                <disco-app-bar-menu-item label="select calls" disabled></disco-app-bar-menu-item>
+                <disco-app-bar-menu-item label="blocked calls" disabled></disco-app-bar-menu-item>
+            </disco-app-bar>
+        </disco-single-page> <disco-single-page id="componentsCheckbox" app-title="DISCO UI" header="checkbox">
             <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
                 <disco-checkbox id="cbDefault">Key press</disco-checkbox>
                 <disco-checkbox id="cbChecked" checked>Lock and unlock</disco-checkbox>

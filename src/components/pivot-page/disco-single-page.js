@@ -157,9 +157,16 @@ class DiscoSinglePage extends DiscoPage {
         this._contentViewport.className = 'content-viewport';
         this._contentViewport.appendChild(this._scrollView);
 
+        this._footer = document.createElement('div');
+        this._footer.className = 'single-footer';
+        const footerSlot = document.createElement('slot');
+        footerSlot.name = 'footer';
+        this._footer.appendChild(footerSlot);
+
         this._root.appendChild(this._appTitleEl);
         this._root.appendChild(this._headerStrip);
         this._root.appendChild(this._contentViewport);
+        this._root.appendChild(this._footer);
         this._container.appendChild(this._root);
         this._updateScrollMode();
     }

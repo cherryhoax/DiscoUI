@@ -135,6 +135,9 @@ class DiscoHub extends DiscoPage {
             <disco-hub-view class="hub-viewport" id="viewport" direction="horizontal">
                 <slot></slot>
             </disco-hub-view>
+            <div class="hub-footer">
+                <slot name="footer"></slot>
+            </div>
         `;
         this._header = this._container.querySelector('.hub-header')
     }

@@ -1,0 +1,131 @@
+@use '../disco-ui-element.scss' as ui;
+
+:host {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    /* Ensure it sits above other content but below overlay if any */
+    pointer-events: none;
+    /* Let clicks pass through empty areas if usage implies */
+    transform-style: preserve-3d;
+}
+
+/* The backdrop covers the screen when menu is open to detect outside clicks */
+.app-bar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    display: none;
+    pointer-events: auto;
+
+    &.is-visible {
+        display: block;
+    }
+}
+
+.app-bar {
+    background-color: var(--disco-background-alt, #1d1d1d);
+    color: var(--disco-foreground, white);
+    /* Use a safe area padding for modern phones */
+    padding-bottom: env(safe-area-inset-bottom);
+    pointer-events: auto;
+    transition: background-color 0.2s;
+    overflow: hidden;
+    height: 60px;
+    /* Default - computed by JS */
+    display: flex;
+    flex-direction: column;
+    /* 
+       Cannot use preserve-3d with overflow: hidden on the same element.
+       We must establish a local perspective here so children can be 3D.
+    */
+    perspective: var(--disco-perspective, 2000px);
+    perspective-origin: 50% calc(100% - (var(--disco-vh, 100vh) / 2));
+    opacity: var(--app-bar-opacity, 1);
+
+    &.is-open {
+        /* Height handled by JS animation explicitly */
+    }
+}
+
+.app-bar-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    /* Items align to top so labels can hang down */
+    justify-content: center;
+    transform-style: preserve-3d;
+    padding: 0 16px;
+    height: 60px;
+    /* Fixed height for the button row part */
+    /* When open, we might need more height for the labels to show immediately under icons 
+       The Icons themselves add height when label is shown. 
+       Actually, let the content define height somewhat, but we need min-height.
+    */
+    flex-shrink: 0;
+    padding-top: 13px;
+    /* Spacing for icons */
+    position: relative;
+}
+
+disco-app-bar-ellipsis {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    z-index: 2;
+    transform-style: preserve-3d;
+}
+
+.icons-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    flex: 1;
+    /* Center icons if desired or start aligned */
+    justify-content: center;
+    transform-style: preserve-3d;
+
+    ::slotted(*) {
+        transform-style: preserve-3d;
+    }
+
+}
+
+/* Ellipsis styles moved to disco-app-bar-ellipsis.scss component */
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.1s;
+    transform-style: preserve-3d;
+
+    /* Hide when not open */
+    visibility: hidden;
+
+    ::slotted(*) {
+        transform-style: preserve-3d;
+    }
+}
+
+.app-bar.is-open {
+    .menu-container {
+        opacity: 1;
+        visibility: visible;
+        padding-bottom: 30px;
+    }
+
+    .app-bar-row {
+        /* When open, row needs to accommodate labels which appear below icons */
+        height: 88px;
+        /* 48px icon + padding + label space */
+    }
+}
