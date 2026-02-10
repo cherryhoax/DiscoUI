@@ -55,6 +55,9 @@
             font-size: 1.5em;
             transform: scaleX(-1);
         }
+        &.mif-plus {
+            font-size: 2em;
+        }
     }
 
     .wrapper[data-pressed] & {
@@ -74,16 +77,18 @@
 
 .label {
     margin-top: 6px;
-    font-size: 14px; /* Default size */
+    font-size: 14px;
+    /* Default size */
     text-transform: lowercase;
     text-align: center;
     color: var(--disco-foreground, white);
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: clip; /* Remove ellipsis since we are shrinking text */
+    text-overflow: clip;
+    /* Remove ellipsis since we are shrinking text */
     //max-width: 100%;
     line-height: 1.2;
-    
+
     /* Hidden by default */
     display: none;
 
