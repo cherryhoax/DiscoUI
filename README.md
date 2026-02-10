@@ -44,7 +44,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 ```
 
 ## Project Structure
-- `src/components/` — web components (frame, page base, splash, pivot, hub, list view)
+- `src/components/` — web components (frame, page, splash, pivot, hub, list view, buttons, inputs)
 - `examples/` — demo apps and viewer shell
 - `vite.config.js` — bundling/dev-server config
 

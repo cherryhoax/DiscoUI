@@ -31,6 +31,8 @@ const launchDemo = async () => {
   const progressPage = document.getElementById('componentsProgress');
   const comboBoxPage = document.getElementById('componentsComboBox');
   const buttonPage = document.getElementById('componentsButton');
+  const textBoxPage = document.getElementById('componentsTextBox');
+  const passwordBoxPage = document.getElementById('componentsPasswordBox');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const comboBox = document.querySelector('#componentsComboBox disco-combo-box');
@@ -122,6 +124,8 @@ const launchDemo = async () => {
       { id: 'appbar', Title: 'App Bar', Description: '' },
       { id: 'progress', Title: 'Progress Bar', Description: '' },
       { id: 'checkbox', Title: 'Checkbox', Description: '' },
+      { id: 'textbox', Title: 'Text Box', Description: '' },
+      { id: 'passwordbox', Title: 'Password Box', Description: '' },
       { id: 'combobox', Title: 'Combo Box', Description: '' },
       { id: 'button', Title: 'Button', Description: '' },
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
@@ -158,6 +162,12 @@ const launchDemo = async () => {
       }
       if (id === 'button') {
         frame.navigate(buttonPage);
+      }
+      if (id === 'textbox') {
+        frame.navigate(textBoxPage);
+      }
+      if (id === 'passwordbox') {
+        frame.navigate(passwordBoxPage);
       }
       if (id === 'scrollview') {
         frame.navigate(scrollViewPage);

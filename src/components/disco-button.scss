@@ -9,16 +9,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 22px;
+  padding: 10px 20px;
   min-height: 40px;
-  border: 2px solid var(--disco-foreground);
+  border: 3px solid var(--disco-foreground);
   background-color: var(--disco-background);
   color: var(--disco-foreground);
-  font-size: 16px;
+  font-size: 20px;
   letter-spacing: 0.02em;
-  text-transform: none;
+  text-transform: lowercase;
   box-sizing: border-box;
   outline: none;
+  width: max-content;
+  height: min-content;
 
   &[data-pressed] {
     background-color: var(--disco-accent);
@@ -27,6 +29,6 @@
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--disco-foreground);
+  outline: 3px solid var(--disco-foreground);
   outline-offset: 2px;
 }

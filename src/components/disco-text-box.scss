@@ -1,0 +1,43 @@
+@use 'disco-ui-element.scss' as ui;
+
+:host {
+    display: block;
+}
+
+.text-box {
+    border: none;
+    width: 100%;
+    height: 48px;
+    box-sizing: border-box;
+    background: var(--disco-background-secondary);
+    //but actually its only light background secondary
+    background: rgb(221, 221, 221);
+    color: var(--disco-foreground);
+    font-family: inherit;
+    font-size: 23px;
+    padding: 10px;
+    outline: none;
+    //transition: background-color 0.2s, box-shadow 0.2s;
+
+    &::placeholder {
+        color: color-mix(in srgb, black 60%, transparent);
+    }
+
+    &:focus {
+        background: var(--disco-background);
+        color: var(--disco-foreground);
+        //but actually its only light background
+        background: rgb(255, 255, 255);
+        color: black;
+        box-shadow: inset 0px 0px 0px 4px var(--disco-accent);
+
+        &::placeholder {
+            color: color-mix(in srgb, black 80%, transparent);
+        }
+    }
+
+    &[type="password"] {
+        text-security: disc;
+        -webkit-text-security: disc;
+    }
+}
