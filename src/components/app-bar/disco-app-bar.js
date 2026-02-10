@@ -73,14 +73,12 @@ class DiscoAppBar extends DiscoUIElement {
   }
 
   static get observedAttributes() {
-    return ['mode', 'opacity'];
+    return ['mode'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'mode') {
       this._container.setAttribute('data-mode', newValue || 'compact');
-    } else if (name === 'opacity') {
-      this._container.style.setProperty('--app-bar-opacity', newValue || '1');
     }
   }
 

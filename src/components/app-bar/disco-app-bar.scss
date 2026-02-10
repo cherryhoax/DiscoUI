@@ -36,8 +36,8 @@
 }
 
 .app-bar {
-    background-color: var(--disco-background-alt, #1d1d1d);
-    color: var(--disco-foreground, white);
+    background-color: var(--disco-background-secondary);
+    color: var(--disco-foreground);
     /* Use a safe area padding for modern phones */
     padding-bottom: env(safe-area-inset-bottom);
     pointer-events: auto;
@@ -52,9 +52,8 @@
        We must establish a local perspective here so children can be 3D.
     */
     perspective: var(--disco-perspective, 2000px);
-    perspective-origin: 50% calc(100% - (var(--disco-vh, 100vh) / 2));
-    opacity: var(--app-bar-opacity, 1);
-
+    perspective-origin: 50% calc(100% - (var(--disco-vh) / 2));
+    
     &.is-open {
         /* Height handled by JS animation explicitly */
     }

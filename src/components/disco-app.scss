@@ -2,6 +2,8 @@
 	/* Theme + core palette */
 	--disco-theme: 0;
 	--disco-background: rgb(calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)) calc(255 * var(--disco-theme)));
+	--disco-background-secondary: rgb(calc(31 + 190 * var(--disco-theme)) calc(31 + 190 * var(--disco-theme)) calc(31 + 190 * var(--disco-theme)));
+	--disco-background-tertiary: rgb(calc(51 + 139 * var(--disco-theme)) calc(51 + 139 * var(--disco-theme)) calc(51 + 139 * var(--disco-theme)));
 	--disco-foreground: rgb(calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)) calc(255 - 255 * var(--disco-theme)));
 	--disco-accent-attr: attr(disco-accent type(<color>));
 	--disco-accent: var(--disco-accent-attr, #d80073);
