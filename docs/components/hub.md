@@ -2,7 +2,7 @@
 
 A container for "Hub" experiences, featuring a large panoramic background, a large header title, and horizontally scrolling sections.
 
-![DiscoHub](../../assets/components/hub.png)
+<img src="../../assets/components/hub.png" alt="DiscoHub" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

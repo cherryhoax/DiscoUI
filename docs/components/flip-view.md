@@ -2,7 +2,7 @@
 
 A specialized scroll view designed for paging content (one item per screen/view), often used for image carousels or tab content.
 
-![DiscoFlipView](../../assets/components/flip-view.gif)
+<img src="../../assets/components/flip-view.gif" alt="DiscoFlipView" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

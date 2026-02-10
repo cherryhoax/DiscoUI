@@ -2,7 +2,7 @@
 
 A standard push button with the Disco UI visual style and tilt effect.
 
-![DiscoButton](../../assets/components/button.webp)
+<img src="../../assets/components/button.webp" alt="DiscoButton" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

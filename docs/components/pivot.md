@@ -2,7 +2,7 @@
 
 A complex page type that implements the "Pivot" navigation pattern (horizontally swipeable sections with a header menu).
 
-![DiscoPivotPage](../../assets/components/pivot.png)
+<img src="../../assets/components/pivot.png" alt="DiscoPivotPage" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

@@ -2,7 +2,7 @@
 
 Displays the progress of a task.
 
-![DiscoProgressBar](../../assets/components/progress.gif)
+<img src="../../assets/components/progress.gif" alt="DiscoProgressBar" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

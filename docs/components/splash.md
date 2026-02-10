@@ -2,7 +2,7 @@
 
 An overlay shown during application startup.
 
-![DiscoSplash](../../assets/components/splash.gif)
+<img src="../../assets/components/splash.gif" alt="DiscoSplash" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

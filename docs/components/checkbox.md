@@ -2,7 +2,7 @@
 
 A binary option toggle.
 
-![DiscoCheckbox](../../assets/components/checkbox.webp)
+<img src="../../assets/components/checkbox.webp" alt="DiscoCheckbox" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 

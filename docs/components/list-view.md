@@ -2,7 +2,7 @@
 
 A scrollable list with support for item click events, selection modes, and built-in styling for list items.
 
-![DiscoListView](../../assets/components/list-view.webp)
+<img src="../../assets/components/list-view.webp" alt="DiscoListView" style="max-width: 480px; width: 100%;" />
 
 ## Usage
 
