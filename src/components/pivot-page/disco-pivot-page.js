@@ -512,25 +512,25 @@ class DiscoPivotPage extends DiscoPage {
         updateHeaders(true);
 
         // Only animate if changing pages
-        if (normalizedTarget !== dragStartIndex) {
-            // Calculate custom entrance animation offset
-            const dist = (detail.targetX || 0) - viewport.scrollLeft;
-            const width = viewport.clientWidth;
+        const dist = (detail.targetX || 0) - viewport.scrollLeft;
+        if (normalizedTarget !== dragStartIndex && Math.abs(dist) > 1) {
+          // Calculate custom entrance animation offset
+          const width = viewport.clientWidth;
             
-            // "translateX(viewport.width - dist) to translateX(0)"
-            let offset = width - Math.abs(dist) + width * 0.25; // Add small extra offset
-            if (dist < 0) {
-                // Moving left, offset should be negative
-                offset = -offset;
-            }
+          // "translateX(viewport.width - dist) to translateX(0)"
+          let offset = width - Math.abs(dist) + width * 0.25; // Add small extra offset
+          if (dist < 0) {
+            // Moving left, offset should be negative
+            offset = -offset;
+          }
             
-            const targetItem = /** @type {HTMLElement & { playEntranceAnimation?: (offset: number, duration: number) => Promise<void> }} */ (items()[normalizedTarget]);
-            if (targetItem && typeof targetItem.playEntranceAnimation === 'function') {
-              targetItem.style.visibility = 'hidden';
-               await new Promise(resolve => setTimeout(resolve, 100));
-               targetItem.style.visibility = '';
-               await targetItem.playEntranceAnimation(offset, 1000);
-            }
+          const targetItem = /** @type {HTMLElement & { playEntranceAnimation?: (offset: number, duration: number) => Promise<void> }} */ (items()[normalizedTarget]);
+          if (targetItem && typeof targetItem.playEntranceAnimation === 'function') {
+            targetItem.style.visibility = 'hidden';
+             await new Promise(resolve => setTimeout(resolve, 100));
+             targetItem.style.visibility = '';
+             await targetItem.playEntranceAnimation(offset, 1000);
+          }
         }
         
         // Cleanup after animation
