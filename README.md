@@ -14,6 +14,14 @@ npm run dev
 
 The viewer loads `examples/index.html` by default.
 
+## Documentation
+
+- [Docs](docs/index.md)
+
+## Related
+
+- [DiscoUI Capacitor](../DiscoUICapacitor/README.md) - Capacitor plugin for Android, Electron, and Web.
+
 ## Usage
 Import the bundle and drop the components:
 ```html
