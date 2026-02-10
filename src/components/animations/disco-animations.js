@@ -45,6 +45,49 @@ const resetAnimation = (target) => {
  * @typedef {KeyframeAnimationOptions & { spline?: boolean | DiscoSplineOptions }} DiscoAnimateOptions
  */
 
+
+const getScrollContainer = (element) => {
+    let current = element.parentElement || element.assignedSlot;
+    while (current) {
+        if (current.localName && (current.localName.includes('scroll-view') || current.localName.includes('list-view'))) {
+            return current;
+        }
+        const style = getComputedStyle(current);
+        if (['auto', 'scroll'].includes(style.overflowY) || ['auto', 'scroll'].includes(style.overflow)) {
+            return current;
+        }
+        if (current.assignedSlot) {
+            current = current.assignedSlot;
+        } else if (current.parentElement) {
+            current = current.parentElement;
+        } else if (current.getRootNode && current.getRootNode().host) {
+            current = current.getRootNode().host;
+        } else {
+            current = null;
+        }
+    }
+    return document.documentElement;
+};
+
+const isElementVisible = (element, container) => {
+    if (!element || !container) return false;
+    const elRect = element.getBoundingClientRect();
+    const isWindow = container === document.body || container === document.documentElement;
+    const conRect = isWindow ? {
+        top: 0,
+        left: 0,
+        bottom: window.innerHeight,
+        right: window.innerWidth
+    } : container.getBoundingClientRect();
+
+    return (
+        elRect.top < conRect.bottom &&
+        elRect.bottom > conRect.top &&
+        elRect.left < conRect.right &&
+        elRect.right > conRect.left
+    );
+};
+
 const animationSet = {
     page: {
         /**
@@ -320,7 +363,7 @@ const animationSet = {
         in: async (targets, options = { direction: 'none' }) => {
             const items = Array.isArray(targets) ? targets : [];
             const animationItems = items
-                .filter((target) => target)
+                .filter((target) => target && isElementVisible(target, getScrollContainer(target)))
                 .map((target, index) => ({
                     target,
                     delay: index * 50,
@@ -338,7 +381,7 @@ const animationSet = {
         out: async (targets, options = { direction: 'forward' }) => {
             const items = Array.isArray(targets) ? targets : [];
             const animationItems = items
-                .filter((target) => target)
+                .filter((target) => target && isElementVisible(target, getScrollContainer(target)))
                 .map((target, index) => ({
                     target,
                     delay: index * 50,
