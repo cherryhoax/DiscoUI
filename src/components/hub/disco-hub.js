@@ -123,7 +123,41 @@ class DiscoHub extends DiscoPage {
     }
 
     connectedCallback() {
+        if (super.connectedCallback) super.connectedCallback();
         this.setupParallax();
+        this._setupActiveSectionTracking();
+    }
+
+    _setupActiveSectionTracking() {
+        const viewport = this.shadowRoot?.getElementById('viewport');
+        if (!viewport) return;
+
+        let lastIndex = null;
+
+        const emitFromIndex = (index) => {
+            const items = Array.from(this.querySelectorAll('disco-hub-section'));
+            if (!items.length) return;
+            const count = items.length;
+            const normalized = ((index % count) + count) % count;
+            const item = items[normalized] || null;
+            if (lastIndex === normalized) return;
+            lastIndex = normalized;
+            this.dispatchEvent(new CustomEvent('disco-active-item-change', {
+                detail: { index: normalized, item },
+                bubbles: true,
+                composed: true
+            }));
+        };
+
+
+        viewport.addEventListener('disco-snap-target', (e) => {
+            const detail = /** @type {{ index?: number }} */ (e.detail || {});
+            emitFromIndex(Number(detail.index || 0));
+        });
+
+        // No app bar updates during scroll; wait for snap target.
+
+        requestAnimationFrame(() => emitFromIndex(0));
     }
 
     render() {
@@ -136,6 +170,7 @@ class DiscoHub extends DiscoPage {
                 <slot></slot>
             </disco-hub-view>
             <div class="hub-footer">
+                <div class="app-bar-host" data-appbar-host></div>
                 <slot name="footer"></slot>
             </div>
         `;

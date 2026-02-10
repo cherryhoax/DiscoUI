@@ -34,6 +34,33 @@ const launchDemo = async () => {
   const buttonPage = document.getElementById('componentsButton');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
+  
+  // App Bar Test Pages
+  const appBarSinglePage = document.getElementById('appBarSinglePage');
+  const appBarPivotPage = document.getElementById('appBarPivotPage');
+  const appBarHubPage = document.getElementById('appBarHubPage');
+  const appBarPivotLocalOnlyPage = document.getElementById('appBarPivotLocalOnlyPage');
+  const appBarHubLocalOnlyPage = document.getElementById('appBarHubLocalOnlyPage');
+  const appBarTestList = document.getElementById('appBarTestList');
+
+  if (appBarTestList) {
+      appBarTestList.items = [
+          { id: 'single', Title: 'App Bar in Page' },
+          { id: 'pivot', Title: 'App Bar in Pivot' },
+          { id: 'panorama', Title: 'App Bar in Panorama' },
+          { id: 'pivot-local', Title: 'Pivot: Local Only' },
+          { id: 'panorama-local', Title: 'Panorama: Local Only' }
+      ];
+      appBarTestList.addEventListener('itemselect', (e) => {
+          const id = e.detail?.data?.id;
+          if (id === 'single') frame.navigate(appBarSinglePage);
+          if (id === 'pivot') frame.navigate(appBarPivotPage);
+          if (id === 'panorama') frame.navigate(appBarHubPage);
+          if (id === 'pivot-local') frame.navigate(appBarPivotLocalOnlyPage);
+          if (id === 'panorama-local') frame.navigate(appBarHubLocalOnlyPage);
+      });
+  }
+
   let stressScrollPage = document.getElementById('componentsStressScroll');
   let stressNativeScrollPage = document.getElementById('componentsStressNativeScroll');
 

@@ -6,6 +6,8 @@
     transform-style: preserve-3d;
     pointer-events: auto;
     /* Ensure it captures events even if parent is none */
+    perspective: var(--disco-perspective, 2000px);
+    perspective-origin: 50% calc(100% - (var(--disco-vh, 100vh) / 2));
 }
 
 .wrapper {

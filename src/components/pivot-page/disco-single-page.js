@@ -61,6 +61,7 @@ class DiscoSinglePage extends DiscoPage {
     }
 
     connectedCallback() {
+        if (super.connectedCallback) super.connectedCallback();
         this._updateScrollMode();
     }
 
@@ -159,8 +160,12 @@ class DiscoSinglePage extends DiscoPage {
 
         this._footer = document.createElement('div');
         this._footer.className = 'single-footer';
+        const appBarHost = document.createElement('div');
+        appBarHost.className = 'app-bar-host';
+        appBarHost.setAttribute('data-appbar-host', '');
         const footerSlot = document.createElement('slot');
         footerSlot.name = 'footer';
+        this._footer.appendChild(appBarHost);
         this._footer.appendChild(footerSlot);
 
         this._root.appendChild(this._appTitleEl);

@@ -1,7 +1,6 @@
 import DiscoUIElement from '../disco-ui-element.js';
 import appBarStyles from './disco-app-bar.scss';
 import './disco-app-bar-ellipsis.js'; // Import the new component
-import DiscoPage from '../disco-page.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 
 /**
@@ -9,6 +8,7 @@ import DiscoAnimations from '../animations/disco-animations.js';
  * @extends DiscoUIElement
  */
 class DiscoAppBar extends DiscoUIElement {
+  static _ownerIdCounter = 0;
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -85,21 +85,8 @@ class DiscoAppBar extends DiscoUIElement {
   }
 
   connectedCallback() {
-      // Auto-slot into single page footer
-      // Wait for parent to be defined to check inheritance
-      const parent = this.parentElement;
-      if (parent) {
-          customElements.whenDefined(parent.localName).then(() => {
-              if (parent instanceof DiscoPage) {
-                  if (!this.hasAttribute('slot')) {
-                      this.setAttribute('slot', 'footer');
-                  }
-              }
-          });
-      }
       this.updateCollapsedHeight();
   }
-
   updateCollapsedHeight() {
       if (this._isOpen) return; // Don't resize if open
       const metrics = this._getMetrics();

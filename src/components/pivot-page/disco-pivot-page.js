@@ -51,7 +51,22 @@ class DiscoPivotPage extends DiscoPage {
   async animateInFn(options = { direction: 'forward' }) {
     this._setAnimationOverflow(true);
     try {
-      await DiscoAnimations.animationSet.page.in(this, options);
+      const appTitle = this.shadowRoot?.querySelector('.app-title');
+      const headerStrip = this.shadowRoot?.getElementById('headerStrip');
+      const viewport = this._getViewport();
+      const animationItems = [];
+
+      if (appTitle) {
+        animationItems.push({ target: appTitle, run: () => DiscoAnimations.animationSet.page.in(appTitle, options) });
+      }
+      if (headerStrip) {
+        animationItems.push({ target: headerStrip, run: () => DiscoAnimations.animationSet.page.in(headerStrip, options) });
+      }
+      if (viewport) {
+        animationItems.push({ target: viewport, run: () => DiscoAnimations.animationSet.page.in(viewport, options) });
+      }
+
+      await DiscoAnimations.animateAll(animationItems);
     } finally {
       this._setAnimationOverflow(false);
     }
@@ -64,7 +79,22 @@ class DiscoPivotPage extends DiscoPage {
   async animateOutFn(options = { direction: 'forward' }) {
     this._setAnimationOverflow(true);
     try {
-      await DiscoAnimations.animationSet.page.out(this, options);
+      const appTitle = this.shadowRoot?.querySelector('.app-title');
+      const headerStrip = this.shadowRoot?.getElementById('headerStrip');
+      const viewport = this._getViewport();
+      const animationItems = [];
+
+      if (appTitle) {
+        animationItems.push({ target: appTitle, run: () => DiscoAnimations.animationSet.page.out(appTitle, options) });
+      }
+      if (headerStrip) {
+        animationItems.push({ target: headerStrip, run: () => DiscoAnimations.animationSet.page.out(headerStrip, options) });
+      }
+      if (viewport) {
+        animationItems.push({ target: viewport, run: () => DiscoAnimations.animationSet.page.out(viewport, options) });
+      }
+
+      await DiscoAnimations.animateAll(animationItems);
     } finally {
       this._setAnimationOverflow(false);
     }
@@ -135,8 +165,25 @@ class DiscoPivotPage extends DiscoPage {
    * @returns {void}
    */
   connectedCallback() {
+    if (super.connectedCallback) super.connectedCallback();
     this.renderHeaders();
     this.setupScrollSync();
+  }
+
+  /**
+   * @param {number} index
+   */
+  _emitActiveItem(index) {
+    const items = Array.from(this.querySelectorAll('disco-pivot-item'));
+    if (!items.length) return;
+    const count = items.length;
+    const normalized = ((index % count) + count) % count;
+    const item = items[normalized] || null;
+    this.dispatchEvent(new CustomEvent('disco-active-item-change', {
+      detail: { index: normalized, item },
+      bubbles: true,
+      composed: true
+    }));
   }
 
   /**
@@ -152,6 +199,7 @@ class DiscoPivotPage extends DiscoPage {
           <slot></slot>
         </disco-flip-view>
         <div class="pivot-footer">
+          <div class="app-bar-host" data-appbar-host></div>
           <slot name="footer"></slot>
         </div>
       </div>
@@ -248,6 +296,8 @@ class DiscoPivotPage extends DiscoPage {
     const strip = this.shadowRoot?.getElementById('headerStrip');
     if (!viewport || !strip) return;
 
+    let lastActiveIndex = null;
+
     const items = () => /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
     const isFromNestedFlipView = (event) => {
       if (!event || typeof event.composedPath !== 'function') return false;
@@ -303,9 +353,10 @@ class DiscoPivotPage extends DiscoPage {
       } else {
         setVisibleItems([0]);
       }
+      this._emitActiveItem(0);
         // Trigger initial header measurement/scroll
         if (items().length > 0) {
-            updateHeaders(); 
+          updateHeaders(true); 
             // Also center the strip initially
             const { totalWidth } = measureOneSet();
             const w = totalWidth; 
@@ -435,6 +486,7 @@ class DiscoPivotPage extends DiscoPage {
     };
     this.getPageSpan = getPageSpan;
 
+
     viewport.addEventListener('disco-snap-target', async (e) => {
       if (isFromNestedFlipView(e)) return;
       if (this._isAnimating) {
@@ -448,12 +500,16 @@ class DiscoPivotPage extends DiscoPage {
         const normalizedTarget = ((idx % count) + count) % count;
         
         snapTargetIndex = normalizedTarget;
+        if (lastActiveIndex !== normalizedTarget) {
+          lastActiveIndex = normalizedTarget;
+          this._emitActiveItem(normalizedTarget);
+        }
         
         // Show BOTH the previous (dragStart) and the new Target during animation
         setVisibleItems([dragStartIndex, normalizedTarget]);
         
-        // Force header update
-        updateHeaders();
+        // Force header update (including opacity) on snap
+        updateHeaders(true);
 
         // Only animate if changing pages
         if (normalizedTarget !== dragStartIndex) {
@@ -486,7 +542,7 @@ class DiscoPivotPage extends DiscoPage {
         }
     });
 
-    const updateHeaders = () => {
+    const updateHeaders = (updateOpacity = false) => {
         let scrollX = viewport.scrollLeft;
         const pageSpan = getPageSpan();
         const headers = Array.from(strip.children).map((el) => /** @type {HTMLElement} */(el));
@@ -510,11 +566,13 @@ class DiscoPivotPage extends DiscoPage {
         
         strip.scrollLeft = (cycleWidth * 5) + localOffset;
 
-        headers.forEach((h) => {
+        if (updateOpacity) {
+          headers.forEach((h) => {
             const idx = Number(h.dataset.index || 0);
             h.style.opacity = idx === currentIndex ? '1' : '0.5';
             h.style.transform = 'none';
-        });
+          });
+        }
     };
 
     viewport.addEventListener('scroll', (e) => {
@@ -523,11 +581,12 @@ class DiscoPivotPage extends DiscoPage {
         showAllItems();
         return;
       }
-        updateHeaders();
+           updateHeaders(false);
         // If simply dragging, ensure visibility is enforced
         if (!isSnapping) {
              setVisibleItems([dragStartIndex]);
         }
+        // No app bar updates during scroll; wait for snap target.
     });
 
     // Check if hideInactiveItems logic exists from previous edit attempt and remove it if so

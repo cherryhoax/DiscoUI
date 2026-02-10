@@ -73,24 +73,149 @@
             </disco-hub-section>
         </disco-hub-page>
         <disco-single-page id="componentsAppBar" app-title="DISCO UI" header="app bar">
-            <div style="display:flex; flex-direction:column; gap:16px;">
-                <div style="font-size: 16px; opacity: 0.9;">
-                    Click the ellipsis (•••) to see the menu with labels and items.
-                </div>
-                <div style="font-size: 14px; opacity: 0.7;">
-                    Icon buttons are always visible, while their labels appear in the menu for accessibility.
-                </div>
+            <disco-list-view id="appBarTestList" selection-mode="none" item-click-enabled>
+                <template disco-list-template>
+                    <div class="setting-title" data-bind="Title"></div>
+                </template>
+            </disco-list-view>
+        </disco-single-page>
+
+        <!-- Test Pages -->
+
+        <disco-single-page id="appBarSinglePage" app-title="DISCO UI" header="app bar">
+            <div style="font-size: 16px; opacity: 0.9; padding: 12px;">
+                Standard App Bar in Single Page
             </div>
-            <disco-app-bar mode="compact" opacity="0.9">
-                <disco-app-bar-icon-button icon="voicemail" label="voicemail"></disco-app-bar-icon-button>
-                <disco-app-bar-icon-button icon="dialpad" label="keypad"></disco-app-bar-icon-button>
-                <disco-app-bar-icon-button icon="addressbook" label="phone book"></disco-app-bar-icon-button>
-                <disco-app-bar-icon-button icon="search" label="search"></disco-app-bar-icon-button>
-                <disco-app-bar-menu-item label="settings"></disco-app-bar-menu-item>
-                <disco-app-bar-menu-item label="select calls" disabled></disco-app-bar-menu-item>
-                <disco-app-bar-menu-item label="blocked calls" disabled></disco-app-bar-menu-item>
-            </disco-app-bar>
-        </disco-single-page> <disco-single-page id="componentsCheckbox" app-title="DISCO UI" header="checkbox">
+            <template data-appbar-global>
+                <disco-app-bar mode="compact" opacity="0.9">
+                    <disco-app-bar-icon-button icon="voicemail" label="voicemail"></disco-app-bar-icon-button>
+                    <disco-app-bar-icon-button icon="dialpad" label="keypad"></disco-app-bar-icon-button>
+                    <disco-app-bar-icon-button icon="addressbook" label="phone book"></disco-app-bar-icon-button>
+                    <disco-app-bar-icon-button icon="search" label="search"></disco-app-bar-icon-button>
+                    <disco-app-bar-menu-item label="settings"></disco-app-bar-menu-item>
+                </disco-app-bar>
+            </template>
+        </disco-single-page>
+
+        <disco-pivot-page id="appBarPivotPage" app-title="DISCO UI">
+            <!-- Global App Bar -->
+            <template data-appbar-global>
+                <disco-app-bar mode="compact">
+                    <disco-app-bar-icon-button icon="add" label="global add"></disco-app-bar-icon-button>
+                    <disco-app-bar-menu-item label="global option"></disco-app-bar-menu-item>
+                </disco-app-bar>
+            </template>
+
+            <disco-pivot-item header="w/bar">
+                <div style="padding: 12px;">This item has its own App Bar, overriding the global one.</div>
+                <!-- Local App Bar override -->
+                <template data-appbar>
+                    <disco-app-bar mode="compact">
+                        <disco-app-bar-icon-button icon="share" label="share (local)"></disco-app-bar-icon-button>
+                        <disco-app-bar-menu-item label="local option"></disco-app-bar-menu-item>
+                    </disco-app-bar>
+                </template>
+            </disco-pivot-item>
+
+            <disco-pivot-item header="global">
+                <div style="padding: 12px;">This item uses the Global App Bar.</div>
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">Item 1</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-pivot-item>
+        </disco-pivot-page>
+
+        <disco-pivot-page id="appBarPivotLocalOnlyPage" app-title="DISCO UI">
+            <disco-pivot-item header="w/bar">
+                <div style="padding: 12px;">Local-only App Bar (no global).</div>
+                <template data-appbar>
+                    <disco-app-bar mode="compact">
+                        <disco-app-bar-icon-button icon="share" label="share (local)"></disco-app-bar-icon-button>
+                        <disco-app-bar-menu-item label="local option"></disco-app-bar-menu-item>
+                    </disco-app-bar>
+                </template>
+            </disco-pivot-item>
+
+            <disco-pivot-item header="no bar">
+                <div style="padding: 12px;">No App Bar here.</div>
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">Item 1</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-pivot-item>
+
+            <disco-pivot-item header="menu only">
+                <div style="padding: 12px;">Menu-only App Bar (no icons).</div>
+                <template data-appbar>
+                    <disco-app-bar mode="compact">
+                        <disco-app-bar-menu-item label="menu option"></disco-app-bar-menu-item>
+                    </disco-app-bar>
+                </template>
+            </disco-pivot-item>
+        </disco-pivot-page>
+
+        <disco-hub-page id="appBarHubPage" header="panorama">
+            <!-- Global App Bar -->
+            <template data-appbar-global>
+                <disco-app-bar mode="compact">
+                    <disco-app-bar-icon-button icon="home" label="global home"></disco-app-bar-icon-button>
+                    <disco-app-bar-menu-item label="global option"></disco-app-bar-menu-item>
+                </disco-app-bar>
+            </template>
+
+            <disco-hub-section header="w/bar">
+                <div style="padding: 12px;">This section overrides the App Bar.</div>
+                <template data-appbar>
+                    <disco-app-bar mode="compact">
+                        <disco-app-bar-icon-button icon="camera" label="camera (local)"></disco-app-bar-icon-button>
+                        <disco-app-bar-menu-item label="local option"></disco-app-bar-menu-item>
+                    </disco-app-bar>
+                </template>
+            </disco-hub-section>
+
+            <disco-hub-section header="global">
+                <div style="padding: 12px;">This section uses global App Bar.</div>
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">News</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-hub-section>
+        </disco-hub-page>
+
+        <disco-hub-page id="appBarHubLocalOnlyPage" header="panorama">
+            <disco-hub-section header="w/bar">
+                <div style="padding: 12px;">Local-only App Bar (no global).</div>
+                <template data-appbar>
+                    <disco-app-bar mode="compact">
+                        <disco-app-bar-icon-button icon="camera" label="camera (local)"></disco-app-bar-icon-button>
+                        <disco-app-bar-menu-item label="local option"></disco-app-bar-menu-item>
+                    </disco-app-bar>
+                </template>
+            </disco-hub-section>
+
+            <disco-hub-section header="no bar">
+                <div style="padding: 12px;">No App Bar here.</div>
+                <disco-list-view selection-mode="none">
+                    <disco-list-item>
+                        <div class="setting-title">News</div>
+                    </disco-list-item>
+                </disco-list-view>
+            </disco-hub-section>
+
+            <disco-hub-section header="menu only">
+                <div style="padding: 12px;">Menu-only App Bar (no icons).</div>
+                <template data-appbar>
+                    <disco-app-bar mode="compact">
+                        <disco-app-bar-menu-item label="menu option"></disco-app-bar-menu-item>
+                    </disco-app-bar>
+                </template>
+            </disco-hub-section>
+        </disco-hub-page>
+        <disco-single-page id="componentsCheckbox" app-title="DISCO UI" header="checkbox">
             <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
                 <disco-checkbox id="cbDefault">Key press</disco-checkbox>
                 <disco-checkbox id="cbChecked" checked>Lock and unlock</disco-checkbox>

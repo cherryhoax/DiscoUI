@@ -11,6 +11,12 @@
     pointer-events: none;
     /* Let clicks pass through empty areas if usage implies */
     transform-style: preserve-3d;
+    transform: translateY(0%);
+    will-change: transform;
+}
+
+:host([data-hidden]) {
+    display: none;
 }
 
 /* The backdrop covers the screen when menu is open to detect outside clicks */
@@ -52,6 +58,14 @@
     &.is-open {
         /* Height handled by JS animation explicitly */
     }
+}
+
+:host([data-appbar-transparent]) .app-bar {
+    background-color: transparent;
+}
+
+:host([data-appbar-solidify]) .app-bar {
+    transition: none;
 }
 
 .app-bar-row {

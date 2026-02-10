@@ -37,6 +37,12 @@
   overflow: visible;
 }
 
+:host([data-animating]) .pivot-root {
+  perspective: var(--disco-perspective, 2000px);
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
 .pivot-root {
   display: flex;
   flex-direction: column;
