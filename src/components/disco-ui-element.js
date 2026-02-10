@@ -62,7 +62,7 @@ class DiscoUIElement extends HTMLElement {
     if (this._tiltHandlers) return;
     this.tiltEnabled = true;
 
-    const { selector = null, tiltMultiplier = 1, margin = 20, pressDown = 10, keyPress = true } = options;
+    const { selector = null, tiltMultiplier = 2, margin = 20, pressDown = 20, keyPress = true } = options;
     const target =
       (selector
         ? (this.shadowRoot?.querySelector(selector) ?? this.querySelector(selector))

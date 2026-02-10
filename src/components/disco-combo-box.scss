@@ -9,6 +9,7 @@
 
 .combo {
   @include ui.disco-tilt;
+  perspective: var(--disco-perspective);
   display: block;
   position: relative;
   box-sizing: border-box;
@@ -37,6 +38,7 @@
   display: flex;
   flex-direction: column;
   transition: transform 0.2s var(--disco-ease-out, ease-out);
+  transform-style: preserve-3d;
 }
 
 :host(:focus-visible) .combo {
