@@ -1,0 +1,85 @@
+@use '../disco-ui-element.scss' as ui;
+@use '../disco-page.scss' as page;
+
+:host {
+    @include page.disco-page-base;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    background-color: transparent;
+    color: var(--disco-foreground);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    perspective: var(--disco-perspective);
+    transform-origin: 0% 0%;
+    padding: 0px;
+
+    * {
+        transform-style: preserve-3d;
+    }
+}
+
+.picker-shell {
+    height: 100%;
+    width: 100%;
+}
+
+.picker-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    background-color: var(--disco-background-secondary);
+}
+
+.app-title {
+    font-size: 22px;
+    text-transform: uppercase;
+    padding: calc(var(--disco-inset-top) + 20px) 18px 0 18px;
+    flex-shrink: 0;
+    transform-origin: left bottom;
+    opacity: 1;
+    letter-spacing: 0.05em;
+    opacity: 1;
+}
+
+
+.content-viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    /* Often we slot content here */
+}
+
+.picker-footer {
+    flex-shrink: 0;
+    min-height: 80px;
+    /* Minimal space for appbar */
+    position: relative;
+    pointer-events: auto;
+    z-index: 200;
+}
+
+/* Slicing / Flip Animation Containers */
+.flip-strip {
+    position: relative;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    background-color: var(--disco-background-secondary);
+    transform-origin: center center;
+    /* Each strip will be transformed rotateX */
+}
+
+.flip-strip-content {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* top will be negative to align the slice */
+}

@@ -84,11 +84,12 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoListView / DiscoListItem](docs/components/list-view.md) | Virtualized list for long lists |
 | | DiscoLongListSelector | Multi-item selector for very long lists |
 | | DiscoMediaElement | Audio/video playback |
-| | DiscoPasswordBox | Password input |
 | ✅ | [DiscoPage](docs/components/page.md) | Base page component for content and transitions (used by variants) |
+| ✅ | [DiscoPickerBox](docs/components/picker-box.md) | Fullscreen picker modal with flip/slide animations |
 | ✅ | [DiscoPivot / DiscoPivotPage](docs/components/pivot.md) | Pivot navigation (pivot page and pivot items) |
-| ✅ | [DiscoProgressBar](docs/components/progress.md) | Indeterminate/determinate progress indicator |
 | | DiscoProgressRing | Circular indeterminate/determinate progress indicator |
+| ✅ | [DiscoProgressBar](docs/components/progress.md) | Indeterminate/determinate progress indicator |
+| | DiscoPasswordBox | Password input |
 | | DiscoRadioButton | Radio button input |
 | ✅ | [DiscoScrollView](docs/components/scroll-view.md) | Scrollable content area |
 | | DiscoSlider | Slider input control |

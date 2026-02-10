@@ -100,12 +100,25 @@ class DiscoFrame extends DiscoUIElement {
    * @returns {Promise<void>}
    */
   async goBack() {
+    const overlay = this._findActiveOverlay();
+    if (overlay && typeof overlay.close === 'function') {
+      this._suppressNextPopAnimation = true;
+      await overlay.close();
+      return;
+    }
     if (this.historyIndex <= 0) return;
     if (this._historyEnabled && typeof window !== 'undefined') {
       window.history.back();
       return;
     }
     await this._navigateToIndex(this.historyIndex - 1, 'back', true);
+  }
+
+  _findActiveOverlay() {
+    if (typeof document === 'undefined') return null;
+    const overlays = document.body?.querySelectorAll('disco-picker-box, disco-message-box') || [];
+    if (!overlays.length) return null;
+    return /** @type {HTMLElement} */ (overlays[overlays.length - 1]);
   }
 
   /**
@@ -275,6 +288,17 @@ class DiscoFrame extends DiscoUIElement {
     if (!state || state.discoFrame !== this._historyKey) return;
     const targetIndex = Number(state.index);
     if (!Number.isFinite(targetIndex) || targetIndex < 0 || targetIndex >= this.history.length) return;
+    const overlay = this._findActiveOverlay();
+    if (overlay && typeof overlay.close === 'function') {
+      overlay.close();
+      this.historyIndex = targetIndex;
+      return;
+    }
+    if (this._suppressNextPopAnimation) {
+      this._suppressNextPopAnimation = false;
+      this.historyIndex = targetIndex;
+      return;
+    }
     const direction = targetIndex < this.historyIndex ? 'back' : 'forward';
     this._navigateToIndex(targetIndex, direction, true);
   }

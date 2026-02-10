@@ -55,8 +55,19 @@
             font-size: 1.5em;
             transform: scaleX(-1);
         }
+
         &.mif-plus {
             font-size: 2em;
+        }
+
+        &.mif-done {
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+
+        &.mif-cancel {
+            font-weight: bold;
+            font-size: .9em;
         }
     }
 
