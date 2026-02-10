@@ -72,6 +72,9 @@ class DiscoUIElement extends HTMLElement {
     }
     target.setAttribute('data-tilt', '');
     let keyPressActive = false;
+    let startX = 0;
+    let startY = 0;
+    let scrollParent = null;
 
     const getTiltBoost = (rect) => {
       const widthBoost = rect.width > 0 ? Math.min(3, 120 / rect.width) : 1;
@@ -79,8 +82,18 @@ class DiscoUIElement extends HTMLElement {
       return { widthBoost, heightBoost };
     };
 
+    const resetTiltState = () => {
+
+      target.style.transform = 'translateZ(0px) rotateX(0deg) rotateY(0deg)';
+
+      this.setPressed(target, false);
+    };
+
     const downHandler = (e) => {
       this.canClick = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      scrollParent = this.closest('disco-scroll-view, disco-list-view');
       this.setPointerCapture(e.pointerId); // Parmağı/Mouse'u dışarı kaydırsan bile takibi bırakmaz
       this.setPressed(target, true);
 
@@ -93,9 +106,7 @@ class DiscoUIElement extends HTMLElement {
     };
 
     const upHandler = () => {
-      this.setPressed(target, false);
-
-      target.style.transform = `translateZ(0px) rotateX(0deg) rotateY(0deg)`;
+      resetTiltState();
     };
 
     const keyDownHandler = (event) => {
@@ -115,28 +126,51 @@ class DiscoUIElement extends HTMLElement {
       target.style.transform = `translateZ(0px)`;
     };
 
-    const cancelHandler = () => this.setPressed(target, false);
+    const cancelHandler = () => {
+      if (target.hasAttribute('data-pressed')) resetTiltState();
+    };
+    const lostCaptureHandler = () => {
+      if (target.hasAttribute('data-pressed')) resetTiltState();
+    };
     const moveHandler = (e) => {
       //update tilt
       if (!this.hasPointerCapture(e.pointerId)) return;
 
+      if (scrollParent) {
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (Math.hypot(dx, dy) > 5) {
+          resetTiltState();
+          this.canClick = false;
+          this.releasePointerCapture(e.pointerId);
+          return;
+        }
+      }
+
       const rect = this.getBoundingClientRect();
-      const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-      const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-      const { widthBoost, heightBoost } = getTiltBoost(rect);
-      target.style.transform = `translateZ(${pressDown}) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
-
-
-      // detect if pointer is outside the element 10px margin
-      if (
+      const isOutside =
         e.clientX < rect.left - margin ||
         e.clientX > rect.right + margin ||
         e.clientY < rect.top - margin ||
-        e.clientY > rect.bottom + margin
-      ) {
-        upHandler();
-        this.canClick = false;
+        e.clientY > rect.bottom + margin;
+
+      if (isOutside) {
+        if (this.canClick) {
+          resetTiltState();
+          this.canClick = false;
+        }
+        return;
       }
+
+      if (!this.canClick) {
+        this.setPressed(target, true);
+        this.canClick = true;
+      }
+
+      const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+      const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+      const { widthBoost, heightBoost } = getTiltBoost(rect);
+      target.style.transform = `translateZ(${-pressDown}px) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
     };
     const clickGuardHandler = (e) => {
       if (!this.canClick) {
@@ -151,6 +185,7 @@ class DiscoUIElement extends HTMLElement {
     this.addEventListener('keydown', keyDownHandler);
     this.addEventListener('keyup', keyUpHandler);
     this.addEventListener('pointercancel', cancelHandler);
+    this.addEventListener('lostpointercapture', lostCaptureHandler);
     this.addEventListener('pointermove', moveHandler);
     this.addEventListener('click', clickGuardHandler);
 
@@ -161,6 +196,7 @@ class DiscoUIElement extends HTMLElement {
       keyDownHandler,
       keyUpHandler,
       cancelHandler,
+      lostCaptureHandler,
       moveHandler,
       clickGuardHandler
     };
@@ -175,6 +211,7 @@ class DiscoUIElement extends HTMLElement {
       keyDownHandler,
       keyUpHandler,
       cancelHandler,
+      lostCaptureHandler,
       moveHandler,
       clickGuardHandler
     } = this._tiltHandlers;
@@ -184,6 +221,7 @@ class DiscoUIElement extends HTMLElement {
     this.removeEventListener('keydown', keyDownHandler);
     this.removeEventListener('keyup', keyUpHandler);
     this.removeEventListener('pointercancel', cancelHandler);
+    this.removeEventListener('lostpointercapture', lostCaptureHandler);
     this.removeEventListener('pointermove', moveHandler);
     this.removeEventListener('click', clickGuardHandler);
 
