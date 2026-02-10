@@ -8,4 +8,4 @@ Welcome to the documentation for **DiscoUI**, a Metro-inspired mobile shell libr
 - [Components](components/index.md)
 - [Theming](theming.md)
 - [API Reference](api/index.md)
-- [DiscoUI Capacitor Docs](https://github.com/cherryhoax/DiscoUICapacitor/docs/index.md) - Capacitor plugin setup, config, and API.
+- [DiscoUI Capacitor Docs](https://github.com/cherryhoax/DiscoUICapacitor/blob/main/docs/index.md) - Capacitor plugin setup, config, and API.

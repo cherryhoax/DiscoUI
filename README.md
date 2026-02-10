@@ -20,7 +20,7 @@ The viewer loads `examples/index.html` by default.
 
 ## Related
 
-- [DiscoUI Capacitor](../DiscoUICapacitor/README.md) - Capacitor plugin for Android, Electron, and Web.
+- [DiscoUI Capacitor](https://github.com/cherryhoax/DiscoUICapacitor?tab=readme-ov-file) - Capacitor plugin for Android, Electron, and Web.
 
 ## Usage
 Import the bundle and drop the components:
