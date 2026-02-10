@@ -93,6 +93,46 @@ class DiscoAppBar extends DiscoUIElement {
       this._container.style.height = `${metrics.collapsedHeight}px`;
   }
 
+    getCollapsedHeight() {
+      return this._getMetrics().collapsedHeight;
+    }
+
+    hasIcons() {
+      return this._getMetrics().hasIcons;
+    }
+
+    animateCollapsedHeight(fromHeight) {
+      const metrics = this._getMetrics();
+      const toHeight = metrics.collapsedHeight;
+      if (!Number.isFinite(fromHeight) || fromHeight === toHeight) {
+        this._container.style.height = `${toHeight}px`;
+        return Promise.resolve();
+      }
+        return this.animateHeightTo(fromHeight, toHeight);
+      }
+
+      animateHeightTo(fromHeight, toHeight) {
+        if (!Number.isFinite(fromHeight) || !Number.isFinite(toHeight) || fromHeight === toHeight) {
+          this._container.style.height = `${toHeight}px`;
+          return Promise.resolve();
+        }
+        this._container.style.height = `${fromHeight}px`;
+        return DiscoAnimations.animate(
+          this._container,
+          [
+            { height: `${fromHeight}px` },
+            { height: `${toHeight}px` }
+          ],
+          {
+            duration: 220,
+            easing: DiscoAnimations.easeOutQuart,
+            fill: 'forwards'
+          }
+        ).finished.then(() => {
+          this._container.style.height = `${toHeight}px`;
+        }).catch(() => null);
+    }
+
   _getMetrics() {
       const iconButtons = this._iconsSlot.assignedElements()
           .filter(e => e.tagName === 'DISCO-APP-BAR-ICON-BUTTON');

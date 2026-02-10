@@ -113,14 +113,21 @@ class DiscoPage extends DiscoUIElement {
     if (prevBar) {
       prevBar.closeMenu?.();
       if (animate) {
-        const prevHeight = this._getAppBarCollapsedHeight(prevBar);
-        const nextHeight = this._getAppBarCollapsedHeight(newBar);
-        if (prevHeight !== nextHeight) {
-          this._animateAppBarHeight(newBar, prevHeight, nextHeight);
-        }
         const outPromise = this._animateBarIconsOut(prevBar);
         const inPromise = this._animateBarIconsIn(newBar);
-        Promise.all([outPromise, inPromise]).then(() => {
+        const prevHeight = typeof prevBar.getCollapsedHeight === 'function'
+          ? prevBar.getCollapsedHeight()
+          : null;
+        const newHeight = typeof newBar.getCollapsedHeight === 'function'
+          ? newBar.getCollapsedHeight()
+          : null;
+        const heightPromise = typeof newBar.animateCollapsedHeight === 'function' && prevHeight != null
+          ? newBar.animateCollapsedHeight(prevHeight)
+          : Promise.resolve();
+        const prevHeightPromise = typeof prevBar.animateHeightTo === 'function' && prevHeight != null && newHeight != null
+          ? prevBar.animateHeightTo(prevHeight, newHeight)
+          : Promise.resolve();
+        Promise.all([outPromise, inPromise, heightPromise, prevHeightPromise]).then(() => {
           newBar.setAttribute('data-appbar-solidify', '');
           newBar.removeAttribute('data-appbar-transparent');
           prevBar.remove();
@@ -151,32 +158,6 @@ class DiscoPage extends DiscoUIElement {
     return Array.from(bar.querySelectorAll('disco-app-bar-icon-button'));
   }
 
-  _getAppBarCollapsedHeight(bar) {
-    if (!bar) return 30;
-    const hasIcons = bar.querySelector('disco-app-bar-icon-button') !== null;
-    return hasIcons ? 72 : 30;
-  }
-
-  _animateAppBarHeight(bar, fromHeight, toHeight) {
-    const container = bar.shadowRoot?.querySelector('.app-bar');
-    if (!container) return;
-    container.style.height = `${fromHeight}px`;
-    DiscoAnimations.animate(
-      container,
-      [
-        { height: `${fromHeight}px` },
-        { height: `${toHeight}px` }
-      ],
-      {
-        duration: 220,
-        easing: 'ease-out',
-        fill: 'forwards'
-      }
-    ).finished.then(() => {
-      container.style.height = `${toHeight}px`;
-    }).catch(() => null);
-  }
-
   _animateBarIconsOut(bar) {
     const icons = this._getAppBarIconButtons(bar);
     if (!icons.length) return Promise.resolve();
@@ -185,11 +166,11 @@ class DiscoPage extends DiscoUIElement {
         icon,
         [
           { transform: 'translateY(0px)', opacity: 1 },
-          { transform: 'translateY(-10px)', opacity: 0 }
+          { transform: 'translateY(-40px)', opacity: 0 }
         ],
         {
-          duration: 150,
-          easing: 'ease-out',
+          duration: 100,
+          easing: DiscoAnimations.easeInQuad,
           fill: 'forwards'
         }
       ).finished.catch(() => null)
@@ -204,12 +185,12 @@ class DiscoPage extends DiscoUIElement {
       DiscoAnimations.animate(
         icon,
         [
-          { transform: 'translateY(10px)', opacity: 0 },
+          { transform: 'translateY(40px)', opacity: 0 },
           { transform: 'translateY(0px)', opacity: 1 }
         ],
         {
-          duration: 150,
-          easing: 'ease-out',
+          duration: 400,
+          easing: DiscoAnimations.easeInOutBack,
           fill: 'forwards'
         }
       ).finished.then(() => {
