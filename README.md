@@ -89,12 +89,12 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoPivot / DiscoPivotPage](docs/components/pivot.md) | Pivot navigation (pivot page and pivot items) |
 | | DiscoProgressRing | Circular indeterminate/determinate progress indicator |
 | ✅ | [DiscoProgressBar](docs/components/progress.md) | Indeterminate/determinate progress indicator |
-| | DiscoPasswordBox | Password input |
+| ✅ | [DiscoPasswordBox](docs/components/password-box.md) | Password input |
 | | DiscoRadioButton | Radio button input |
 | ✅ | [DiscoScrollView](docs/components/scroll-view.md) | Scrollable content area |
 | | DiscoSlider | Slider input control |
 | ✅ | [DiscoSplash](docs/components/splash.md) | Optional splash screen (modes: none, auto, manual) |
-| | DiscoTextBox | Single-line text input |
+| ✅ | [DiscoTextBox](docs/components/text-box.md) | Single-line text input |
 | | DiscoTimePicker | Time picker input |
 | | DiscoToggleButton | On/off toggle button |
 | | DiscoToggleSwitch | On/off toggle control |
