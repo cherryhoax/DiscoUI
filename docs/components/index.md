@@ -12,6 +12,7 @@
 - [Flip View (disco-flip-view)](flip-view.md)
 - [Button (disco-button)](button.md)
 - [Checkbox (disco-checkbox)](checkbox.md)
+- [Combo Box (disco-combo-box)](combo-box.md)
 - [Progress Bar (disco-progress-bar)](progress.md)
 - [Splash (disco-splash)](splash.md)
 

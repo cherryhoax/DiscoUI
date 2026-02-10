@@ -1,0 +1,53 @@
+@use 'disco-ui-element.scss' as ui;
+
+:host {
+  display: inline-block;
+  min-width: 220px;
+  width: max-content;
+  max-width: 100%;
+}
+
+.combo {
+  @include ui.disco-tilt;
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  height: 48px;
+  border: 2px solid var(--disco-foreground);
+  background-color: var(--disco-background);
+  color: var(--disco-foreground);
+  overflow: hidden;
+  text-transform: lowercase;
+  transition: transform 0.25s var(--disco-ease-out, ease-out),
+    height 0.2s var(--disco-ease-out, ease-out);
+}
+
+:host([open]) .combo,
+.combo[data-pressed] {
+  border-color: var(--disco-accent);
+  background-color: #fff;
+  color: #000;
+}
+
+:host([open]) .combo {
+  height: 56px;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s var(--disco-ease-out, ease-out);
+}
+
+:host(:focus-visible) .combo {
+  outline: 2px solid var(--disco-foreground);
+  outline-offset: 2px;
+}
+
+:host(:not([open])) ::slotted(disco-combo-box-item) {
+  pointer-events: none;
+}
+
+:host([open]) ::slotted(disco-combo-box-item) {
+  pointer-events: auto;
+}

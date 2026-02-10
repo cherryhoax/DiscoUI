@@ -1,0 +1,30 @@
+@use 'disco-ui-element.scss' as ui;
+
+:host {
+  display: block;
+}
+
+.item {
+  @include ui.disco-tilt;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  margin: 0 10px;
+  font-size: 25px;
+  line-height: 1;
+  text-transform: lowercase;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: transform 0.25s var(--disco-ease-out, ease-out),
+    height 0.2s var(--disco-ease-out, ease-out),
+    margin-top 0.2s var(--disco-ease-out, ease-out);
+}
+
+:host-context(disco-combo-box[open]) .item {
+  height: 56px;
+}
+
+:host-context(disco-combo-box[open]):host([selected]) .item {
+  color: var(--disco-accent);
+}

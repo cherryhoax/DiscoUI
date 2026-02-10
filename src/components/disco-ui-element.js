@@ -59,6 +59,7 @@ class DiscoUIElement extends HTMLElement {
    * Enable pointer tilt interaction on the element.
    */
   enableTilt(options = {}) {
+    if (this._tiltHandlers) return;
     this.tiltEnabled = true;
 
     const { selector = null, tiltMultiplier = 1, margin = 20, pressDown = 10, keyPress = true } = options;
@@ -114,12 +115,8 @@ class DiscoUIElement extends HTMLElement {
       target.style.transform = `translateZ(0px)`;
     };
 
-    this.addEventListener('pointerdown', downHandler);
-    this.addEventListener('pointerup', upHandler);
-    this.addEventListener('keydown', keyDownHandler);
-    this.addEventListener('keyup', keyUpHandler);
-    this.addEventListener('pointercancel', () => this.setPressed(target, false));
-    this.addEventListener('pointermove', (e) => {
+    const cancelHandler = () => this.setPressed(target, false);
+    const moveHandler = (e) => {
       //update tilt
       if (!this.hasPointerCapture(e.pointerId)) return;
 
@@ -140,14 +137,62 @@ class DiscoUIElement extends HTMLElement {
         upHandler();
         this.canClick = false;
       }
-    })
-    this.addEventListener('click', (e) => {
+    };
+    const clickGuardHandler = (e) => {
       if (!this.canClick) {
         console.info('Click cancelled due to pointer move outside element.');
         e.stopImmediatePropagation();
         e.preventDefault();
       }
-    });
+    };
+
+    this.addEventListener('pointerdown', downHandler);
+    this.addEventListener('pointerup', upHandler);
+    this.addEventListener('keydown', keyDownHandler);
+    this.addEventListener('keyup', keyUpHandler);
+    this.addEventListener('pointercancel', cancelHandler);
+    this.addEventListener('pointermove', moveHandler);
+    this.addEventListener('click', clickGuardHandler);
+
+    this._tiltTarget = target;
+    this._tiltHandlers = {
+      downHandler,
+      upHandler,
+      keyDownHandler,
+      keyUpHandler,
+      cancelHandler,
+      moveHandler,
+      clickGuardHandler
+    };
+  }
+
+  disableTilt() {
+    if (!this._tiltHandlers) return;
+    const target = this._tiltTarget || this;
+    const {
+      downHandler,
+      upHandler,
+      keyDownHandler,
+      keyUpHandler,
+      cancelHandler,
+      moveHandler,
+      clickGuardHandler
+    } = this._tiltHandlers;
+
+    this.removeEventListener('pointerdown', downHandler);
+    this.removeEventListener('pointerup', upHandler);
+    this.removeEventListener('keydown', keyDownHandler);
+    this.removeEventListener('keyup', keyUpHandler);
+    this.removeEventListener('pointercancel', cancelHandler);
+    this.removeEventListener('pointermove', moveHandler);
+    this.removeEventListener('click', clickGuardHandler);
+
+    this.setPressed(target, false);
+    target.style.transform = 'translateZ(0px) rotateX(0deg) rotateY(0deg)';
+    target.removeAttribute('data-tilt');
+    this.tiltEnabled = false;
+    this._tiltHandlers = null;
+    this._tiltTarget = null;
   }
 }
 

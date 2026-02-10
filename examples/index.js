@@ -29,9 +29,11 @@ const launchDemo = async () => {
   const appBarPage = document.getElementById('componentsAppBar');
   const checkboxPage = document.getElementById('componentsCheckbox');
   const progressPage = document.getElementById('componentsProgress');
+  const comboBoxPage = document.getElementById('componentsComboBox');
   const buttonPage = document.getElementById('componentsButton');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
+  const comboBox = document.querySelector('#componentsComboBox disco-combo-box');
   
   // App Bar Test Pages
   const appBarSinglePage = document.getElementById('appBarSinglePage');
@@ -120,6 +122,7 @@ const launchDemo = async () => {
       { id: 'appbar', Title: 'App Bar', Description: '' },
       { id: 'progress', Title: 'Progress Bar', Description: '' },
       { id: 'checkbox', Title: 'Checkbox', Description: '' },
+      { id: 'combobox', Title: 'Combo Box', Description: '' },
       { id: 'button', Title: 'Button', Description: '' },
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
       { id: 'flipview', Title: 'Flip View', Description: '' }
@@ -149,6 +152,9 @@ const launchDemo = async () => {
       }
       if (id === 'checkbox') {
         frame.navigate(checkboxPage);
+      }
+      if (id === 'combobox') {
+        frame.navigate(comboBoxPage);
       }
       if (id === 'button') {
         frame.navigate(buttonPage);
@@ -224,6 +230,13 @@ const launchDemo = async () => {
     toggle.addEventListener('click', () => {
       if (det.hasAttribute('indeterminate')) det.removeAttribute('indeterminate');
       else det.setAttribute('indeterminate', '');
+    });
+  }
+
+  if (comboBox) {
+    comboBox.addEventListener('change', (event) => {
+      const detail = event.detail || {};
+      console.log('Combo box changed:', detail.value, detail.index);
     });
   }
 

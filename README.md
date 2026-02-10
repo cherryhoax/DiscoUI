@@ -55,7 +55,6 @@ Set the theme and accent color via attributes on the `<html>` tag:
 - `npm run test:e2e` — run browser tests (Playwright)
 
 ## Planned
-- Combobox
 - Password Box
 - Radio Button
 - Text Box
@@ -72,7 +71,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoAppBar](docs/components/app-bar.md) | Bottom app bar / command area |
 | ✅ | [DiscoButton](docs/components/button.md) | Button control |
 | ✅ | [DiscoCheckbox](docs/components/checkbox.md) | Checkbox input |
-| | DiscoCombobox | Combo box input |
+| ✅ | [DiscoComboBox](docs/components/combo-box.md) | Combo box input |
 | | DiscoContextMenu | Contextual menu / right-click menu |
 | | DiscoDatePicker | Date picker input |
 | ✅ | [DiscoFlipView](docs/components/flip-view.md) | Displays a collection of items one at a time |
