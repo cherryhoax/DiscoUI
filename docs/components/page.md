@@ -18,6 +18,25 @@ You generally do not use `<disco-page>` directly. Instead, use specialized page 
 
 (Note: `disco-single-page` is a concrete implementation often found in examples, but in the library, `DiscoPage` is the base class).
 
+## App Bar Templates
+
+Pages manage app bars via `template` definitions. App bars are cloned into an internal footer host only when active, so the definitions do not render until needed.
+
+Use `template[data-appbar-global]` to define the page-level (global) app bar.
+
+```html
+<disco-single-page>
+    <template data-appbar-global>
+        <disco-app-bar mode="compact">
+            <disco-app-bar-icon-button icon="search" label="search"></disco-app-bar-icon-button>
+            <disco-app-bar-menu-item label="settings"></disco-app-bar-menu-item>
+        </disco-app-bar>
+    </template>
+</disco-single-page>
+```
+
+Use `data-appbar` on a template inside a pivot item or hub section to override the global app bar for that item.
+
 ## API
 
 ### `animateIn(options?): Promise<void>`

@@ -2,6 +2,8 @@
 
 An overlay shown during application startup.
 
+![DiscoSplash](../../assets/components/splash.gif)
+
 ## Usage
 
 Typically initialized via `DiscoApp` options, but can be customized.

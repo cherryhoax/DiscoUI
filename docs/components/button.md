@@ -2,6 +2,8 @@
 
 A standard push button with the Disco UI visual style and tilt effect.
 
+![DiscoButton](../../assets/components/button.webp)
+
 ## Usage
 
 ```html

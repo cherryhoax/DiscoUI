@@ -2,6 +2,8 @@
 
 Displays the progress of a task.
 
+![DiscoProgressBar](../../assets/components/progress.gif)
+
 ## Usage
 
 ### Determinate

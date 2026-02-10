@@ -2,6 +2,8 @@
 
 A binary option toggle.
 
+![DiscoCheckbox](../../assets/components/checkbox.webp)
+
 ## Usage
 
 ```html
