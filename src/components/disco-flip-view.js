@@ -373,6 +373,13 @@ class DiscoFlipView extends DiscoScrollView {
       if (!loopEnabled) {
         idx = Math.max(0, Math.min(maxIndex, idx));
       }
+
+      const scrollLimit = (this.getAttribute('scroll-limit') || '').toLowerCase();
+      if (scrollLimit === 'page') {
+        const startIdx = Math.round(this._dragStartVirtualX / pageWidth);
+        idx = Math.max(startIdx - 1, Math.min(startIdx + 1, idx));
+      }
+
       targetX = idx * pageWidth;
     } else {
       const snapMode = (this.getAttribute('snap-mode') || '').toLowerCase();
@@ -400,6 +407,14 @@ class DiscoFlipView extends DiscoScrollView {
       if (!loopEnabled) {
         idx = Math.max(0, Math.min(maxIndex, idx));
       }
+
+      const scrollLimit = (this.getAttribute('scroll-limit') || '').toLowerCase();
+      if (scrollLimit === 'page') {
+        const size = this._getPageSize() || 1;
+        const startIdx = Math.round(this._dragStartVirtualY / size);
+        idx = Math.max(startIdx - 1, Math.min(startIdx + 1, idx));
+      }
+
       targetY = idx * (this._getPageSize() || 1);
     }
 

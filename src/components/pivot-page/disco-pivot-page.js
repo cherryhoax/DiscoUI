@@ -513,13 +513,13 @@ class DiscoPivotPage extends DiscoPage {
 
         // Only animate if changing pages
         const dist = (detail.targetX || 0) - viewport.scrollLeft;
-        if (normalizedTarget !== dragStartIndex && Math.abs(dist) > 1) {
+        if (idx !== dragStartIndex) {
           // Calculate custom entrance animation offset
           const width = viewport.clientWidth;
             
           // "translateX(viewport.width - dist) to translateX(0)"
           let offset = width - Math.abs(dist) + width * 0.25; // Add small extra offset
-          if (dist < 0) {
+          if (idx < dragStartIndex) {
             // Moving left, offset should be negative
             offset = -offset;
           }
