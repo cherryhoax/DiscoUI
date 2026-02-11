@@ -61,8 +61,8 @@ class DiscoFlipView extends DiscoScrollView {
     if (!Number.isFinite(pageSize) || pageSize <= 1) return;
 
     if (!Number.isFinite(this._lastPageSize) || this._lastPageSize <= 1) {
-      this._loopVirtualX = 0;
-      this._loopVirtualY = 0;
+      if (!Number.isFinite(this._loopVirtualX)) this._loopVirtualX = 0;
+      if (!Number.isFinite(this._loopVirtualY)) this._loopVirtualY = 0;
       this._loopInitialized = true;
     }
 
@@ -84,8 +84,8 @@ class DiscoFlipView extends DiscoScrollView {
       });
       // Ensure we have a valid virtual position
       if (!this._loopInitialized) {
-        this._loopVirtualX = 0;
-        this._loopVirtualY = 0;
+        if (!Number.isFinite(this._loopVirtualX)) this._loopVirtualX = 0;
+        if (!Number.isFinite(this._loopVirtualY)) this._loopVirtualY = 0;
         this._loopInitialized = true;
       } else {
         if (!Number.isFinite(this._loopVirtualX)) this._loopVirtualX = 0;

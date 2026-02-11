@@ -4,8 +4,11 @@ import './disco-date-picker-flip-view.js';
 import '../app-bar/disco-app-bar.js';
 import '../app-bar/disco-app-bar-icon-button.js';
 
-const DEFAULT_MIN = new Date(1900, 0, 1);
-const DEFAULT_MAX = new Date(2100, 11, 31);
+const LIMIT_DAYS = 100_000_000;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const DEFAULT_MIN = new Date(-LIMIT_DAYS * MS_PER_DAY);
+const DEFAULT_MAX = new Date(LIMIT_DAYS * MS_PER_DAY);
 
 /**
  * Date picker built on top of DiscoPickerBox.
@@ -39,6 +42,8 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._pendingIndex = { month: null, day: null, year: null };
     this._scrollStopTimers = { month: null, day: null, year: null };
     this._suppressScroll = { month: 0, day: 0, year: 0 };
+    this._hasUserInteracted = false;
+    this._lastInteractedKind = null;
     this._resolveSelection = null;
     this._openPromise = null;
     this._skipResolveOnClose = false;
@@ -60,6 +65,14 @@ class DiscoDatePicker extends DiscoPickerBox {
     });
 
     this.show().then(() => {
+      // Reset any active column state so it opens clean
+      this._activeColumn = null;
+      this._hasUserInteracted = false;
+      this._lastInteractedKind = null;
+      [this._monthColumn, this._dayColumn, this._yearColumn].forEach((col) => {
+        if (col) col.removeAttribute('data-expanded');
+      });
+
       requestAnimationFrame(() => this._syncToDate(this._selectedDate));
     });
 
@@ -150,7 +163,9 @@ class DiscoDatePicker extends DiscoPickerBox {
     view.setAttribute('direction', 'vertical');
     view.setAttribute('overscroll-mode', 'loop');
 
-    view.addEventListener('pointerdown', () => this._setActiveColumn(kind));
+    view.addEventListener('pointerdown', () => this._markUserInteraction(kind));
+    view.addEventListener('touchstart', () => this._markUserInteraction(kind), { passive: true });
+    view.addEventListener('wheel', () => this._markUserInteraction(kind), { passive: true });
     view.addEventListener('scroll', () => this._onScroll(kind), { passive: true });
     view.addEventListener('disco-snap-target', (e) => this._onSnap(kind, e));
 
@@ -282,8 +297,9 @@ class DiscoDatePicker extends DiscoPickerBox {
     items.forEach((item) => {
       item.addEventListener('click', () => {
         const idx = Number(item.dataset.index || 0);
-        this._setActiveColumn(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year');
+        this._markUserInteraction(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year');
         this._scrollToIndex(view, idx);
+        this._scheduleCommit(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year', idx);
       });
       view.appendChild(item);
     });
@@ -311,6 +327,12 @@ class DiscoDatePicker extends DiscoPickerBox {
     return item;
   }
 
+  _markUserInteraction(kind) {
+    this._hasUserInteracted = true;
+    this._lastInteractedKind = kind;
+    this._setActiveColumn(kind);
+  }
+
   _setActiveColumn(kind) {
     if (this._activeColumn === kind) return;
     this._activeColumn = kind;
@@ -325,12 +347,14 @@ class DiscoDatePicker extends DiscoPickerBox {
 
   _onScroll(kind) {
     if (this._isSyncing || this._suppressScroll[kind]) return;
+    if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
     this._setActiveColumn(kind);
-    //this._scheduleCommit(kind, null);
+    this._scheduleCommit(kind, null);
   }
 
   _onSnap(kind, e) {
     if (this._isSyncing) return;
+    if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
 
     const detail = /** @type {{ index?: number }} */ (e.detail || {});
     const idx = Number(detail.index || 0);
@@ -410,11 +434,10 @@ class DiscoDatePicker extends DiscoPickerBox {
       // Suppress scroll events triggered by rebuilding the view (which resets scroll to 0)
       this._suppressScroll.day += 1;
       this._buildDayItems();
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this._suppressScroll.day = Math.max(0, this._suppressScroll.day - 1);
-        });
-      });
+      // Use setTimeout to ensure we cover any async layout/scroll event timing
+      setTimeout(() => {
+        this._suppressScroll.day = Math.max(0, this._suppressScroll.day - 1);
+      }, 100);
     }
 
     const dayClamped = clamped.getDate() !== current.getDate();
@@ -450,11 +473,10 @@ class DiscoDatePicker extends DiscoPickerBox {
     const kind = this._getKindForView(view);
     if (kind) {
       this._suppressScroll[kind] += 1;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this._suppressScroll[kind] = Math.max(0, this._suppressScroll[kind] - 1);
-        });
-      });
+      // Use setTimeout to ensure the suppression covers the async scroll event
+      setTimeout(() => {
+        this._suppressScroll[kind] = Math.max(0, this._suppressScroll[kind] - 1);
+      }, 100);
     }
     view.scrollTop = index * size;
   }

@@ -6,6 +6,15 @@ import DiscoFlipView from '../disco-flip-view.js';
  */
 class DiscoDatePickerFlipView extends DiscoFlipView {
   _updateChildrenLayout() {
+    const prevTileSize = this._lastTileSize;
+    const nextTileSize = this._getTileSize();
+
+    if (this.direction === 'vertical' && this._isLooping() && prevTileSize && nextTileSize && prevTileSize !== nextTileSize) {
+      const currentIndex = Math.round(this.scrollTop / prevTileSize);
+      this.scrollTop = currentIndex * nextTileSize;
+    }
+
+    this._lastTileSize = nextTileSize;
     super._updateChildrenLayout();
     const size = this._getTileSize();
     const nodes = this._getPageElements();

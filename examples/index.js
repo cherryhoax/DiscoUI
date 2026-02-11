@@ -144,10 +144,10 @@ const launchDemo = async () => {
       if (id === 'datepicker') {
         const datePicker = new DiscoDatePicker(
           'CHOOSE DATE',
-          new Date(2008, 0, 1),
+          new Date(),
           {
             min: new Date(1900, 0, 1),
-            max: new Date(2008, 11, 31),
+            max: new Date(),
             format: 'dd MMMM yyyy'
           }
         );

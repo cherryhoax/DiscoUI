@@ -24,7 +24,7 @@ class DiscoPickerBox extends DiscoPage {
         this.appTitle = appTitle;
         this.header = header;
         this._flipCount = 5; // Default flip count
-        this._animationType = 'slide-up'; // 'slide-up' | 'flip'
+        this._animationType = 'flip'; // 'slide-up' | 'flip'
 
         this.attachShadow({ mode: 'open' });
         this.loadStyle(pickerBoxCss, this.shadowRoot);
@@ -291,7 +291,6 @@ class DiscoPickerBox extends DiscoPage {
         });
 
         await Promise.all(promises);
-
         animContainer.remove();
         this._root.style.visibility = '';
     }
