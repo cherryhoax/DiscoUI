@@ -96,7 +96,7 @@ class DiscoPivotPage extends DiscoPage {
 
       await DiscoAnimations.animateAll(animationItems);
     } finally {
-      this._setAnimationOverflow(false);
+      //this._setAnimationOverflow(false);
     }
   }
 
@@ -111,6 +111,7 @@ class DiscoPivotPage extends DiscoPage {
       this.removeAttribute('data-animating');
       this._isAnimating = false;
     }
+    return; // Temporary disable overflow changes during animation for better performance and to avoid bugs with scroll position
     const viewport = this._getViewport();
     if (viewport) {
       viewport.style.overflow = enabled ? 'visible' : '';
@@ -298,7 +299,7 @@ class DiscoPivotPage extends DiscoPage {
 
     let lastActiveIndex = null;
 
-    const items = () => /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
+    const items = () => /** @type {HTMLElement[]} */(Array.from(this.querySelectorAll('disco-pivot-item')));
     const isFromNestedFlipView = (event) => {
       if (!event || typeof event.composedPath !== 'function') return false;
       const path = event.composedPath();
@@ -406,7 +407,7 @@ class DiscoPivotPage extends DiscoPage {
             if (upE.pointerId !== e.pointerId) return;
             strip.removeEventListener('pointermove', onSysMove);
             strip.removeEventListener('pointerup', onSysUp);
-            try { strip.releasePointerCapture(upE.pointerId); } catch(ex){}
+        try { strip.releasePointerCapture(upE.pointerId); } catch (ex) { }
 
             viewport.dispatchEvent(cloneEvent('pointerup', upE));
 
@@ -526,10 +527,47 @@ class DiscoPivotPage extends DiscoPage {
             
           const targetItem = /** @type {HTMLElement & { playEntranceAnimation?: (offset: number, duration: number) => Promise<void> }} */ (items()[normalizedTarget]);
           if (targetItem && typeof targetItem.playEntranceAnimation === 'function') {
-            targetItem.style.visibility = 'hidden';
-             await new Promise(resolve => setTimeout(resolve, 100));
-             targetItem.style.visibility = '';
-             await targetItem.playEntranceAnimation(offset, 1000);
+          const duration = 800;
+          const prevItem = /** @type {HTMLElement | undefined} */ (items()[dragStartIndex]);
+
+          if (prevItem && prevItem !== targetItem) {
+            prevItem.style.opacity = '1';
+          }
+          targetItem.style.opacity = '0';
+
+          // Ensure initial opacity is applied before starting animations.
+          await new Promise(requestAnimationFrame);
+
+          const fadeOut = (prevItem && prevItem !== targetItem)
+            ? prevItem.animate([
+              { opacity: 1 },
+              { opacity: 0 }
+            ], {
+              duration: 50,
+              easing: 'linear',
+              fill: 'forwards'
+            })
+            : null;
+
+          const fadeIn = targetItem.animate([
+            { opacity: 0 },
+            { opacity: 1 }
+          ], {
+            duration: 200,
+            easing: 'linear',
+            fill: 'forwards'
+          });
+
+          await Promise.all([
+            targetItem.playEntranceAnimation(offset, duration),
+            fadeIn.finished,
+            fadeOut ? fadeOut.finished.catch(() => { }) : Promise.resolve()
+          ]);
+
+          if (prevItem && prevItem !== targetItem) {
+            prevItem.style.opacity = '0';
+          }
+          targetItem.style.opacity = '1';
           }
         }
         

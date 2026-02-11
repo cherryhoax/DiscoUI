@@ -10,10 +10,6 @@
   /* Ensure host is 100% height */
 }
 
-:host([data-animating]) {
-  overflow: visible;
-}
-
 .pivot-shell {
   height: 100%;
   /* Ensure pivot shell is 100% height */
@@ -32,10 +28,6 @@
   }
 }
 
-:host([data-animating]) .pivot-shell,
-:host([data-animating]) .pivot-root {
-  overflow: visible;
-}
 
 :host([data-animating]) .pivot-root {
   perspective: var(--disco-perspective, 2000px);
@@ -66,15 +58,6 @@
   scrollbar-width: none;
 }
 
-:host([data-animating]) .header-strip {
-  overflow: visible;
-}
-
-:host([data-animating]) .header-strip .header-item[data-set]:not([data-set="5"]) {
-  display: none;
-}
-
-
 .header-strip::-webkit-scrollbar {
   display: none;
 }
@@ -94,23 +77,6 @@
   height: 100%;
   min-height: 0;
   /* Ensure content viewport is 100% height */
-}
-
-
-:host([data-animating]) .content-viewport {
-  overflow: visible;
-}
-
-:host([data-animating]) > disco-pivot-item {
-  visibility: visible !important;
-  opacity: 1 !important;
-  transition: none !important;
-  animation: none !important;
-}
-
-:host([data-animating]) > disco-pivot-item * {
-  transition: none !important;
-  animation: none !important;
 }
 
 .ghost {
