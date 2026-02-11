@@ -6,8 +6,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: var(--disco-vw);
+    height: var(--disco-vh);
     z-index: 1000;
     background-color: transparent;
     color: var(--disco-foreground);
@@ -17,7 +17,7 @@
     perspective: var(--disco-perspective);
     transform-origin: 0% 0%;
     padding: 0px;
-
+    zoom: var(--disco-scale);
     * {
         transform-style: preserve-3d;
     }

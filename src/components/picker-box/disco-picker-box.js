@@ -215,7 +215,7 @@ class DiscoPickerBox extends DiscoPage {
     async _animateInFlip() {
         if (!this._root) return;
 
-        const contentSource = this._root.cloneNode(true);
+        const contentSource = this._getFlipClone();
         contentSource.style.visibility = 'visible';
 
         this._root.style.visibility = 'hidden';
@@ -298,7 +298,7 @@ class DiscoPickerBox extends DiscoPage {
     async _animateOutFlip() {
         if (!this._root) return;
 
-        const contentSource = this._root.cloneNode(true);
+        const contentSource = this._getFlipClone();
         contentSource.style.visibility = 'visible';
 
         this._root.style.visibility = 'hidden';
@@ -380,6 +380,14 @@ class DiscoPickerBox extends DiscoPage {
 
         await Promise.all(promises);
         animContainer.remove();
+    }
+
+    _getFlipClone() {
+        if (typeof this.getFlipClone === 'function') {
+            const clone = this.getFlipClone();
+            if (clone instanceof HTMLElement) return clone;
+        }
+        return this._root.cloneNode(true);
     }
 }
 

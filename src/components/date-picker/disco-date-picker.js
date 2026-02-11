@@ -196,6 +196,46 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._buildDayItems();
   }
 
+  getFlipClone() {
+    if (!this._root) return null;
+
+    const rootClone = this._root.cloneNode(true);
+    const viewport = rootClone.querySelector('.content-viewport');
+    if (!viewport) return rootClone;
+
+    viewport.innerHTML = '';
+
+    const columnsEl = document.createElement('div');
+    columnsEl.className = 'date-picker-columns';
+
+    const addColumn = (kind, item) => {
+      if (!item) return;
+      const col = document.createElement('div');
+      col.className = 'date-picker-column';
+      col.dataset.column = kind;
+
+      const view = document.createElement('div');
+      view.className = 'date-picker-view';
+
+      view.appendChild(item.cloneNode(true));
+      col.appendChild(view);
+      columnsEl.appendChild(col);
+    };
+
+    if (this._formatSpec?.hasMonth) {
+      addColumn('month', this._monthItems[this._monthIndex]);
+    }
+    if (this._formatSpec?.hasDay) {
+      addColumn('day', this._dayItems[this._dayIndex]);
+    }
+    if (this._formatSpec?.hasYear) {
+      addColumn('year', this._yearItems[this._yearIndex]);
+    }
+
+    viewport.appendChild(columnsEl);
+    return rootClone;
+  }
+
   _parseFormat(format) {
     const safeFormat = typeof format === 'string' ? format : 'dd MMMM yyyy';
     const hasMonthName = /MMMM/.test(safeFormat) ? 'long' : (/MMM/.test(safeFormat) ? 'short' : null);
