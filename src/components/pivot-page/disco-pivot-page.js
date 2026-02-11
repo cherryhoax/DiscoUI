@@ -340,7 +340,7 @@ class DiscoPivotPage extends DiscoPage {
           el.style.opacity = '1';
           el.style.transition = 'none';
         } else {
-          el.style.visibility = 'hidden';
+          el.style.visibility = 'visible';
           el.style.opacity = '0';
           el.style.transition = 'none';
         }
@@ -530,9 +530,19 @@ class DiscoPivotPage extends DiscoPage {
           const duration = 800;
           const prevItem = /** @type {HTMLElement | undefined} */ (items()[dragStartIndex]);
 
+          const cancelAnimations = (el) => {
+            if (!el || typeof el.getAnimations !== 'function') return;
+            el.getAnimations().forEach((anim) => anim.cancel());
+          };
+
+          cancelAnimations(prevItem);
+          cancelAnimations(targetItem);
+
           if (prevItem && prevItem !== targetItem) {
+            prevItem.style.visibility = 'visible';
             prevItem.style.opacity = '1';
           }
+          targetItem.style.visibility = 'visible';
           targetItem.style.opacity = '0';
 
           // Ensure initial opacity is applied before starting animations.

@@ -9,8 +9,6 @@ class DiscoFlipView extends DiscoScrollView {
   constructor() {
     super();
     this.loadStyle(flipViewCss, this.shadowRoot);
-    // Force horizontal direction by default
-    if (!this.hasAttribute('direction')) this.setAttribute('direction', 'horizontal');
 
     this._boundUpdateChildren = this._updateChildrenLayout.bind(this);
     this._slotObserver = new MutationObserver(this._boundUpdateChildren);
@@ -33,6 +31,8 @@ class DiscoFlipView extends DiscoScrollView {
   }
 
   connectedCallback() {
+    // Force horizontal direction by default
+    if (!this.hasAttribute('direction')) this.setAttribute('direction', 'horizontal');
     super.connectedCallback();
     // ensure children are full-size pages
     const slot = this.shadowRoot.querySelector('slot');

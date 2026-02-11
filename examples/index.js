@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoPickerBox } from './dist/discoui.mjs';
+import { DiscoApp, DiscoDatePicker, DiscoPickerBox } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -130,7 +130,8 @@ const launchDemo = async () => {
       { id: 'button', Title: 'Button', Description: '' },
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
       { id: 'flipview', Title: 'Flip View', Description: '' },
-      { id: 'pickerbox', Title: 'Picker Box', Description: 'Debug Flip Animation' }
+      { id: 'pickerbox', Title: 'Picker Box', Description: 'Debug Flip Animation' },
+      { id: 'datepicker', Title: 'Date Picker', Description: 'DiscoDatePicker demo' }
     ];
     const sortedItems = listItems
       .filter((item) => item.id !== 'toggle-theme')
@@ -140,6 +141,23 @@ const launchDemo = async () => {
     list.addEventListener('itemselect', async (event) => {
       const detail = event.detail;
       const id = detail?.data?.id;
+      if (id === 'datepicker') {
+        const datePicker = new DiscoDatePicker(
+          'CHOOSE DATE',
+          new Date(2008, 0, 1),
+          {
+            min: new Date(1900, 0, 1),
+            max: new Date(2008, 11, 31),
+            format: 'dd MMMM yyyy'
+          }
+        );
+
+        datePicker.open().then((selectedDate) => {
+          if (selectedDate) {
+            console.log('Date picker selected:', selectedDate);
+          }
+        });
+      }
       if (id === 'pickerbox') {
          console.log('Launching Picker Box...');
          const picker = new DiscoPickerBox('Picker Debug', 'TEST');
