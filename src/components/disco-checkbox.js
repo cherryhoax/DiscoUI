@@ -13,9 +13,8 @@ class DiscoCheckbox extends DiscoUIElement {
     super();
     this.attachShadow({ mode: 'open' });
     this.loadStyle(checkboxStyles, this.shadowRoot);
-    this.enableTilt();
 
-    const wrapper = document.createElement('label');
+    const wrapper = document.createElement('div');
     wrapper.className = 'wrapper';
 
     this._input = document.createElement('input');
@@ -35,27 +34,21 @@ class DiscoCheckbox extends DiscoUIElement {
     wrapper.appendChild(text);
     this.shadowRoot.appendChild(wrapper);
 
-    wrapper.addEventListener('click', (event) => {
+    this.addEventListener('click', () => {
       if (this.disabled) return;
-      event.preventDefault();
-      this.checked = !this.checked;
-      this._syncFromAttributes();
-      this.dispatchEvent(new Event('change', { bubbles: true }));
+      if (!this.canClick) return;
+      console.log("heyyy")
+      this._toggleFromUser();
     });
 
-    this._input.addEventListener('change', () => {
-      this.checked = this._input.checked;
-    });
+    this.enableTilt({ selector: '.wrapper', skipTransformWhenHostDisabled: true });
 
     this.setAttribute('role', 'checkbox');
     this.tabIndex = 0;
     this.addEventListener('keydown', (event) => {
-      if (this.disabled) return;
       if (event.key === ' ' || event.key === 'Enter') {
         event.preventDefault();
-        this.checked = !this.checked;
-        this._syncFromAttributes();
-        this.dispatchEvent(new Event('change', { bubbles: true }));
+        this._toggleFromUser();
       }
     });
 
@@ -120,6 +113,16 @@ class DiscoCheckbox extends DiscoUIElement {
       this.setAttribute('aria-disabled', 'true');
     } else {
       this.removeAttribute('aria-disabled');
+    }
+  }
+
+  _toggleFromUser() {
+    if (this.disabled) return;
+    const prev = this.checked;
+    this.checked = !prev;
+    this._syncFromAttributes();
+    if (this.checked !== prev) {
+      this.dispatchEvent(new Event('change', { bubbles: true }));
     }
   }
 }

@@ -21,7 +21,7 @@ class DiscoButton extends DiscoUIElement {
     button.appendChild(slot);
     this.shadowRoot.appendChild(button);
 
-    this.enableTilt({ selector: 'button' });
+    this.enableTilt({ selector: 'button', skipTransformWhenHostDisabled: true });
   }
 }
 

@@ -1,3 +1,5 @@
+@use 'ui-elements/disco-ui-element.scss' as ui;
+
 :host {
     display: inline-flex;
     align-items: center;
@@ -9,6 +11,10 @@
     gap: 10px;
     color: var(--disco-foreground);
     font-size: 21px;
+}
+
+:host(:not([disabled])) .wrapper {
+    @include ui.disco-tilt;
 }
 
 .input {
@@ -46,11 +52,11 @@
 
 
 /* Pressed state: background becomes accent and check becomes white, only inside the box. Border is unchanged. */
-:host([data-pressed]) {
-
-    .wrapper .box,
+:host(:not([disabled])) .wrapper[data-pressed] {
+    .box,
     .input+.box {
         background-color: var(--disco-accent);
+
         &::after {
             border-left-color: #fff;
             border-bottom-color: #fff;

@@ -57,12 +57,27 @@ class DiscoUIElement extends HTMLElement {
 
   /**
    * Enable pointer tilt interaction on the element.
+    * @param {{
+    *  selector?: string | null,
+    *  tiltMultiplier?: number,
+    *  margin?: number,
+    *  pressDown?: number,
+    *  keyPress?: boolean,
+    *  skipTransformWhenHostDisabled?: boolean
+    * }} [options]
    */
   enableTilt(options = {}) {
     if (this._tiltHandlers) return;
     this.tiltEnabled = true;
 
-    const { selector = null, tiltMultiplier = 2, margin = 20, pressDown = 20, keyPress = true } = options;
+    const {
+      selector = null,
+      tiltMultiplier = 2,
+      margin = 20,
+      pressDown = 20,
+      keyPress = true,
+      skipTransformWhenHostDisabled = false
+    } = options;
     const target =
       (selector
         ? (this.shadowRoot?.querySelector(selector) ?? this.querySelector(selector))
@@ -76,6 +91,8 @@ class DiscoUIElement extends HTMLElement {
     let startY = 0;
     let scrollParent = null;
 
+    const canApplyTransform = () => !(skipTransformWhenHostDisabled && this.hasAttribute('disabled'));
+
     const getTiltBoost = (rect) => {
       const widthBoost = rect.width > 0 ? Math.min(3, 120 / rect.width) : 1;
       const heightBoost = rect.height > 0 ? Math.min(3, 120 / rect.height) : 1;
@@ -83,8 +100,9 @@ class DiscoUIElement extends HTMLElement {
     };
 
     const resetTiltState = () => {
-
-      target.style.transform = 'translateZ(0px) rotateX(0deg) rotateY(0deg)';
+      if (canApplyTransform()) {
+        target.style.transform = 'translateZ(0px) rotateX(0deg) rotateY(0deg)';
+      }
 
       this.setPressed(target, false);
     };
@@ -101,7 +119,9 @@ class DiscoUIElement extends HTMLElement {
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       const { widthBoost, heightBoost } = getTiltBoost(rect);
-      target.style.transform = `translateZ(${-pressDown}px) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
+      if (canApplyTransform()) {
+        target.style.transform = `translateZ(${-pressDown}px) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
+      }
 
     };
 
@@ -115,7 +135,9 @@ class DiscoUIElement extends HTMLElement {
       if (keyPressActive) return;
       keyPressActive = true;
       this.setPressed(target, true);
-      target.style.transform = `translateZ(${-pressDown}px)`;
+      if (canApplyTransform()) {
+        target.style.transform = `translateZ(${-pressDown}px)`;
+      }
     };
 
     const keyUpHandler = (event) => {
@@ -123,7 +145,9 @@ class DiscoUIElement extends HTMLElement {
       if (event.key !== ' ' && event.key !== 'Enter') return;
       keyPressActive = false;
       this.setPressed(target, false);
-      target.style.transform = `translateZ(0px)`;
+      if (canApplyTransform()) {
+        target.style.transform = `translateZ(0px)`;
+      }
     };
 
     const cancelHandler = () => {
@@ -170,7 +194,9 @@ class DiscoUIElement extends HTMLElement {
       const x = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
       const y = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       const { widthBoost, heightBoost } = getTiltBoost(rect);
-      target.style.transform = `translateZ(${-pressDown}px) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
+      if (canApplyTransform()) {
+        target.style.transform = `translateZ(${-pressDown}px) rotateX(${-x * tiltMultiplier * widthBoost}deg) rotateY(${y * tiltMultiplier * heightBoost}deg)`;
+      }
     };
     const clickGuardHandler = (e) => {
       if (!this.canClick) {
