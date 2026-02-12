@@ -1,4 +1,4 @@
-import DiscoUIElement from './ui-elements/disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import comboBoxStyles from './disco-combo-box.scss';
 import './disco-combo-box-item.js';
 

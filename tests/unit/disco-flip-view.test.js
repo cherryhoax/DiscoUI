@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import DiscoFlipView from '../../src/components/disco-flip-view.js';
+import DiscoFlipView from '../../src/components/flip-view/disco-flip-view.js';
 
 describe('DiscoFlipView loop layout', () => {
   it('wraps pages around the virtual scroll offset', () => {

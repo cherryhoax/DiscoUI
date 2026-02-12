@@ -1,7 +1,7 @@
-import DiscoUIElement from './ui-elements/disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import splashCss from './disco-splash.scss';
-import DiscoAnimations from './animations/disco-animations.js';
-import './disco-progress-bar.js';
+import DiscoAnimations from '../animations/disco-animations.js';
+import '../progress-bar/disco-progress-bar.js';
 
 /**
  * Splash screen element shown while the app is starting.

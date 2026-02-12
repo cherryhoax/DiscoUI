@@ -1,7 +1,7 @@
 import DiscoPage from '../page/disco-page.js';
 import singlePageCss from './disco-single-page.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
-import '../disco-scroll-view.js';
+import '../scroll-view/disco-scroll-view.js';
 
 /**
  * Single pivot-style page with one header and one content slot.

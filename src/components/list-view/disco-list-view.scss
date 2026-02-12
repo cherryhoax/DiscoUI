@@ -1,5 +1,5 @@
 @use '../ui-elements/disco-ui-element.scss' as ui;
-@use '../disco-scroll-view.scss' as scroll;
+@use '../scroll-view/disco-scroll-view.scss' as scroll;
 
 @include scroll.disco-scroll-view-base;
 

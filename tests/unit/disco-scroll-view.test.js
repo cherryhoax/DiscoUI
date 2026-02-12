@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import DiscoScrollView from '../../src/components/disco-scroll-view.js';
+import DiscoScrollView from '../../src/components/scroll-view/disco-scroll-view.js';
 
 describe('DiscoScrollView momentum', () => {
   it('computes momentum targets within overscroll bounds', () => {

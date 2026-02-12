@@ -1,4 +1,4 @@
-import type DiscoScrollView from './disco-scroll-view.js';
+import type DiscoScrollView from '../scroll-view/disco-scroll-view.js';
 
 export default class DiscoFlipView extends DiscoScrollView {
   constructor();

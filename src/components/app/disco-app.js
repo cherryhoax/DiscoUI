@@ -1,6 +1,6 @@
 import appStyles from './disco-app.scss';
 import '../frame/disco-frame.js';
-import '../disco-splash.js';
+import '../splash/disco-splash.js';
 /** @typedef {import('../disco-splash').DiscoSplashElement} DiscoSplashElement */
 
 /**

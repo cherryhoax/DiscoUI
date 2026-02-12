@@ -1,4 +1,4 @@
-@use 'ui-elements/disco-ui-element.scss' as ui;
+@use '../ui-elements/disco-ui-element.scss' as ui;
 
 :host {
     display: block;
@@ -12,7 +12,8 @@
     background: var(--disco-background-secondary);
     //but actually its only light background secondary
     background: rgb(221, 221, 221);
-    color: var(--disco-foreground);
+    //color: var(--disco-foreground);
+    color: black;
     font-family: inherit;
     font-size: 23px;
     padding: 10px;

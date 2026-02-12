@@ -1,10 +1,6 @@
 import DiscoPickerBox from '../picker-box/disco-picker-box.js';
 import DiscoFlipView from '../flip-view/disco-flip-view.js';
-import loopingSelectorCss from './disco-looping-selector.scss';
-
-/**
- * @typedef {HTMLElement & { _getPageSize?: () => number }} LoopingSelectorView
- */
+import sliderPickerCss from './disco-slider-picker.scss';
 
 /**
  * Generic flip view for slider-based pickers.
@@ -257,7 +253,7 @@ class DiscoLoopingSelector extends DiscoPickerBox {
   constructor(appTitle = 'DISCO APP', header = 'PICKER') {
     super(appTitle, header);
 
-    this.loadStyle(loopingSelectorCss, this.shadowRoot);
+    this.loadStyle(sliderPickerCss, this.shadowRoot);
 
     /** @type {string[]} */
     this._sliderKinds = [];
@@ -470,7 +466,7 @@ class DiscoLoopingSelector extends DiscoPickerBox {
    */
   _commitPendingSelection(kind) {
     this._setScrolling(kind, false);
-    const view = /** @type {LoopingSelectorView | null} */ (this._getSliderView(kind));
+    const view = this._getSliderView(kind);
     if (!view) return;
 
     let idx = this._pendingIndex[kind];
@@ -551,8 +547,7 @@ class DiscoLoopingSelector extends DiscoPickerBox {
    * @param {number} index
    */
   _scrollToIndex(view, index) {
-    const sliderView = /** @type {LoopingSelectorView} */ (view);
-    const size = typeof sliderView._getPageSize === 'function' ? sliderView._getPageSize() : (sliderView.clientHeight || 1);
+    const size = typeof view._getPageSize === 'function' ? view._getPageSize() : (view.clientHeight || 1);
     const kind = this._getSliderKindForView(view);
     if (kind) {
       this._suppressScroll[kind] += 1;

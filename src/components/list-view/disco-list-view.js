@@ -1,4 +1,4 @@
-import DiscoScrollView from '../disco-scroll-view.js';
+import DiscoScrollView from '../scroll-view/disco-scroll-view.js';
 import listViewStyles from './disco-list-view.scss';
 import './disco-list-item.js';
 

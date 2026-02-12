@@ -1,4 +1,4 @@
-import DiscoUIElement from './ui-elements/disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 
 /**
  * Scroll view with momentum and overscroll.

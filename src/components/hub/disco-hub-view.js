@@ -1,4 +1,4 @@
-import DiscoFlipView from '../disco-flip-view.js';
+import DiscoFlipView from '../flip-view/disco-flip-view.js';
 import DiscoAnimations from '../animations/disco-animations.js';
 import hubViewCss from './disco-hub-view.scss';
 

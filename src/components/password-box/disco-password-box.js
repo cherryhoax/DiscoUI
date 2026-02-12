@@ -1,4 +1,4 @@
-import DiscoTextBox from './disco-text-box.js';
+import DiscoTextBox from '../text-box/disco-text-box.js';
 
 class DiscoPasswordBox extends DiscoTextBox {
   constructor() {

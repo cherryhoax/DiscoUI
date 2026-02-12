@@ -1,6 +1,6 @@
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import itemCss from './disco-pivot-item.scss';
-import '../disco-scroll-view.js';
+import '../scroll-view/disco-scroll-view.js';
 
 /**
  * An item used within a pivot page.
