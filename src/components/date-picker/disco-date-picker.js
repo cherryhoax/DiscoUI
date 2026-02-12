@@ -1,4 +1,4 @@
-import DiscoPickerBox from '../picker-box/disco-picker-box.js';
+import DiscoSliderPicker from '../slider-picker/disco-slider-picker.js';
 import datePickerCss from './disco-date-picker.scss';
 import './disco-date-picker-flip-view.js';
 import '../app-bar/disco-app-bar.js';
@@ -11,10 +11,10 @@ const DEFAULT_MIN = new Date(-LIMIT_DAYS * MS_PER_DAY);
 const DEFAULT_MAX = new Date(LIMIT_DAYS * MS_PER_DAY);
 
 /**
- * Date picker built on top of DiscoPickerBox.
- * @extends DiscoPickerBox
+ * Date picker built on top of DiscoSliderPicker.
+ * @extends DiscoSliderPicker
  */
-class DiscoDatePicker extends DiscoPickerBox {
+class DiscoDatePicker extends DiscoSliderPicker {
   /**
    * @param {string} [title]
    * @param {Date} [initialDate]
@@ -40,13 +40,7 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._dayValues = [];
     this._yearValues = [];
 
-    this._isSyncing = false;
-    this._activeColumn = null;
-    this._pendingIndex = { month: null, day: null, year: null };
-    this._scrollStopTimers = { month: null, day: null, year: null };
-    this._suppressScroll = { month: 0, day: 0, year: 0 };
-    this._hasUserInteracted = false;
-    this._lastInteractedKind = null;
+    this._initSliderPicker(['month', 'day', 'year']);
     this._resolveSelection = null;
     this._openPromise = null;
     this._skipResolveOnClose = false;
@@ -77,12 +71,7 @@ class DiscoDatePicker extends DiscoPickerBox {
 
     this.show().then(() => {
       // Reset any active column state so it opens clean
-      this._activeColumn = null;
-      this._hasUserInteracted = false;
-      this._lastInteractedKind = null;
-      [this._monthColumn, this._dayColumn, this._yearColumn].forEach((col) => {
-        if (col) col.removeAttribute('data-expanded');
-      });
+      this._resetSliderInteractionState();
 
       requestAnimationFrame(() => this._syncToDate(this._selectedDate));
     });
@@ -184,6 +173,8 @@ class DiscoDatePicker extends DiscoPickerBox {
     if (kind === 'month') this._monthView = view;
     if (kind === 'day') this._dayView = view;
     if (kind === 'year') this._yearView = view;
+
+    this._registerSliderKind(kind, { column, view });
 
     return column;
   }
@@ -364,6 +355,7 @@ class DiscoDatePicker extends DiscoPickerBox {
 
     this._monthItems = items;
     this._monthValues = values;
+    this._registerSliderKind('month', { items, values });
     this._populateView(this._monthView, items);
     this._updateLoopingForView(this._monthView, 'month', items.length);
   }
@@ -395,6 +387,7 @@ class DiscoDatePicker extends DiscoPickerBox {
 
     this._yearItems = items;
     this._yearValues = values;
+    this._registerSliderKind('year', { items, values });
     this._populateView(this._yearView, items);
     this._updateLoopingForView(this._yearView, 'year', items.length);
   }
@@ -433,6 +426,7 @@ class DiscoDatePicker extends DiscoPickerBox {
 
     this._dayItems = items;
     this._dayValues = values;
+    this._registerSliderKind('day', { items, values });
     this._populateView(this._dayView, items);
     this._updateLoopingForView(this._dayView, 'day', items.length);
   }
@@ -442,10 +436,11 @@ class DiscoDatePicker extends DiscoPickerBox {
     items.forEach((item) => {
       item.addEventListener('click', () => {
         const idx = Number(item.dataset.index || 0);
-        this._markUserInteraction(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year');
-        this._scrollToIndex(view, idx);
-        this._pendingIndex[view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year'] = idx;
-        this._setScrolling(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year', true);
+        const kind = view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year';
+        this._markUserInteraction(kind);
+        this._scrollSliderToIndex(kind, idx);
+        this._pendingIndex[kind] = idx;
+        this._setScrolling(kind, true);
       });
       view.appendChild(item);
     });
@@ -473,112 +468,18 @@ class DiscoDatePicker extends DiscoPickerBox {
     return item;
   }
 
-  _markUserInteraction(kind) {
-    this._hasUserInteracted = true;
-    this._lastInteractedKind = kind;
-    this._setActiveColumn(kind);
-  }
-
-  _setActiveColumn(kind) {
-    if (this._activeColumn === kind) return;
-    this._activeColumn = kind;
-
-    const columns = [this._monthColumn, this._dayColumn, this._yearColumn];
-    columns.forEach((col) => {
-      if (!col) return;
-      const isActive = col.dataset.column === kind;
-      col.toggleAttribute('data-expanded', Boolean(isActive));
-    });
-  }
-
-  _setScrolling(kind, isScrolling) {
-    const column = kind === 'month' ? this._monthColumn : kind === 'day' ? this._dayColumn : this._yearColumn;
-    if (!column) return;
-    column.toggleAttribute('data-scrolling', Boolean(isScrolling));
-  }
-
-  _onScroll(kind) {
-    if (this._isSyncing || this._suppressScroll[kind]) return;
-    if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
-    this._setActiveColumn(kind);
-    this._setScrolling(kind, true);
-    this._pendingIndex[kind] = null;
-  }
-
-  _onScrollEnd(kind) {
-    if (this._isSyncing || this._suppressScroll[kind]) return;
-    if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
-    this._setScrolling(kind, false);
-    this._commitPendingSelection(kind);
-  }
-
-  _onSnap(kind, e) {
-    if (this._isSyncing) return;
-    if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
-    const detail = /** @type {{ index?: number }} */ (e.detail || {});
-    const idx = Number(detail.index || 0);
-    this._setActiveColumn(kind);
-    this._pendingIndex[kind] = idx;
-  }
-
-  _scheduleCommit(kind, idx) {
-    if (idx != null && Number.isFinite(idx)) {
-      this._pendingIndex[kind] = idx;
-    } else {
-      this._pendingIndex[kind] = null;
-    }
-
-    const prevTimer = this._scrollStopTimers[kind];
-    if (prevTimer) {
-      clearTimeout(prevTimer);
-    }
-
-    this._scrollStopTimers[kind] = setTimeout(() => {
-      this._scrollStopTimers[kind] = null;
-      this._commitPendingSelection(kind);
-    }, 100);
-  }
-
-  _commitPendingSelection(kind) {
-    this._setScrolling(kind, false);
-    const view = kind === 'month' ? this._monthView : kind === 'day' ? this._dayView : this._yearView;
-    if (!view) return;
-
-    let idx = this._pendingIndex[kind];
-    this._pendingIndex[kind] = null;
-    if (idx == null || !Number.isFinite(idx)) {
-      const size = typeof view._getPageSize === 'function' ? view._getPageSize() : (view.clientHeight || 1);
-      const rawIdx = size > 0 ? Math.round(view.scrollTop / size) : 0;
-      idx = rawIdx;
-    }
-
+  _onSliderCommit(kind, value) {
     if (kind === 'month') {
-      const normalized = this._normalizeIndex(idx, this._monthValues.length);
-      const monthValue = this._monthValues[normalized];
-      if (monthValue == null) return;
-      this._updateDateParts({ month: monthValue });
+      this._updateDateParts({ month: value });
       return;
     }
-
     if (kind === 'day') {
-      const normalized = this._normalizeIndex(idx, this._dayValues.length);
-      const dayValue = this._dayValues[normalized];
-      if (dayValue == null) return;
-      this._updateDateParts({ day: dayValue });
+      this._updateDateParts({ day: value });
       return;
     }
-
     if (kind === 'year') {
-      const normalized = this._normalizeIndex(idx, this._yearValues.length);
-      const yearValue = this._yearValues[normalized];
-      if (yearValue == null) return;
-      this._updateDateParts({ year: yearValue });
+      this._updateDateParts({ year: value });
     }
-  }
-
-  _normalizeIndex(idx, count) {
-    if (count <= 0) return 0;
-    return ((idx % count) + count) % count;
   }
 
   _updateDateParts({ year, month, day }) {
@@ -665,26 +566,6 @@ class DiscoDatePicker extends DiscoPickerBox {
     const minTime = this._minDate.getTime();
     const maxTime = this._maxDate.getTime();
     return end.getTime() >= minTime && start.getTime() <= maxTime;
-  }
-
-  _scrollToIndex(view, index) {
-    const size = typeof view._getPageSize === 'function' ? view._getPageSize() : (view.clientHeight || 1);
-    const kind = this._getKindForView(view);
-    if (kind) {
-      this._suppressScroll[kind] += 1;
-      // Use setTimeout to ensure the suppression covers the async scroll event
-      setTimeout(() => {
-        this._suppressScroll[kind] = Math.max(0, this._suppressScroll[kind] - 1);
-      }, 100);
-    }
-    view.scrollTop = index * size;
-  }
-
-  _getKindForView(view) {
-    if (view === this._monthView) return 'month';
-    if (view === this._dayView) return 'day';
-    if (view === this._yearView) return 'year';
-    return null;
   }
 
   _updateSelectedStates() {

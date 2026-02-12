@@ -116,7 +116,7 @@ class DiscoFrame extends DiscoUIElement {
 
   _findActiveOverlay() {
     if (typeof document === 'undefined') return null;
-    const overlays = document.body?.querySelectorAll('disco-picker-box, disco-message-box, disco-date-picker') || [];
+    const overlays = document.body?.querySelectorAll('disco-picker-box, disco-slider-picker, disco-message-box, disco-date-picker') || [];
     if (!overlays.length) return null;
     return /** @type {HTMLElement} */ (overlays[overlays.length - 1]);
   }
