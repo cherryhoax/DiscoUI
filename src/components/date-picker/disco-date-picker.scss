@@ -2,18 +2,16 @@
 
 @include slider.disco-slider-picker('date-picker');
 
-@media (max-width: 420px) {
-    :host {
-        --date-picker-gap: 12px;
-        --date-picker-tile-width: calc((var(--disco-vw) - 48px - var(--date-picker-gap) * 2) / 3);
-        --date-picker-tile-height: var(--date-picker-tile-width);
-    }
+:host {
+    --smallest-viewport: calc(min(min(var(--disco-vw), var(--disco-vh)), 720px));
+    --date-picker-tile-width: calc((var(--smallest-viewport) - 48px - var(--date-picker-gap) * 2) / 3);
+    --date-picker-tile-height: calc((var(--smallest-viewport) - 48px - var(--date-picker-gap) * 2) / 3);
+}
 
-    .date-picker-primary {
-        font-size: 30px;
-    }
+.date-picker-primary {
+    font-size: 30px;
+}
 
-    .date-picker-secondary {
-        font-size: 12px;
-    }
+.date-picker-secondary {
+    font-size: 12px;
 }

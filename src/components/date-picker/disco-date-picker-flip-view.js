@@ -5,6 +5,38 @@ import DiscoFlipView from '../disco-flip-view.js';
  * @extends DiscoFlipView
  */
 class DiscoDatePickerFlipView extends DiscoFlipView {
+  _resolveCssLengthPx(varName, fallback = 0) {
+    if (!this.shadowRoot) return fallback;
+
+    if (!this._lengthProbe) {
+      const probe = document.createElement('div');
+      probe.style.position = 'absolute';
+      probe.style.visibility = 'hidden';
+      probe.style.pointerEvents = 'none';
+      probe.style.left = '-99999px';
+      probe.style.top = '-99999px';
+      probe.style.width = '0';
+      probe.style.height = '0';
+      this.shadowRoot.appendChild(probe);
+      this._lengthProbe = probe;
+    }
+
+    this._lengthProbe.style.height = `var(${varName})`;
+    const computed = getComputedStyle(this._lengthProbe).height;
+    const parsed = parseFloat(computed || '');
+    if (Number.isFinite(parsed) && parsed >= 0) return parsed;
+    return fallback;
+  }
+
+  _applyTileBoxSize(node, tileSize, itemGap) {
+    const visualHeight = Math.max(0, tileSize - itemGap);
+    node.style.width = '100%';
+    node.style.height = `${visualHeight}px`;
+    node.style.minHeight = `${visualHeight}px`;
+    node.style.maxHeight = `${visualHeight}px`;
+    node.style.flex = '0 0 auto';
+  }
+
   _updateChildrenLayout() {
     const prevTileSize = this._lastTileSize;
     const nextTileSize = this._getTileSize();
@@ -17,10 +49,10 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
     this._lastTileSize = nextTileSize;
     super._updateChildrenLayout();
     const size = this._getTileSize();
+    const gap = this._getItemGap();
     const nodes = this._getPageElements();
     nodes.forEach((node) => {
-      node.style.height = `${size}px`;
-      node.style.width = '100%';
+      this._applyTileBoxSize(node, size, gap);
     });
 
     if (this.direction === 'vertical' && !this._isLooping()) {
@@ -35,10 +67,22 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
   }
 
   _getTileSize() {
-    const value = getComputedStyle(this).getPropertyValue('--date-picker-tile-height');
-    const parsed = parseFloat(value || '');
-    if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    const stepResolved = this._resolveCssLengthPx('--date-picker-tile-step', 0);
+    if (Number.isFinite(stepResolved) && stepResolved > 0) return stepResolved;
+
+    const tileHeight = this._resolveCssLengthPx('--date-picker-tile-height', 0);
+    if (Number.isFinite(tileHeight) && tileHeight > 0) {
+      const gap = this._getItemGap();
+      return tileHeight + gap;
+    }
+
     return this.clientHeight || 1;
+  }
+
+  _getItemGap() {
+    const resolved = this._resolveCssLengthPx('--date-picker-item-gap', 0);
+    if (Number.isFinite(resolved) && resolved > 0) return resolved;
+    return 0;
   }
 
   _getPageSize() {
@@ -82,9 +126,11 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
 
     const nodes = this._getPageElements();
     const virtual = this._loopVirtualY || 0;
-    const baseOffset = (this.clientHeight - pageSize) / 2;
+    const gap = this._getItemGap();
+    const baseOffset = (this.clientHeight - pageSize) / 2 + (gap / 2);
 
     nodes.forEach((node, i) => {
+      this._applyTileBoxSize(node, pageSize, gap);
       const rawOffset = i * pageSize - virtual;
       let offset = ((rawOffset % span) + span) % span;
       if (offset > span / 2) {
@@ -107,9 +153,11 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
     if (!nodes.length) return;
 
     const virtual = this._nonLoopVirtualY || 0;
-    const baseOffset = (this.clientHeight - size) / 2;
+    const gap = this._getItemGap();
+    const baseOffset = (this.clientHeight - size) / 2 + (gap / 2);
 
     nodes.forEach((node, i) => {
+      this._applyTileBoxSize(node, size, gap);
       const offset = i * size - virtual + baseOffset;
       const zIndex = 100000 - (Math.round(Math.abs(offset)) * 10) - i;
       node.style.zIndex = `${zIndex}`;

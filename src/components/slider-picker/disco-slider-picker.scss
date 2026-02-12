@@ -1,11 +1,16 @@
 @mixin disco-slider-picker($prefix: 'slider-picker') {
     :host {
+        --#{$prefix}-gap: 12px;
+        /* Visual gap between scrollable items (does not affect snap math). */
+        --#{$prefix}-item-gap: 12px;
+        /* Visible tile height. */
         --#{$prefix}-tile-height: 110px;
         /* Width of a single wheel/tile (and therefore the whole column). */
         --#{$prefix}-tile-width: var(--#{$prefix}-tile-height);
+        /* Internal snap-step used by slider math (tile + gap). */
+        --#{$prefix}-tile-step: calc(var(--#{$prefix}-tile-height) + var(--#{$prefix}-item-gap));
         /* Back-compat alias (deprecated): */
         --#{$prefix}-column-width: var(--#{$prefix}-tile-width);
-        --#{$prefix}-gap: 12px;
         /* Neutral gray channel (theme 0 => 132, theme 1 => 166). */
         --#{$prefix}-gray: calc(132 + 34 * var(--disco-theme));
     }
@@ -60,10 +65,10 @@
         align-items: flex-start;
         padding: 12px 16px;
         box-sizing: border-box;
-        border: 3px solid rgba(var(--#{$prefix}-gray), var(--#{$prefix}-gray), var(--#{$prefix}-gray));
+        border: 3px solid rgb(var(--#{$prefix}-gray) var(--#{$prefix}-gray) var(--#{$prefix}-gray) / 0.25);
         border-radius: 0;
         background: transparent;
-        color: rgba(var(--#{$prefix}-gray), var(--#{$prefix}-gray), var(--#{$prefix}-gray));
+        color: rgb(var(--#{$prefix}-gray) var(--#{$prefix}-gray) var(--#{$prefix}-gray) / 0.7);
         transition: opacity 120ms ease;
     }
 
@@ -79,12 +84,10 @@
         pointer-events: none;
     }
 
-    .#{$prefix}-column[data-expanded] .#{$prefix}-item:not([data-selected]) {}
-
     .#{$prefix}-column[data-scrolling] .#{$prefix}-item[data-selected] {
         background: transparent;
-        border-color: rgba(var(--#{$prefix}-gray), var(--#{$prefix}-gray), var(--#{$prefix}-gray));
-        color: rgba(var(--#{$prefix}-gray), var(--#{$prefix}-gray), var(--#{$prefix}-gray));
+        border-color: rgb(var(--#{$prefix}-gray) var(--#{$prefix}-gray) var(--#{$prefix}-gray) / 0.25);
+        color: rgb(var(--#{$prefix}-gray) var(--#{$prefix}-gray) var(--#{$prefix}-gray) / 0.7);
     }
 
     .#{$prefix}-primary {
