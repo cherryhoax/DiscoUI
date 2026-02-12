@@ -1,4 +1,4 @@
-import DiscoUIElement from '../disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import iconButtonStyles from './disco-app-bar-icon-button.scss';
 import metroIcons from '@olton/metroui/lib/icons.css?inline';
 

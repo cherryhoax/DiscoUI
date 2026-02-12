@@ -1,4 +1,4 @@
-import DiscoUIElement from './disco-ui-element.js';
+import DiscoUIElement from './ui-elements/disco-ui-element.js';
 import pageStyles from './disco-page.scss';
 import DiscoAnimations from './animations/disco-animations.js';
 

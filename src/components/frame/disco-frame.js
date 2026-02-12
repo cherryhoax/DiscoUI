@@ -1,6 +1,6 @@
-import DiscoUIElement from './disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import frameStyles from './disco-frame.scss';
-import DiscoAnimations from './animations/disco-animations.js';
+import DiscoAnimations from '../animations/disco-animations.js';
 
 /**
  * Frame container for Disco UI pages. Manages navigation history and page transitions.
@@ -198,7 +198,7 @@ class DiscoFrame extends DiscoUIElement {
   }
 
   async _transitionTo(page, options) {
-    const current = /** @type {import('./disco-page.js').default | null} */ (
+    const current = /** @type {import('../disco-page.js').default | null} */ (
       this.history[this.historyIndex] || null
     );
 
@@ -215,7 +215,7 @@ class DiscoFrame extends DiscoUIElement {
     this._setPageVisibility(page, true);
     this._hideInactivePages(page);
 
-    const typedPage = /** @type {import('./disco-page.js').default} */ (page);
+    const typedPage = /** @type {import('../disco-page.js').default} */ (page);
     if (typeof typedPage.animateIn === 'function') {
       await typedPage.animateIn(options);
     }
@@ -255,7 +255,7 @@ class DiscoFrame extends DiscoUIElement {
   _hideInactivePages(activePage) {
     const children = Array.from(this.children);
     for (const child of children) {
-      const typedChild = /** @type {import('./disco-page.js').default} */ (child);
+      const typedChild = /** @type {import('../disco-page.js').default} */ (child);
       if (typeof typedChild.animateIn !== 'function' && typeof typedChild.animateOut !== 'function') continue;
       if (child === activePage) continue;
       this._setPageVisibility(child, false);

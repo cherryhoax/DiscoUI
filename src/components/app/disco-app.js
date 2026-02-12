@@ -1,7 +1,7 @@
 import appStyles from './disco-app.scss';
-import './disco-frame.js';
-import './disco-splash.js';
-/** @typedef {import('./disco-splash.d.ts').DiscoSplashElement} DiscoSplashElement */
+import '../frame/disco-frame.js';
+import '../disco-splash.js';
+/** @typedef {import('../disco-splash').DiscoSplashElement} DiscoSplashElement */
 
 /**
  * @typedef {'none' | 'auto' | 'manual'} SplashMode

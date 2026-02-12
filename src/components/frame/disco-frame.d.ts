@@ -1,4 +1,4 @@
-import type DiscoUIElement from './ui-elements/disco-ui-element.js';
+import type DiscoUIElement from '../ui-elements/disco-ui-element.js';
 
 export default class DiscoFrame extends DiscoUIElement {
   history: HTMLElement[];

@@ -1,4 +1,4 @@
-import DiscoUIElement from '../disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import appBarStyles from './disco-app-bar.scss';
 import './disco-app-bar-ellipsis.js'; // Import the new component
 import DiscoAnimations from '../animations/disco-animations.js';

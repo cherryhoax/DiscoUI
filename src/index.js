@@ -1,7 +1,7 @@
 import '@olton/metroui/source/icons';
 
-export { default as DiscoApp, DiscoAppDelegate } from './components/disco-app.js';
-export { default as DiscoFrame } from './components/disco-frame.js';
+export { default as DiscoApp, DiscoAppDelegate } from './components/app/disco-app.js';
+export { default as DiscoFrame } from './components/frame/disco-frame.js';
 export { default as DiscoSplash } from './components/disco-splash.js';
 export { default as DiscoPage } from './components/disco-page.js';
 export { default as DiscoButton } from './components/disco-button.js';

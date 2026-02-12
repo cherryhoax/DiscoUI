@@ -1,4 +1,4 @@
-import DiscoUIElement from '../disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import menuItemStyles from './disco-app-bar-menu-item.scss';
 
 /**
