@@ -5,6 +5,35 @@ import DiscoFlipView from '../disco-flip-view.js';
  * @extends DiscoFlipView
  */
 class DiscoDatePickerFlipView extends DiscoFlipView {
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (!this._layoutResizeObserver) {
+      this._layoutResizeObserver = new ResizeObserver(() => {
+        if (this._layoutRaf) cancelAnimationFrame(this._layoutRaf);
+        this._layoutRaf = requestAnimationFrame(() => {
+          this._layoutRaf = null;
+          this._updateChildrenLayout();
+        });
+      });
+    }
+
+    this._layoutResizeObserver.observe(this);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this._layoutResizeObserver) {
+      this._layoutResizeObserver.disconnect();
+    }
+
+    if (this._layoutRaf) {
+      cancelAnimationFrame(this._layoutRaf);
+      this._layoutRaf = null;
+    }
+  }
+
   _resolveCssLengthPx(varName, fallback = 0) {
     if (!this.shadowRoot) return fallback;
 
@@ -40,14 +69,18 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
   _updateChildrenLayout() {
     const prevTileSize = this._lastTileSize;
     const nextTileSize = this._getTileSize();
-
-    if (this.direction === 'vertical' && this._isLooping() && prevTileSize && nextTileSize && prevTileSize !== nextTileSize) {
-      const currentIndex = Math.round(this.scrollTop / prevTileSize);
-      this.scrollTop = currentIndex * nextTileSize;
-    }
+    const shouldKeepIndex = this.direction === 'vertical' && prevTileSize && nextTileSize && prevTileSize !== nextTileSize;
+    const currentIndex = shouldKeepIndex
+      ? Math.round((this.scrollTop || 0) / prevTileSize)
+      : null;
 
     this._lastTileSize = nextTileSize;
     super._updateChildrenLayout();
+
+    if (currentIndex != null && Number.isFinite(currentIndex)) {
+      this.scrollTop = currentIndex * nextTileSize;
+    }
+
     const size = this._getTileSize();
     const gap = this._getItemGap();
     const nodes = this._getPageElements();
