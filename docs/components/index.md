@@ -11,6 +11,7 @@
 - [Scroll View (disco-scroll-view)](scroll-view.md)
 - [Flip View (disco-flip-view)](flip-view.md)
 - [Picker Box (disco-picker-box)](picker-box.md)
+- [Time Picker (disco-time-picker)](time-picker.md)
 - [Button (disco-button)](button.md)
 - [Checkbox (disco-checkbox)](checkbox.md)
 - [Combo Box (disco-combo-box)](combo-box.md)

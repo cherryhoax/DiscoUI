@@ -1,4 +1,4 @@
-import type DiscoUIElement from './disco-ui-element.js';
+import type DiscoUIElement from './ui-elements/disco-ui-element.js';
 import type DiscoComboBoxItem from './disco-combo-box-item.js';
 
 export default class DiscoComboBox extends DiscoUIElement {

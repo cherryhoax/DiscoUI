@@ -5,7 +5,7 @@
 :host {
     --smallest-viewport: calc(min(min(var(--disco-vw), var(--disco-vh)), 720px));
     --date-picker-tile-width: calc((var(--smallest-viewport) - 48px - var(--date-picker-gap) * 2) / 3);
-    --date-picker-tile-height: calc((var(--smallest-viewport) - 48px - var(--date-picker-gap) * 2) / 3);
+    --date-picker-tile-height: var(--date-picker-tile-width);
 }
 
 .date-picker-primary {

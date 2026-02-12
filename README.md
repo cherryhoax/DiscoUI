@@ -95,7 +95,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | | DiscoSlider | Slider input control |
 | ✅ | [DiscoSplash](docs/components/splash.md) | Optional splash screen (modes: none, auto, manual) |
 | ✅ | [DiscoTextBox](docs/components/text-box.md) | Single-line text input |
-| | DiscoTimePicker | Time picker input |
+| ✅ | [DiscoTimePicker](docs/components/time-picker.md) | Time picker input |
 | | DiscoToggleButton | On/off toggle button |
 | | DiscoToggleSwitch | On/off toggle control |
 

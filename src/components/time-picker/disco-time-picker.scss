@@ -1,0 +1,17 @@
+@use '../slider-picker/disco-slider-picker.scss' as slider;
+
+@include slider.disco-slider-picker('time-picker');
+
+:host {
+    --smallest-viewport: calc(min(min(var(--disco-vw), var(--disco-vh)), 720px));
+    --time-picker-tile-width: calc((var(--smallest-viewport) - 48px - var(--time-picker-gap) * 2) / 3);
+    --time-picker-tile-height: var(--time-picker-tile-width);
+}
+
+.time-picker-primary {
+    font-size: 30px;
+}
+
+.time-picker-secondary {
+    font-size: 12px;
+}

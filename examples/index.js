@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoDatePicker, DiscoPickerBox } from './dist/discoui.mjs';
+import { DiscoApp, DiscoDatePicker, DiscoPickerBox, DiscoTimePicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -16,7 +16,7 @@ const launchDemo = async () => {
     }
   });
   app.scale = 1.025;
-  app.scale= 1 //remove me
+  app.scale = 1 //remove me
   app.setInsets({ top: 30, bottom: 0, left: 0, right: 0 });
   window.app = app;
 
@@ -37,7 +37,7 @@ const launchDemo = async () => {
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const comboBox = document.querySelector('#componentsComboBox disco-combo-box');
-  
+
   // App Bar Test Pages
   const appBarSinglePage = document.getElementById('appBarSinglePage');
   const appBarPivotPage = document.getElementById('appBarPivotPage');
@@ -47,21 +47,21 @@ const launchDemo = async () => {
   const appBarTestList = document.getElementById('appBarTestList');
 
   if (appBarTestList) {
-      appBarTestList.items = [
-          { id: 'single', Title: 'App Bar in Page' },
-          { id: 'pivot', Title: 'App Bar in Pivot' },
-          { id: 'panorama', Title: 'App Bar in Panorama' },
-          { id: 'pivot-local', Title: 'Pivot: Local Only' },
-          { id: 'panorama-local', Title: 'Panorama: Local Only' }
-      ];
-      appBarTestList.addEventListener('itemselect', (e) => {
-          const id = e.detail?.data?.id;
-          if (id === 'single') frame.navigate(appBarSinglePage);
-          if (id === 'pivot') frame.navigate(appBarPivotPage);
-          if (id === 'panorama') frame.navigate(appBarHubPage);
-          if (id === 'pivot-local') frame.navigate(appBarPivotLocalOnlyPage);
-          if (id === 'panorama-local') frame.navigate(appBarHubLocalOnlyPage);
-      });
+    appBarTestList.items = [
+      { id: 'single', Title: 'App Bar in Page' },
+      { id: 'pivot', Title: 'App Bar in Pivot' },
+      { id: 'panorama', Title: 'App Bar in Panorama' },
+      { id: 'pivot-local', Title: 'Pivot: Local Only' },
+      { id: 'panorama-local', Title: 'Panorama: Local Only' }
+    ];
+    appBarTestList.addEventListener('itemselect', (e) => {
+      const id = e.detail?.data?.id;
+      if (id === 'single') frame.navigate(appBarSinglePage);
+      if (id === 'pivot') frame.navigate(appBarPivotPage);
+      if (id === 'panorama') frame.navigate(appBarHubPage);
+      if (id === 'pivot-local') frame.navigate(appBarPivotLocalOnlyPage);
+      if (id === 'panorama-local') frame.navigate(appBarHubLocalOnlyPage);
+    });
   }
 
   let stressScrollPage = document.getElementById('componentsStressScroll');
@@ -132,7 +132,8 @@ const launchDemo = async () => {
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
       { id: 'flipview', Title: 'Flip View', Description: '' },
       { id: 'pickerbox', Title: 'Picker Box', Description: 'Debug Flip Animation' },
-      { id: 'datepicker', Title: 'Date Picker', Description: 'DiscoDatePicker demo' }
+      { id: 'datepicker', Title: 'Date Picker', Description: 'DiscoDatePicker demo' },
+      { id: 'timepicker', Title: 'Time Picker', Description: 'DiscoTimePicker demo' }
     ];
     const sortedItems = listItems
       .filter((item) => item.id !== 'toggle-theme')
@@ -159,28 +160,43 @@ const launchDemo = async () => {
           }
         });
       }
+      if (id === 'timepicker') {
+        const timePicker = new DiscoTimePicker(
+          'CHOOSE TIME',
+          '14:30',
+          {
+            minuteIncrement: 5
+          }
+        );
+
+        timePicker.open().then((selectedTime) => {
+          if (selectedTime) {
+            console.log('Time picker selected:', selectedTime);
+          }
+        });
+      }
       if (id === 'pickerbox') {
-         console.log('Launching Picker Box...');
-         const picker = new DiscoPickerBox('Picker Debug', 'TEST');
-         picker.setAttribute('animation', 'flip');
-         const appBar = document.createElement('disco-app-bar');
-         appBar.innerHTML = `
+        console.log('Launching Picker Box...');
+        const picker = new DiscoPickerBox('Picker Debug', 'TEST');
+        picker.setAttribute('animation', 'flip');
+        const appBar = document.createElement('disco-app-bar');
+        appBar.innerHTML = `
             <disco-app-bar-icon-button icon="done" label="done"></disco-app-bar-icon-button>
             <disco-app-bar-icon-button icon="cross" label="cancel"></disco-app-bar-icon-button>
          `;
-         picker.appendChild(appBar);
-         
-         // Add some content to visualize flip
-         const content = document.createElement('div');
-         content.style.padding = '24px';
-         content.innerHTML = `
+        picker.appendChild(appBar);
+
+        // Add some content to visualize flip
+        const content = document.createElement('div');
+        content.style.padding = '24px';
+        content.innerHTML = `
             <h1>Hello Picker</h1>
             <p>This content should be flipped in strips.</p>
             <div style="background: red; width: 100px; height: 100px;"></div>
          `;
-         picker.appendChild(content);
-         
-         picker.show();    
+        picker.appendChild(content);
+
+        picker.show();
       }
       if (id === 'toggle-theme') {
         const nextTheme = getTheme() === 'dark' ? 'light' : 'dark';

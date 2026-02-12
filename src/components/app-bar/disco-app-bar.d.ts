@@ -1,4 +1,4 @@
-import DiscoUIElement from '../disco-ui-element.js';
+import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 
 /**
  * A Disco UI app bar element that displays icon buttons and menu items.
