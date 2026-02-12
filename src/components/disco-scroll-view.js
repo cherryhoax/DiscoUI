@@ -30,6 +30,8 @@ class DiscoScrollView extends DiscoUIElement {
         this._velocity = { x: 0, y: 0 };
         this._rafId = null;
         this._lastTimestamp = 0;
+        this._isScrolling = false;
+        this._isAnimating = false;
 
         // Overscroll state
         this._overscrollX = 0;
@@ -677,6 +679,7 @@ class DiscoScrollView extends DiscoUIElement {
                 if (snapX) this._snapBackActiveX = false;
                 if (snapY) this._snapBackActiveY = false;
                 this._renderOverscroll(this._overscrollX, this._overscrollY);
+                this._markScrollEndIfIdle();
             }
         };
 
@@ -749,6 +752,7 @@ class DiscoScrollView extends DiscoUIElement {
         this._amplitudeY = targetY - this.scrollTop;
 
         this._timestampStart = performance.now();
+        this._isAnimating = true;
         this._rafId = requestAnimationFrame(this._update);
     }
 
@@ -757,6 +761,7 @@ class DiscoScrollView extends DiscoUIElement {
             cancelAnimationFrame(this._rafId);
             this._rafId = null;
         }
+        this._isAnimating = false;
     }
 
     _updateMetrics() {
@@ -773,6 +778,7 @@ class DiscoScrollView extends DiscoUIElement {
             if (this._targetX !== null) this.scrollLeft = this._targetX;
             if (this._targetY !== null) this.scrollTop = this._targetY;
             this._emitScroll();
+            this._markScrollEndIfIdle();
             return;
         }
 
@@ -871,7 +877,21 @@ class DiscoScrollView extends DiscoUIElement {
     }
 
     _emitScroll() {
+        this._isScrolling = true;
         this.dispatchEvent(new Event('scroll', { bubbles: true, composed: true }));
+    }
+
+    _markScrollEndIfIdle() {
+        if (this._isDragging || this._isPreDragging) return;
+        if (this._isAnimating) return;
+        if (this._snapBackRaf) return;
+        this._emitScrollEnd();
+    }
+
+    _emitScrollEnd() {
+        if (!this._isScrolling) return;
+        this._isScrolling = false;
+        this.dispatchEvent(new Event('scroll-end', { bubbles: true, composed: true }));
     }
 
     _hasSnapPoints() {

@@ -585,6 +585,7 @@ class DiscoFlipView extends DiscoScrollView {
           this._prevTimeConstant = undefined;
           this._strictSnapActive = false;
         }
+        this._markScrollEndIfIdle();
         return;
       }
 

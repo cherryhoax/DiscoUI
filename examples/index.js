@@ -16,6 +16,7 @@ const launchDemo = async () => {
     }
   });
   app.scale = 1.025;
+  app.scale= 1 //remove me
   app.setInsets({ top: 30, bottom: 0, left: 0, right: 0 });
   window.app = app;
 
@@ -143,12 +144,12 @@ const launchDemo = async () => {
       const id = detail?.data?.id;
       if (id === 'datepicker') {
         const datePicker = new DiscoDatePicker(
-          'CHOOSE DATE',
+          'Choose Date',
           new Date(),
           {
             min: new Date(1900, 0, 1),
             max: new Date(),
-            format: 'dd MMMM yyyy'
+            format: 'dd MM yyyy'
           }
         );
 

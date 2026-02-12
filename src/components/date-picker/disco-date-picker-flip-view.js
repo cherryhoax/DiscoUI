@@ -1,7 +1,7 @@
 import DiscoFlipView from '../disco-flip-view.js';
 
 /**
- * Flip view variant for date picker that allows overflow to be visible.
+ * Flip view variant for date picker.
  * @extends DiscoFlipView
  */
 class DiscoDatePickerFlipView extends DiscoFlipView {
@@ -23,10 +23,14 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
       node.style.width = '100%';
     });
 
-    this.style.overflow = 'hidden';
-    const wrapper = this.shadowRoot?.querySelector('.scroll-content');
-    if (wrapper instanceof HTMLElement) {
-      wrapper.style.overflow = 'hidden';
+    if (this.direction === 'vertical' && !this._isLooping()) {
+      nodes.forEach((node) => {
+        node.style.position = 'absolute';
+        node.style.top = '0';
+        node.style.left = '0';
+        node.style.willChange = 'transform';
+      });
+      this._renderNonLoop();
     }
   }
 
@@ -42,6 +46,29 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
       return this._getTileSize();
     }
     return super._getPageSize();
+  }
+
+  get scrollTop() {
+    if (this.direction === 'vertical' && !this._isLooping()) {
+      return this._nonLoopVirtualY || 0;
+    }
+    return super.scrollTop;
+  }
+
+  set scrollTop(val) {
+    if (this.direction === 'vertical' && !this._isLooping()) {
+      this._nonLoopVirtualY = val;
+      this._renderNonLoop();
+      return;
+    }
+    super.scrollTop = val;
+  }
+
+  get maxScrollTop() {
+    if (this.direction === 'vertical' && !this._isLooping()) {
+      return this._getNonLoopMax();
+    }
+    return super.maxScrollTop;
   }
 
   _renderLoop() {
@@ -70,6 +97,33 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
     });
 
     if (this._emitScroll) this._emitScroll();
+  }
+
+  _renderNonLoop() {
+    if (this.direction !== 'vertical' || this._isLooping()) return;
+
+    const size = this._getTileSize();
+    const nodes = this._getPageElements();
+    if (!nodes.length) return;
+
+    const virtual = this._nonLoopVirtualY || 0;
+    const baseOffset = (this.clientHeight - size) / 2;
+
+    nodes.forEach((node, i) => {
+      const offset = i * size - virtual + baseOffset;
+      const zIndex = 100000 - (Math.round(Math.abs(offset)) * 10) - i;
+      node.style.zIndex = `${zIndex}`;
+      node.style.transform = `translate3d(0, ${offset}px, 0)`;
+    });
+
+    if (this._emitScroll) this._emitScroll();
+  }
+
+  _getNonLoopMax() {
+    const size = this._getTileSize();
+    const count = this._getPageElements().length;
+    if (!count) return 0;
+    return Math.max(0, (count - 1) * size);
   }
 }
 

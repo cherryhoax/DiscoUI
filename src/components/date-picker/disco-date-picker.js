@@ -36,6 +36,9 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._monthItems = [];
     this._dayItems = [];
     this._yearItems = [];
+    this._monthValues = [];
+    this._dayValues = [];
+    this._yearValues = [];
 
     this._isSyncing = false;
     this._activeColumn = null;
@@ -164,9 +167,8 @@ class DiscoDatePicker extends DiscoPickerBox {
     view.setAttribute('overscroll-mode', 'loop');
 
     view.addEventListener('pointerdown', () => this._markUserInteraction(kind));
-    view.addEventListener('touchstart', () => this._markUserInteraction(kind), { passive: true });
-    view.addEventListener('wheel', () => this._markUserInteraction(kind), { passive: true });
     view.addEventListener('scroll', () => this._onScroll(kind), { passive: true });
+    view.addEventListener('scroll-end', () => this._onScrollEnd(kind));
     view.addEventListener('disco-snap-target', (e) => this._onSnap(kind, e));
 
     column.appendChild(view);
@@ -191,9 +193,33 @@ class DiscoDatePicker extends DiscoPickerBox {
       this._yearColumn.toggleAttribute('data-hidden', !this._formatSpec.hasYear);
     }
 
+    this._applyColumnOrder();
+
     this._buildMonthItems();
     this._buildYearItems();
     this._buildDayItems();
+  }
+
+  _applyColumnOrder() {
+    if (!this._columnsEl) return;
+    const order = this._formatSpec?.order || ['month', 'day', 'year'];
+    const map = {
+      month: this._monthColumn,
+      day: this._dayColumn,
+      year: this._yearColumn
+    };
+
+    this._columnsEl.innerHTML = '';
+    order.forEach((kind) => {
+      const col = map[kind];
+      if (col) this._columnsEl.appendChild(col);
+    });
+
+    ['month', 'day', 'year'].forEach((kind) => {
+      if (order.includes(kind)) return;
+      const col = map[kind];
+      if (col) this._columnsEl.appendChild(col);
+    });
   }
 
   getFlipClone() {
@@ -222,15 +248,18 @@ class DiscoDatePicker extends DiscoPickerBox {
       columnsEl.appendChild(col);
     };
 
-    if (this._formatSpec?.hasMonth) {
-      addColumn('month', this._monthItems[this._monthIndex]);
-    }
-    if (this._formatSpec?.hasDay) {
-      addColumn('day', this._dayItems[this._dayIndex]);
-    }
-    if (this._formatSpec?.hasYear) {
-      addColumn('year', this._yearItems[this._yearIndex]);
-    }
+    const order = this._formatSpec?.order || ['month', 'day', 'year'];
+    order.forEach((kind) => {
+      if (kind === 'month' && this._formatSpec?.hasMonth) {
+        addColumn('month', this._monthItems[this._monthIndex]);
+      }
+      if (kind === 'day' && this._formatSpec?.hasDay) {
+        addColumn('day', this._dayItems[this._dayIndex]);
+      }
+      if (kind === 'year' && this._formatSpec?.hasYear) {
+        addColumn('year', this._yearItems[this._yearIndex]);
+      }
+    });
 
     viewport.appendChild(columnsEl);
     return rootClone;
@@ -239,44 +268,68 @@ class DiscoDatePicker extends DiscoPickerBox {
   _parseFormat(format) {
     const safeFormat = typeof format === 'string' ? format : 'dd MMMM yyyy';
     const hasMonthName = /MMMM/.test(safeFormat) ? 'long' : (/MMM/.test(safeFormat) ? 'short' : null);
-    const hasMonthNumber = /MM/.test(safeFormat) || /\bM\b/.test(safeFormat);
-    const hasDayNumber = /dd/.test(safeFormat) || /\bd\b/.test(safeFormat);
+    const hasMonthNumber = /(?:^|[^M])MM(?!M)/.test(safeFormat) || /(?:^|[^M])M(?!M)/.test(safeFormat);
+    const hasDayNumber = /(?:^|[^d])dd(?!d)/.test(safeFormat) || /(?:^|[^d])d(?!d)/.test(safeFormat);
     const hasYear = /yyyy/.test(safeFormat) ? 'numeric' : (/yy/.test(safeFormat) ? '2-digit' : null);
     const hasWeekday = /dddd/.test(safeFormat) ? 'long' : (/ddd/.test(safeFormat) ? 'short' : null);
+
+    const tokens = safeFormat.match(/yyyy|yy|MMMM|MMM|MM|M|dd|d/g) || [];
+    const order = [];
+    tokens.forEach((token) => {
+      let kind = null;
+      if (token.startsWith('y')) kind = 'year';
+      else if (token.startsWith('M')) kind = 'month';
+      else if (token.startsWith('d')) kind = 'day';
+      if (kind && !order.includes(kind)) order.push(kind);
+    });
+
+    const finalOrder = order.length ? order : ['month', 'day', 'year'];
 
     return {
       hasMonth: Boolean(hasMonthName || hasMonthNumber),
       hasDay: Boolean(hasDayNumber),
       hasYear: Boolean(hasYear),
       monthNameStyle: hasMonthName,
-      monthNumberDigits: /MM/.test(safeFormat) ? 2 : (hasMonthNumber ? 1 : 0),
-      dayNumberDigits: /dd/.test(safeFormat) ? 2 : (hasDayNumber ? 1 : 0),
+      monthNumberDigits: /(?:^|[^M])MM(?!M)/.test(safeFormat) ? 2 : (hasMonthNumber ? 1 : 0),
+      dayNumberDigits: /(?:^|[^d])dd(?!d)/.test(safeFormat) ? 2 : (hasDayNumber ? 1 : 0),
       yearStyle: hasYear,
-      weekdayStyle: hasWeekday
+      weekdayStyle: hasWeekday,
+      order: finalOrder
     };
   }
 
   _buildMonthItems() {
     if (!this._monthView) return;
 
+    const year = this._selectedDate.getFullYear();
+
     const monthFormatter = this._formatSpec.monthNameStyle
       ? new Intl.DateTimeFormat(this._locale, { month: this._formatSpec.monthNameStyle })
       : null;
 
     const items = [];
+    const values = [];
     for (let m = 0; m < 12; m += 1) {
+      const start = new Date(year, m, 1);
+      const end = new Date(year, m + 1, 0, 23, 59, 59, 999);
+      if (!this._isRangeInBounds(start, end)) continue;
+
       const date = new Date(2020, m, 1);
       const monthNumber = this._formatSpec.monthNumberDigits
         ? String(m + 1).padStart(this._formatSpec.monthNumberDigits, '0')
         : '';
       const monthName = monthFormatter ? monthFormatter.format(date) : '';
       const item = this._createItem(monthNumber || monthName, monthNumber ? monthName : '');
-      item.dataset.index = String(m);
+      item.dataset.index = String(items.length);
+      item.dataset.value = String(m);
       items.push(item);
+      values.push(m);
     }
 
     this._monthItems = items;
+    this._monthValues = values;
     this._populateView(this._monthView, items);
+    this._updateLoopingForView(this._monthView, 'month', items.length);
   }
 
   _buildYearItems() {
@@ -288,17 +341,26 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._maxYear = maxYear;
 
     const items = [];
+    const values = [];
     for (let y = minYear; y <= maxYear; y += 1) {
+      const start = new Date(y, 0, 1);
+      const end = new Date(y, 11, 31, 23, 59, 59, 999);
+      if (!this._isRangeInBounds(start, end)) continue;
+
       const display = this._formatSpec.yearStyle === '2-digit'
         ? String(y).slice(-2)
         : String(y);
       const item = this._createItem(display, '');
-      item.dataset.index = String(y - minYear);
+      item.dataset.index = String(items.length);
+      item.dataset.value = String(y);
       items.push(item);
+      values.push(y);
     }
 
     this._yearItems = items;
+    this._yearValues = values;
     this._populateView(this._yearView, items);
+    this._updateLoopingForView(this._yearView, 'year', items.length);
   }
 
   _buildDayItems() {
@@ -314,22 +376,29 @@ class DiscoDatePicker extends DiscoPickerBox {
 
     const selectedDay = this._selectedDate.getDate();
     const items = [];
+    const values = [];
     for (let d = 1; d <= daysInMonth; d += 1) {
       const date = new Date(year, month, d);
+      if (!this._isDateInBounds(date)) continue;
+
       const dayNumber = this._formatSpec.dayNumberDigits
         ? String(d).padStart(this._formatSpec.dayNumberDigits, '0')
         : String(d);
       const weekday = weekdayFormatter ? weekdayFormatter.format(date) : '';
       const item = this._createItem(dayNumber, weekday);
-      item.dataset.index = String(d - 1);
+      item.dataset.index = String(items.length);
+      item.dataset.value = String(d);
       if (d === selectedDay) {
         item.toggleAttribute('data-selected', true);
       }
       items.push(item);
+      values.push(d);
     }
 
     this._dayItems = items;
+    this._dayValues = values;
     this._populateView(this._dayView, items);
+    this._updateLoopingForView(this._dayView, 'day', items.length);
   }
 
   _populateView(view, items) {
@@ -339,7 +408,8 @@ class DiscoDatePicker extends DiscoPickerBox {
         const idx = Number(item.dataset.index || 0);
         this._markUserInteraction(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year');
         this._scrollToIndex(view, idx);
-        this._scheduleCommit(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year', idx);
+        this._pendingIndex[view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year'] = idx;
+        this._setScrolling(view === this._monthView ? 'month' : view === this._dayView ? 'day' : 'year', true);
       });
       view.appendChild(item);
     });
@@ -385,21 +455,34 @@ class DiscoDatePicker extends DiscoPickerBox {
     });
   }
 
+  _setScrolling(kind, isScrolling) {
+    const column = kind === 'month' ? this._monthColumn : kind === 'day' ? this._dayColumn : this._yearColumn;
+    if (!column) return;
+    column.toggleAttribute('data-scrolling', Boolean(isScrolling));
+  }
+
   _onScroll(kind) {
     if (this._isSyncing || this._suppressScroll[kind]) return;
     if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
     this._setActiveColumn(kind);
-    this._scheduleCommit(kind, null);
+    this._setScrolling(kind, true);
+    this._pendingIndex[kind] = null;
+  }
+
+  _onScrollEnd(kind) {
+    if (this._isSyncing || this._suppressScroll[kind]) return;
+    if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
+    this._setScrolling(kind, false);
+    this._commitPendingSelection(kind);
   }
 
   _onSnap(kind, e) {
     if (this._isSyncing) return;
     if (!this._hasUserInteracted || this._lastInteractedKind !== kind) return;
-
     const detail = /** @type {{ index?: number }} */ (e.detail || {});
     const idx = Number(detail.index || 0);
     this._setActiveColumn(kind);
-    this._scheduleCommit(kind, idx);
+    this._pendingIndex[kind] = idx;
   }
 
   _scheduleCommit(kind, idx) {
@@ -421,10 +504,12 @@ class DiscoDatePicker extends DiscoPickerBox {
   }
 
   _commitPendingSelection(kind) {
+    this._setScrolling(kind, false);
     const view = kind === 'month' ? this._monthView : kind === 'day' ? this._dayView : this._yearView;
     if (!view) return;
 
     let idx = this._pendingIndex[kind];
+    this._pendingIndex[kind] = null;
     if (idx == null || !Number.isFinite(idx)) {
       const size = typeof view._getPageSize === 'function' ? view._getPageSize() : (view.clientHeight || 1);
       const rawIdx = size > 0 ? Math.round(view.scrollTop / size) : 0;
@@ -432,21 +517,26 @@ class DiscoDatePicker extends DiscoPickerBox {
     }
 
     if (kind === 'month') {
-      const normalized = this._normalizeIndex(idx, this._monthItems.length);
-      this._updateDateParts({ month: normalized });
+      const normalized = this._normalizeIndex(idx, this._monthValues.length);
+      const monthValue = this._monthValues[normalized];
+      if (monthValue == null) return;
+      this._updateDateParts({ month: monthValue });
       return;
     }
 
     if (kind === 'day') {
-      const normalized = this._normalizeIndex(idx, this._dayItems.length);
-      this._updateDateParts({ day: normalized + 1 });
+      const normalized = this._normalizeIndex(idx, this._dayValues.length);
+      const dayValue = this._dayValues[normalized];
+      if (dayValue == null) return;
+      this._updateDateParts({ day: dayValue });
       return;
     }
 
     if (kind === 'year') {
-      const normalized = this._normalizeIndex(idx, this._yearItems.length);
-      const year = this._minYear + normalized;
-      this._updateDateParts({ year });
+      const normalized = this._normalizeIndex(idx, this._yearValues.length);
+      const yearValue = this._yearValues[normalized];
+      if (yearValue == null) return;
+      this._updateDateParts({ year: yearValue });
     }
   }
 
@@ -495,9 +585,13 @@ class DiscoDatePicker extends DiscoPickerBox {
     const month = date.getMonth();
     const day = date.getDate();
 
-    this._monthIndex = month;
-    this._yearIndex = Math.max(0, Math.min(this._yearItems.length - 1, year - this._minYear));
-    this._dayIndex = Math.max(0, Math.min(this._dayItems.length - 1, day - 1));
+    const monthIndex = this._monthValues.indexOf(month);
+    const yearIndex = this._yearValues.indexOf(year);
+    const dayIndex = this._dayValues.indexOf(day);
+
+    this._monthIndex = monthIndex >= 0 ? monthIndex : 0;
+    this._yearIndex = yearIndex >= 0 ? yearIndex : 0;
+    this._dayIndex = dayIndex >= 0 ? dayIndex : 0;
 
     if (sync.month && this._monthView) this._scrollToIndex(this._monthView, this._monthIndex);
     if (sync.day && this._dayView) this._scrollToIndex(this._dayView, this._dayIndex);
@@ -506,6 +600,35 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._updateSelectedStates();
 
     this._isSyncing = false;
+  }
+
+  _updateLoopingForView(view, kind, count) {
+    if (!view) return;
+
+    if (kind === 'year') {
+      view.setAttribute('overscroll-mode', 'none');
+      return;
+    }
+
+    const update = () => {
+      const size = typeof view._getPageSize === 'function' ? view._getPageSize() : (view.clientHeight || 1);
+      const height = view.clientHeight || 1;
+      const canLoop = count * size > height + 1;
+      view.setAttribute('overscroll-mode', canLoop ? 'loop' : 'none');
+    };
+
+    requestAnimationFrame(() => requestAnimationFrame(update));
+  }
+
+  _isDateInBounds(date) {
+    const time = date.getTime();
+    return time >= this._minDate.getTime() && time <= this._maxDate.getTime();
+  }
+
+  _isRangeInBounds(start, end) {
+    const minTime = this._minDate.getTime();
+    const maxTime = this._maxDate.getTime();
+    return end.getTime() >= minTime && start.getTime() <= maxTime;
   }
 
   _scrollToIndex(view, index) {
