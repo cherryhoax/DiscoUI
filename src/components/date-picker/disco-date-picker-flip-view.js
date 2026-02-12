@@ -125,6 +125,15 @@ class DiscoDatePickerFlipView extends DiscoFlipView {
     if (!count) return 0;
     return Math.max(0, (count - 1) * size);
   }
+
+  _renderOverscroll(x, y) {
+    if (Math.abs(x) < 0.1 && Math.abs(y) < 0.1) {
+      this._wrapper.style.transform = '';
+      return;
+    }
+    // Override standard scale behavior - just translate
+    this._wrapper.style.transform = `translate3d(0, ${Math.round(y / 3)}px, 0)`;
+  }
 }
 
 customElements.define('disco-date-picker-flip-view', DiscoDatePickerFlipView);

@@ -54,7 +54,15 @@ class DiscoDatePicker extends DiscoPickerBox {
     this._buildContent();
     this._buildAppBar();
     this._applyFormat();
+    // Initial sync. Note: scrollTop assignments here won't work if detached,
+    // so we also sync in connectedCallback.
     this._syncToDate(this._selectedDate);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    // Re-apply scroll positions now that we are attached and have layout dimensions
+    requestAnimationFrame(() => this._syncToDate(this._selectedDate));
   }
 
   /**
@@ -242,8 +250,22 @@ class DiscoDatePicker extends DiscoPickerBox {
 
       const view = document.createElement('div');
       view.className = 'date-picker-view';
+      view.style.position = 'relative';
+      view.style.overflow = 'hidden';
+      view.style.height = '100%';
+      view.style.width = '100%';
 
-      view.appendChild(item.cloneNode(true));
+      const clone = item.cloneNode(true);
+      clone.setAttribute('data-selected', 'true');
+      
+      // Manually center the item since we want it to match the "selected" position (center of view)
+      clone.style.position = 'absolute';
+      clone.style.top = '50%';
+      clone.style.left = '0';
+      clone.style.width = '100%';
+      clone.style.transform = 'translateY(-50%)';
+
+      view.appendChild(clone);
       col.appendChild(view);
       columnsEl.appendChild(col);
     };
@@ -265,9 +287,23 @@ class DiscoDatePicker extends DiscoPickerBox {
     return rootClone;
   }
 
+  get locale() {
+    return this._locale;
+  }
+
+  set locale(val) {
+    if (this._locale !== val) {
+      this._locale = val || 'en-US';
+      this._buildMonthItems();
+      this._buildDayItems();
+    }
+  }
+
   _parseFormat(format) {
     const safeFormat = typeof format === 'string' ? format : 'dd MMMM yyyy';
-    const hasMonthName = /MMMM/.test(safeFormat) ? 'long' : (/MMM/.test(safeFormat) ? 'short' : null);
+    // User requested MMMM to render short month names (e.g. "Jan" instead of "January")
+    // effectively overriding the standard meaning of MMMM for the view.
+    const hasMonthName = /MMMM/.test(safeFormat) ? 'short' : (/MMM/.test(safeFormat) ? 'short' : null);
     const hasMonthNumber = /(?:^|[^M])MM(?!M)/.test(safeFormat) || /(?:^|[^M])M(?!M)/.test(safeFormat);
     const hasDayNumber = /(?:^|[^d])dd(?!d)/.test(safeFormat) || /(?:^|[^d])d(?!d)/.test(safeFormat);
     const hasYear = /yyyy/.test(safeFormat) ? 'numeric' : (/yy/.test(safeFormat) ? '2-digit' : null);

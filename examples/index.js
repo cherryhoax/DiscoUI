@@ -149,7 +149,7 @@ const launchDemo = async () => {
           {
             min: new Date(1900, 0, 1),
             max: new Date(),
-            format: 'dd MM yyyy'
+            format: 'dd MMMM yyyy'
           }
         );
 
