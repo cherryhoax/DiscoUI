@@ -28,7 +28,7 @@
 .app-title {
     font-size: 22px;
     text-transform: uppercase;
-    padding: 18px 20px 0;
+    padding: 18px 24px 0;
     letter-spacing: 0.05em;
     opacity: 1;
 }
@@ -36,7 +36,7 @@
 .header-strip {
     display: flex;
     gap: 25px;
-    padding: 0px 20px 20px;
+    padding: 0px 24px 24px;
     overflow: hidden;
     scrollbar-width: none;
 }
@@ -84,11 +84,11 @@
 
 .single-page-plain-content {
     box-sizing: border-box;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 .single-page-scroll-content {
     box-sizing: border-box;
     min-height: 100%;
-    padding: 0 20px calc(120px + var(--disco-inset-bottom) + var(--disco-inset-top));
+    padding: 0 24px calc(120px + var(--disco-inset-bottom) + var(--disco-inset-top));
 }
