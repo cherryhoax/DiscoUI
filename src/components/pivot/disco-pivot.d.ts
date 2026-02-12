@@ -1,5 +1,5 @@
-import type DiscoPage from '../disco-page.js';
-import type { DiscoPageAnimationOptions } from '../disco-page.js';
+import type DiscoPage from '../page/disco-page.js';
+import type { DiscoPageAnimationOptions } from '../page/disco-page.js';
 
 /**
  * Pivot-style page with header strip and flip-view content.

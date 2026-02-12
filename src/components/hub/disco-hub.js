@@ -1,4 +1,4 @@
-import DiscoPage from '../disco-page.js';
+import DiscoPage from '../page/disco-page.js';
 import hubCss from './disco-hub.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 import './disco-hub-view.js';

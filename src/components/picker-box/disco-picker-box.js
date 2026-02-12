@@ -1,4 +1,4 @@
-import DiscoPage from '../disco-page.js';
+import DiscoPage from '../page/disco-page.js';
 import pickerBoxCss from './disco-picker-box.scss';
 import DiscoAnimations from '../animations/disco-animations.js';
 

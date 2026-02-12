@@ -1,4 +1,4 @@
-@use '../disco-page.scss' as page;
+@use '../page/disco-page.scss' as page;
 
 :host {
   @include page.disco-page-base;

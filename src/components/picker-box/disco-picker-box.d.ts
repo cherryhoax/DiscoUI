@@ -1,4 +1,4 @@
-import type DiscoPage from '../disco-page.js';
+import type DiscoPage from '../page/disco-page.js';
 
 export type DiscoPickerBoxAnimation = 'slide-up' | 'flip';
 
