@@ -1,6 +1,6 @@
-@use '../slider-picker/disco-slider-picker.scss' as slider;
+@use '../looping-selector/disco-looping-selector.scss' as slider;
 
-@include slider.disco-slider-picker('date-picker');
+@include slider.disco-looping-selector('date-picker');
 
 :host {
     --smallest-viewport: calc(min(min(var(--disco-vw), var(--disco-vh)), 720px));

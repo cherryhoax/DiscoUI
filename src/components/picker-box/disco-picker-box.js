@@ -94,9 +94,9 @@ class DiscoPickerBox extends DiscoPage {
         window.history.pushState({ pickerId: Math.random().toString(36) }, '', window.location.href);
         this._pushedState = true;
 
-        this._popStateListener = (e) => {
+        this._popStateListener = () => {
             this._pushedState = false; // We are already back in history
-            this.close();
+            this.close({ fromPopState: true });
         };
         window.addEventListener('popstate', this._popStateListener, { once: true });
 
@@ -121,8 +121,10 @@ class DiscoPickerBox extends DiscoPage {
     /**
      * Public method to close the picker modal.
      */
-    async close() {
+    async close(options = {}) {
         if (!document.body.contains(this)) return;
+
+        const fromPopState = Boolean(options && options.fromPopState);
 
         // Clean up history listener if manually called
         if (this._popStateListener) {
@@ -143,10 +145,15 @@ class DiscoPickerBox extends DiscoPage {
         this.remove();
 
         // If we pushed state and haven't popped yet, do it now.
-        if (this._pushedState) {
+        if (this._pushedState && !fromPopState) {
             this._pushedState = false;
             window.history.back();
         }
+
+        if (fromPopState) {
+            this._pushedState = false;
+        }
+
         this._isClosing = false;
     }
 

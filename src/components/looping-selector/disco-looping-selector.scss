@@ -1,4 +1,4 @@
-@mixin disco-slider-picker($prefix: 'slider-picker') {
+@mixin disco-looping-selector($prefix: 'slider-picker') {
     :host {
         --#{$prefix}-gap: 12px;
         /* Visual gap between scrollable items (does not affect snap math). */
@@ -106,4 +106,4 @@
     }
 }
 
-@include disco-slider-picker('slider-picker');
+@include disco-looping-selector('slider-picker');

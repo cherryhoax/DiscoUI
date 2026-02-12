@@ -1,14 +1,13 @@
-import DiscoSliderPicker from '../slider-picker/disco-slider-picker.js';
+import DiscoLoopingSelector from '../looping-selector/disco-looping-selector.js';
 import timePickerCss from './disco-time-picker.scss';
-import './disco-time-picker-flip-view.js';
 import '../app-bar/disco-app-bar.js';
 import '../app-bar/disco-app-bar-icon-button.js';
 
 /**
- * Time picker built on top of DiscoSliderPicker.
- * @extends DiscoSliderPicker
+ * Time picker built on top of DiscoLoopingSelector.
+ * @extends DiscoLoopingSelector
  */
-class DiscoTimePicker extends DiscoSliderPicker {
+class DiscoTimePicker extends DiscoLoopingSelector {
   /**
    * @param {string} [title]
    * @param {Date | string} [value]
@@ -70,12 +69,12 @@ class DiscoTimePicker extends DiscoSliderPicker {
   /**
    * @returns {Promise<void>}
    */
-  async close() {
+  async close(options) {
     if (this._resolveSelection && !this._skipResolveOnClose) {
       this._resolveOnce(null);
     }
     this._skipResolveOnClose = false;
-    await super.close();
+    await super.close(options);
   }
 
   _resolveOnce(value) {
@@ -146,10 +145,11 @@ class DiscoTimePicker extends DiscoSliderPicker {
     column.className = 'time-picker-column';
     column.dataset.column = kind;
 
-    const view = document.createElement('disco-time-picker-flip-view');
+    const view = document.createElement('disco-looping-selector-flip-view');
     view.className = 'time-picker-view';
     view.setAttribute('direction', 'vertical');
     view.setAttribute('overscroll-mode', kind === 'period' ? 'none' : 'loop');
+    view.setAttribute('css-prefix', 'time-picker');
 
     view.addEventListener('pointerdown', () => this._markUserInteraction(kind));
     view.addEventListener('scroll', () => this._onScroll(kind), { passive: true });

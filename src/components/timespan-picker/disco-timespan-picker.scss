@@ -1,0 +1,22 @@
+@use '../looping-selector/disco-looping-selector.scss' as slider;
+
+@include slider.disco-looping-selector('timespan-picker');
+
+:host {
+    --smallest-viewport: calc(min(min(var(--disco-vw), var(--disco-vh)), 720px));
+    --timespan-picker-columns: 2;
+    --timespan-picker-tile-width: calc((var(--smallest-viewport) - 48px - var(--timespan-picker-gap) * (var(--timespan-picker-columns) - 1)) / var(--timespan-picker-columns));
+    --timespan-picker-tile-height: var(--timespan-picker-tile-width);
+}
+
+:host([data-show-seconds="true"]) {
+    --timespan-picker-columns: 3;
+}
+
+.timespan-picker-primary {
+    font-size: 30px;
+}
+
+.timespan-picker-secondary {
+    font-size: 12px;
+}

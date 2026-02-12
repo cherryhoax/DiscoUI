@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoDatePicker, DiscoPickerBox, DiscoTimePicker } from './dist/discoui.mjs';
+import { DiscoApp, DiscoDatePicker, DiscoPickerBox, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -133,7 +133,8 @@ const launchDemo = async () => {
       { id: 'flipview', Title: 'Flip View', Description: '' },
       { id: 'pickerbox', Title: 'Picker Box', Description: 'Debug Flip Animation' },
       { id: 'datepicker', Title: 'Date Picker', Description: 'DiscoDatePicker demo' },
-      { id: 'timepicker', Title: 'Time Picker', Description: 'DiscoTimePicker demo' }
+      { id: 'timepicker', Title: 'Time Picker', Description: 'DiscoTimePicker demo' },
+      { id: 'timespanpicker', Title: 'Time Span Picker', Description: 'DiscoTimeSpanPicker demo' }
     ];
     const sortedItems = listItems
       .filter((item) => item.id !== 'toggle-theme')
@@ -172,6 +173,24 @@ const launchDemo = async () => {
         timePicker.open().then((selectedTime) => {
           if (selectedTime) {
             console.log('Time picker selected:', selectedTime);
+          }
+        });
+      }
+      if (id === 'timespanpicker') {
+        const timeSpanPicker = new DiscoTimeSpanPicker(
+          'DURATION',
+          '01:30:00',
+          {
+            min: '00:10:00',
+            max: '12:00:00',
+            step: { m: 5, s: 10 },
+            showSeconds: true
+          }
+        );
+
+        timeSpanPicker.open().then((selectedValue) => {
+          if (selectedValue) {
+            console.log('Time span picker selected:', selectedValue);
           }
         });
       }

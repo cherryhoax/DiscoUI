@@ -1,6 +1,5 @@
-import DiscoSliderPicker from '../slider-picker/disco-slider-picker.js';
+import DiscoLoopingSelector from '../looping-selector/disco-looping-selector.js';
 import datePickerCss from './disco-date-picker.scss';
-import './disco-date-picker-flip-view.js';
 import '../app-bar/disco-app-bar.js';
 import '../app-bar/disco-app-bar-icon-button.js';
 
@@ -11,10 +10,10 @@ const DEFAULT_MIN = new Date(-LIMIT_DAYS * MS_PER_DAY);
 const DEFAULT_MAX = new Date(LIMIT_DAYS * MS_PER_DAY);
 
 /**
- * Date picker built on top of DiscoSliderPicker.
- * @extends DiscoSliderPicker
+ * Date picker built on top of DiscoLoopingSelector.
+ * @extends DiscoLoopingSelector
  */
-class DiscoDatePicker extends DiscoSliderPicker {
+class DiscoDatePicker extends DiscoLoopingSelector {
   /**
    * @param {string} [title]
    * @param {Date} [initialDate]
@@ -82,12 +81,12 @@ class DiscoDatePicker extends DiscoSliderPicker {
   /**
    * @returns {Promise<void>}
    */
-  async close() {
+  async close(options) {
     if (this._resolveSelection && !this._skipResolveOnClose) {
       this._resolveOnce(null);
     }
     this._skipResolveOnClose = false;
-    await super.close();
+    await super.close(options);
   }
 
   _resolveOnce(value) {
@@ -158,10 +157,11 @@ class DiscoDatePicker extends DiscoSliderPicker {
     column.className = 'date-picker-column';
     column.dataset.column = kind;
 
-    const view = document.createElement('disco-date-picker-flip-view');
+    const view = document.createElement('disco-looping-selector-flip-view');
     view.className = 'date-picker-view';
     view.setAttribute('direction', 'vertical');
     view.setAttribute('overscroll-mode', 'loop');
+    view.setAttribute('css-prefix', 'date-picker');
 
     view.addEventListener('pointerdown', () => this._markUserInteraction(kind));
     view.addEventListener('scroll', () => this._onScroll(kind), { passive: true });

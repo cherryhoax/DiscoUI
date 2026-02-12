@@ -20,12 +20,12 @@ export default class DiscoScrollView extends DiscoUIElement {
   /**
    * The maximum scroll position X
    */
-  readonly maxScrollLeft: number;
+  get maxScrollLeft(): number;
 
   /**
    * The maximum scroll position Y
    */
-  readonly maxScrollTop: number;
+  get maxScrollTop(): number;
 
   /**
    * Scrolls to a specific position

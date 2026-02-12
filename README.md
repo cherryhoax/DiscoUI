@@ -73,7 +73,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoCheckbox](docs/components/checkbox.md) | Checkbox input |
 | ✅ | [DiscoComboBox](docs/components/combo-box.md) | Combo box input |
 | | DiscoContextMenu | Contextual menu / right-click menu |
-| | DiscoDatePicker | Date picker input |
+| ✅ | [DiscoDatePicker](docs/components/date-picker.md) | Date picker input |
 | ✅ | [DiscoFlipView](docs/components/flip-view.md) | Displays a collection of items one at a time |
 | | DiscoFlyout | Displays a non-modal popup |
 | ✅ | [DiscoFrame](docs/components/frame.md) | Top-level frame handling navigation, theme, and transitions |
@@ -93,9 +93,11 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | | DiscoRadioButton | Radio button input |
 | ✅ | [DiscoScrollView](docs/components/scroll-view.md) | Scrollable content area |
 | | DiscoSlider | Slider input control |
+| ✅ | [DiscoLoopingSelector](docs/components/looping-selector.md) | Base class for wheel/column pickers |
 | ✅ | [DiscoSplash](docs/components/splash.md) | Optional splash screen (modes: none, auto, manual) |
 | ✅ | [DiscoTextBox](docs/components/text-box.md) | Single-line text input |
 | ✅ | [DiscoTimePicker](docs/components/time-picker.md) | Time picker input |
+| ✅ | [DiscoTimeSpanPicker](docs/components/timespan-picker.md) | Duration picker input |
 | | DiscoToggleButton | On/off toggle button |
 | | DiscoToggleSwitch | On/off toggle control |
 
