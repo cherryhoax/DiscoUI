@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoDatePicker, DiscoPickerBox, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
+import { DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -130,7 +130,6 @@ const launchDemo = async () => {
       { id: 'button', Title: 'Button', Description: '' },
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
       { id: 'flipview', Title: 'Flip View', Description: '' },
-      { id: 'pickerbox', Title: 'Picker Box', Description: '' },
       { id: 'datepicker', Title: 'Date Picker', Description: '' },
       { id: 'timepicker', Title: 'Time Picker', Description: '' },
       { id: 'timespanpicker', Title: 'Time Span Picker', Description: '' }
@@ -192,29 +191,6 @@ const launchDemo = async () => {
             console.log('Time span picker selected:', selectedValue);
           }
         });
-      }
-      if (id === 'pickerbox') {
-        console.log('Launching Picker Box...');
-        const picker = new DiscoPickerBox('Picker Debug', 'TEST');
-        picker.setAttribute('animation', 'flip');
-        const appBar = document.createElement('disco-app-bar');
-        appBar.innerHTML = `
-            <disco-app-bar-icon-button icon="done" label="done"></disco-app-bar-icon-button>
-            <disco-app-bar-icon-button icon="cross" label="cancel"></disco-app-bar-icon-button>
-         `;
-        picker.appendChild(appBar);
-
-        // Add some content to visualize flip
-        const content = document.createElement('div');
-        content.style.padding = '24px';
-        content.innerHTML = `
-            <h1>Hello Picker</h1>
-            <p>This content should be flipped in strips.</p>
-            <div style="background: red; width: 100px; height: 100px;"></div>
-         `;
-        picker.appendChild(content);
-
-        picker.show();
       }
       if (id === 'toggle-theme') {
         const nextTheme = getTheme() === 'dark' ? 'light' : 'dark';
