@@ -348,6 +348,15 @@
             </disco-list-view>
         </disco-single-page>
 
+        <disco-single-page id="componentsGroupStyle" app-title="DISCO UI" header="group style list">
+            <disco-list-view id="groupStyleList" selection-mode="none" item-click-enabled group-style="auto" group-label-field="Title">
+                <template disco-list-template>
+                    <div class="item-title" data-bind="Title"></div>
+                    <div class="item-description" data-bind="Description"></div>
+                </template>
+            </disco-list-view>
+        </disco-single-page>
+
         <!-- Test Pages -->
 
         <disco-single-page id="appBarSinglePage" app-title="DISCO UI" header="app bar">

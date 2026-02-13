@@ -1,0 +1,95 @@
+:host {
+  --long-list-selector-gap: 12px;
+  --long-list-selector-max-width: 520px;
+  --long-list-selector-tile-size: 88px;
+}
+
+.picker-root {
+  background: transparent !important;
+}
+
+.app-title {
+  color: var(--disco-foreground);
+}
+
+.picker-footer {
+  display: none;
+}
+
+.long-list-selector-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.long-list-selector-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+}
+
+.long-list-selector-panel {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(var(--disco-inset-top) + 72px);
+  width: calc(100% - 36px);
+  max-width: var(--long-list-selector-max-width);
+  max-height: calc(100% - var(--disco-inset-top) - var(--disco-inset-bottom) - 96px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 20px;
+}
+
+.long-list-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--long-list-selector-gap);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.long-list-selector-grid.shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.long-list-selector-grid.custom-mode {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.long-list-selector-tile {
+  min-height: var(--long-list-selector-tile-size);
+  aspect-ratio: 1;
+  border: none;
+  box-shadow: none;
+  padding: 8px 10px;
+  font-size: 46px;
+  font-weight: 500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  color: #fff;
+  background: var(--disco-accent);
+  transform: perspective(var(--disco-perspective)) rotateX(90deg);
+  transition:
+    transform calc(0.075s * var(--animation-duration-scale, 1)) calc(var(--row-index) * 0.02s * var(--animation-duration-scale, 1)) ease-out,
+    opacity calc(0.075s * var(--animation-duration-scale, 1)) calc(var(--row-index) * 0.02s * var(--animation-duration-scale, 1)) ease-out,
+    background-color calc(0.2s * var(--animation-duration-scale, 1));
+}
+
+.long-list-selector-grid.shown .long-list-selector-tile {
+  transform: perspective(var(--disco-perspective)) rotateX(0deg);
+}
+
+.long-list-selector-tile.disabled {
+  background: var(--disco-background-tertiary, rgba(255, 255, 255, 0.15));
+  color: var(--disco-foreground-secondary, rgba(255, 255, 255, 0.5));
+  cursor: default;
+}
+
+.long-list-selector-grid.custom-mode .long-list-selector-tile {
+  aspect-ratio: auto;
+  min-height: 64px;
+  font-size: 28px;
+  align-items: center;
+}

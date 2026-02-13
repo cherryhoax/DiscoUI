@@ -12,6 +12,9 @@ export default class DiscoListView extends DiscoScrollView {
   items: Array<unknown | DiscoListRecord>;
   itemClickEnabled: boolean;
   selectionMode: string;
+  groupStyle: 'auto' | 'custom' | null;
+  groupField: string;
+  groupLabelField: string;
 }
 
 export type DiscoListViewElement = DiscoListView;

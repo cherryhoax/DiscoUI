@@ -88,6 +88,21 @@ const isElementVisible = (element, container) => {
     );
 };
 
+const buildListAnimationQueue = (targets) => {
+    const items = Array.isArray(targets) ? targets : [];
+    return items
+        .filter((target) => target && isElementVisible(target, getScrollContainer(target)))
+        .map((target, index) => {
+            const isHeader = target instanceof HTMLElement
+                && target.tagName === 'DISCO-LIST-HEADER-ITEM';
+            return {
+                target,
+                priorityIndex: index - (isHeader ? 2 : 0)
+            };
+        })
+        .sort((a, b) => a.priorityIndex - b.priorityIndex);
+};
+
 const animationSet = {
     page: {
         /**
@@ -361,13 +376,11 @@ const animationSet = {
          * @returns {Promise<void>}
          */
         in: async (targets, options = { direction: 'none' }) => {
-            const items = Array.isArray(targets) ? targets : [];
-            const animationItems = items
-                .filter((target) => target && isElementVisible(target, getScrollContainer(target)))
-                .map((target, index) => ({
-                    target,
+            const animationItems = buildListAnimationQueue(targets)
+                .map((item, index) => ({
+                    target: item.target,
                     delay: index * 50,
-                    run: () => animationSet.page.in(target, options)
+                    run: () => animationSet.page.in(item.target, options)
                 }));
 
             await DiscoAnimations.animateAll(animationItems, true);
@@ -379,13 +392,11 @@ const animationSet = {
          * @returns {Promise<void>}
          */
         out: async (targets, options = { direction: 'forward' }) => {
-            const items = Array.isArray(targets) ? targets : [];
-            const animationItems = items
-                .filter((target) => target && isElementVisible(target, getScrollContainer(target)))
-                .map((target, index) => ({
-                    target,
+            const animationItems = buildListAnimationQueue(targets)
+                .map((item, index) => ({
+                    target: item.target,
                     delay: index * 50,
-                    run: () => animationSet.page.out(target, options)
+                    run: () => animationSet.page.out(item.target, options)
                 }));
 
             await DiscoAnimations.animateAll(animationItems);

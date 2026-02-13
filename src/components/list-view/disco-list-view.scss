@@ -13,6 +13,10 @@
   transform-style: preserve-3d;
 }
 
+.group-section {
+  display: block;
+}
+
 ::slotted(disco-list-item) {
   @include ui.disco-tilt;
   display: block;

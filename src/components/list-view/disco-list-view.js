@@ -1,6 +1,8 @@
 import DiscoScrollView from '../scroll-view/disco-scroll-view.js';
 import listViewStyles from './disco-list-view.scss';
+import DiscoLongListSelector from '../long-list-selector/disco-long-list-selector.js';
 import './disco-list-item.js';
+import './disco-list-header-item.js';
 
 /**
  * @typedef {object} DiscoListItemClickDetail
@@ -13,6 +15,10 @@ import './disco-list-item.js';
  * Disco list view with static and dynamic item support.
  */
 class DiscoListView extends DiscoScrollView {
+  static get observedAttributes() {
+    return ['group-style', 'group-field', 'group-label-field'];
+  }
+
   constructor() {
     super();
     this.loadStyle(listViewStyles, this.shadowRoot);
@@ -23,6 +29,10 @@ class DiscoListView extends DiscoScrollView {
 
     this._items = [];
     this._itemProxyCache = new WeakMap();
+    this._groupEntries = [];
+    this._groupIndexByKey = new Map();
+    this._groupSelector = null;
+
     this._list = document.createElement('div');
     this._list.className = 'list';
 
@@ -40,6 +50,16 @@ class DiscoListView extends DiscoScrollView {
   }
 
   /**
+   * @param {string} _name
+   * @param {string | null} oldValue
+   * @param {string | null} newValue
+   */
+  attributeChangedCallback(_name, oldValue, newValue) {
+    if (oldValue === newValue) return;
+    this._refreshGrouping();
+  }
+
+  /**
    * @returns {unknown[]}
    */
   get items() {
@@ -52,6 +72,71 @@ class DiscoListView extends DiscoScrollView {
   set items(value) {
     const normalized = Array.isArray(value) ? value : [];
     this._items = normalized.map((item, index) => this._observeItem(item, index));
+    this._renderDynamic();
+  }
+
+  /**
+   * @returns {'auto' | 'custom' | null}
+   */
+  get groupStyle() {
+    const style = (this.getAttribute('group-style') || '').toLowerCase();
+    if (style === 'auto' || style === 'custom') return style;
+    return null;
+  }
+
+  /**
+   * @param {'auto' | 'custom' | null | undefined} value
+   */
+  set groupStyle(value) {
+    const normalized = value === 'custom' ? 'custom' : (value === 'auto' ? 'auto' : null);
+    if (normalized) {
+      this.setAttribute('group-style', normalized);
+    } else {
+      this.removeAttribute('group-style');
+    }
+    this._refreshGrouping();
+    this._renderDynamic();
+  }
+
+  /**
+   * @returns {string}
+   */
+  get groupField() {
+    return this.getAttribute('group-field') || this.getAttribute('groupfield') || 'separator';
+  }
+
+  /**
+   * @param {string} value
+   */
+  set groupField(value) {
+    if (!value) {
+      this.removeAttribute('group-field');
+      this.removeAttribute('groupfield');
+    } else {
+      this.setAttribute('group-field', value);
+    }
+    this._refreshGrouping();
+    this._renderDynamic();
+  }
+
+  /**
+   * @returns {string}
+   */
+  get groupLabelField() {
+    return this.getAttribute('group-label-field') || this.getAttribute('group-labelfield') || 'Title';
+  }
+
+  /**
+   * @param {string} value
+   */
+  set groupLabelField(value) {
+    if (!value) {
+      this.removeAttribute('group-label-field');
+      this.removeAttribute('group-labelfield');
+    } else {
+      this.setAttribute('group-label-field', value);
+    }
+    this._refreshGrouping();
     this._renderDynamic();
   }
 
@@ -158,8 +243,17 @@ class DiscoListView extends DiscoScrollView {
    * @returns {void}
    */
   _handleClick(event) {
-    if (!this.itemClickEnabled) return;
     const path = event.composedPath();
+    const groupHeader = path.find((node) =>
+      node instanceof HTMLElement
+      && node.tagName === 'DISCO-LIST-HEADER-ITEM'
+    );
+    if (groupHeader instanceof HTMLElement && this.groupStyle) {
+      this._openGroupSelector();
+      return;
+    }
+
+    if (!this.itemClickEnabled) return;
     const listItem = path.find((node) =>
       node instanceof HTMLElement &&
       (node.tagName === 'DISCO-LIST-ITEM' || node.hasAttribute('data-list-index'))
@@ -257,7 +351,13 @@ class DiscoListView extends DiscoScrollView {
       }
     });
     if (this._list) {
-      Array.from(this._list.children).forEach((child) => {
+      this._list.querySelectorAll('disco-list-header-item').forEach((header) => {
+        if (!(header instanceof HTMLElement)) return;
+        header.setAttribute('role', 'button');
+        header.tabIndex = 0;
+      });
+
+      this._list.querySelectorAll('disco-list-item').forEach((child) => {
         if (!(child instanceof HTMLElement)) return;
         child.setAttribute('role', enable ? 'button' : 'listitem');
         if (enable) {
@@ -285,9 +385,51 @@ class DiscoListView extends DiscoScrollView {
     }
 
     const template = this._getTemplate();
+    let activeSection = null;
+    let lastGroupKey = null;
+
+    const ensureSectionForItem = (groupMeta) => {
+      if (!this.groupStyle || !groupMeta.key) {
+        if (!activeSection) {
+          activeSection = document.createElement('div');
+          activeSection.className = 'group-section';
+          this._list.appendChild(activeSection);
+        }
+        return activeSection;
+      }
+
+      if (groupMeta.key !== lastGroupKey || !activeSection) {
+        activeSection = document.createElement('div');
+        activeSection.className = 'group-section';
+
+        const groupHeader = new (customElements.get('disco-list-header-item'))();
+        groupHeader.dataset.groupKey = groupMeta.key;
+        groupHeader.dataset.groupLabel = groupMeta.label;
+
+        const groupHeaderLabel = document.createElement('div');
+        groupHeaderLabel.className = 'group-header-label';
+        groupHeaderLabel.textContent = groupMeta.label || groupMeta.key;
+        groupHeader.appendChild(groupHeaderLabel);
+
+        activeSection.appendChild(groupHeader);
+        this._list.appendChild(activeSection);
+        lastGroupKey = groupMeta.key;
+      }
+
+      return activeSection;
+    };
+
     this._items.forEach((item, index) => {
+      const groupMeta = this._resolveGroupMeta(item);
+      const section = ensureSectionForItem(groupMeta);
+
       const listItem = new (customElements.get('disco-list-item'))();
       listItem.dataset.listIndex = `${index}`;
+      if (groupMeta.key) {
+        listItem.dataset.groupKey = groupMeta.key;
+        listItem.dataset.groupLabel = groupMeta.label;
+      }
+
       listItem.setAttribute('role', this.itemClickEnabled ? 'button' : 'listitem');
       if (this.itemClickEnabled) {
         listItem.tabIndex = 0;
@@ -299,10 +441,11 @@ class DiscoListView extends DiscoScrollView {
       } else {
         listItem.textContent = typeof item === 'string' ? item : JSON.stringify(item);
       }
-      this._list.appendChild(listItem);
+      section.appendChild(listItem);
     });
 
     this._syncStaticVisibility();
+    this._refreshGrouping();
   }
 
   _bindTemplate(fragment, data) {
@@ -315,6 +458,122 @@ class DiscoListView extends DiscoScrollView {
       const value = data[field];
       node.textContent = value != null ? String(value) : '';
     });
+  }
+
+  /**
+   * @param {string} key
+   * @returns {string}
+   */
+  _mapAutoGroupLabel(key) {
+    if (key === '0-9') return '#';
+    if (key === '&') return '&';
+    return key;
+  }
+
+  /**
+   * @param {string} text
+   * @returns {string | null}
+   */
+  _toAutoGroupKey(text) {
+    const source = String(text || '').trim();
+    if (!source) return null;
+
+    const first = Array.from(source)[0]?.toLocaleUpperCase('en') || '';
+    if (!first) return null;
+
+    if (/^[0-9]$/.test(first)) return '0-9';
+    if (/^[A-Z]$/.test(first)) return first;
+    return '&';
+  }
+
+  /**
+   * @param {unknown} item
+   * @returns {{ key: string | null, label: string }}
+   */
+  _resolveGroupMeta(item) {
+    if (!item || typeof item !== 'object') {
+      return { key: null, label: '' };
+    }
+
+    if (this.groupStyle === 'custom') {
+      const key = item[this.groupField] != null ? String(item[this.groupField]).trim() : '';
+      return {
+        key: key || null,
+        label: key || ''
+      };
+    }
+
+    const rawLabel = item[this.groupLabelField] != null
+      ? String(item[this.groupLabelField])
+      : (item.title != null ? String(item.title) : '');
+    const key = this._toAutoGroupKey(rawLabel);
+    return {
+      key,
+      label: key ? this._mapAutoGroupLabel(key) : ''
+    };
+  }
+
+  _refreshGrouping() {
+    if (!this.groupStyle || !Array.isArray(this._items) || !this._items.length) {
+      this._groupEntries = [];
+      this._groupIndexByKey = new Map();
+      return;
+    }
+
+    const seen = new Set();
+    const entries = [];
+    const groupIndexByKey = new Map();
+
+    this._items.forEach((item, index) => {
+      const meta = this._resolveGroupMeta(item);
+      if (!meta.key) return;
+      if (seen.has(meta.key)) return;
+      seen.add(meta.key);
+      entries.push({ key: meta.key, label: meta.label, index });
+      groupIndexByKey.set(meta.key, index);
+    });
+
+    this._groupEntries = entries;
+    this._groupIndexByKey = groupIndexByKey;
+  }
+
+  _openGroupSelector() {
+    if (!this.groupStyle || !this._groupEntries.length) return;
+
+    if (!this._groupSelector) {
+      this._groupSelector = new DiscoLongListSelector('GROUPS', [], { mode: this.groupStyle || 'auto' });
+    }
+
+    if (this.groupStyle === 'custom') {
+      this._groupSelector.setData(this._items, {
+        mode: 'custom',
+        separatorField: this.groupField,
+        separators: this._groupEntries.map((entry) => entry.key)
+      });
+    } else {
+      this._groupSelector.setData(this._items, {
+        mode: 'auto',
+        labelField: this.groupLabelField
+      });
+    }
+
+    this._groupSelector.open().then((selected) => {
+      if (!selected) return;
+      this._scrollToGroup(selected);
+    });
+  }
+
+  /**
+   * @param {string} key
+   */
+  _scrollToGroup(key) {
+    const element = Array.from(this._list?.querySelectorAll('disco-list-header-item') || []).find((node) =>
+      node instanceof HTMLElement
+      && node.dataset.groupKey === key
+    );
+    if (!(element instanceof HTMLElement)) return;
+
+    this.scrollTo(0, element.offsetTop, false);
   }
 }
 

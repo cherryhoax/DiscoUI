@@ -1,0 +1,30 @@
+@use '../ui-elements/disco-ui-element.scss' as ui;
+
+:host {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 12;
+    width: 100%;
+    border: 0;
+    margin: 0;
+    box-sizing: border-box;
+    text-align: left;
+    color: var(--disco-foreground);
+    background: var(--disco-background);
+    isolation: isolate;
+    perspective: var(--disco-perspective);
+    transform-style: preserve-3d;
+}
+
+:host .item {
+    padding: 10px 0;
+    font-size: 30px;
+    font-weight: 400;
+    background: var(--disco-background);
+
+}
+
+:host .item ::slotted(.group-header-label) {
+    pointer-events: none;
+}

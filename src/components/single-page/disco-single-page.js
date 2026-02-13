@@ -88,7 +88,7 @@ class DiscoSinglePage extends DiscoPage {
             if (child.tagName === 'DISCO-LIST-VIEW') {
                 const listRoot = child.shadowRoot;
                 const listItems = listRoot
-                    ? Array.from(listRoot.querySelectorAll('disco-list-item, disco-list-view-item, [data-list-index]'))
+                    ? Array.from(listRoot.querySelectorAll('disco-list-header-item, disco-list-item, disco-list-view-item, [data-list-index]'))
                     : [];
                 animationItems.push({ target: child, run: () => DiscoAnimations.animationSet.list.in(listItems, options) });
                 return;
@@ -122,7 +122,7 @@ class DiscoSinglePage extends DiscoPage {
             if (child.tagName === 'DISCO-LIST-VIEW') {
                 const listRoot = child.shadowRoot;
                 const listItems = listRoot
-                    ? Array.from(listRoot.querySelectorAll('disco-list-item, disco-list-view-item, [data-list-index]'))
+                    ? Array.from(listRoot.querySelectorAll('disco-list-header-item, disco-list-item, disco-list-view-item, [data-list-index]'))
                     : [];
                 animationItems.push({ target: child, run: () => DiscoAnimations.animationSet.list.out(listItems, options) });
                 return;

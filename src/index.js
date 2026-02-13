@@ -20,6 +20,7 @@ export { default as DiscoLoopingSelector } from './components/looping-selector/d
 export { default as DiscoDatePicker } from './components/date-picker/disco-date-picker.js';
 export { default as DiscoTimePicker } from './components/time-picker/disco-time-picker.js';
 export { default as DiscoTimeSpanPicker } from './components/timespan-picker/disco-timespan-picker.js';
+export { default as DiscoLongListSelector } from './components/long-list-selector/disco-long-list-selector.js';
 export { default as DiscoAnimations } from './components/animations/disco-animations.js';
 export { default as DiscoList } from './components/list-view/index.js';
 export { default as DiscoHub } from './components/hub/index.js';
