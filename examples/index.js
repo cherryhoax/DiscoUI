@@ -131,10 +131,10 @@ const launchDemo = async () => {
       { id: 'button', Title: 'Button', Description: '' },
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
       { id: 'flipview', Title: 'Flip View', Description: '' },
-      { id: 'pickerbox', Title: 'Picker Box', Description: 'Debug Flip Animation' },
-      { id: 'datepicker', Title: 'Date Picker', Description: 'DiscoDatePicker demo' },
-      { id: 'timepicker', Title: 'Time Picker', Description: 'DiscoTimePicker demo' },
-      { id: 'timespanpicker', Title: 'Time Span Picker', Description: 'DiscoTimeSpanPicker demo' }
+      { id: 'pickerbox', Title: 'Picker Box', Description: '' },
+      { id: 'datepicker', Title: 'Date Picker', Description: '' },
+      { id: 'timepicker', Title: 'Time Picker', Description: '' },
+      { id: 'timespanpicker', Title: 'Time Span Picker', Description: '' }
     ];
     const sortedItems = listItems
       .filter((item) => item.id !== 'toggle-theme')
