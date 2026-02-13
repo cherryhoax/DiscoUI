@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoDatePicker, DiscoLongListSelector, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
+import { DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -134,8 +134,6 @@ const launchDemo = async () => {
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
       { id: 'flipview', Title: 'Flip View', Description: '' },
       { id: 'datepicker', Title: 'Date Picker', Description: '' },
-      { id: 'longlistselector-auto', Title: 'Long List Selector (Auto)', Description: '' },
-      { id: 'longlistselector-custom', Title: 'Long List Selector (Custom)', Description: '' },
       { id: 'timepicker', Title: 'Time Picker', Description: '' },
       { id: 'timespanpicker', Title: 'Time Span Picker', Description: '' }
     ];
@@ -194,56 +192,6 @@ const launchDemo = async () => {
         timeSpanPicker.open().then((selectedValue) => {
           if (selectedValue) {
             console.log('Time span picker selected:', selectedValue);
-          }
-        });
-      }
-      if (id === 'longlistselector-auto') {
-        const selector = new DiscoLongListSelector(
-          'APPS',
-          [
-            { title: 'Calculator' },
-            { title: 'Calendar' },
-            { title: 'Files' },
-            { title: 'Maps' },
-            { title: 'News' },
-            { title: 'Photos' },
-            { title: 'Radio' },
-            { title: 'Settings' },
-            { title: 'Terminal' },
-            { title: 'Weather' },
-            { title: '7Zip' },
-            { title: '&Tools' }
-          ],
-          {
-            mode: 'auto',
-            labelField: 'title'
-          }
-        );
-
-        selector.open().then((separator) => {
-          if (separator) {
-            console.log('Long list selector (auto) selected:', separator);
-          }
-        });
-      }
-      if (id === 'longlistselector-custom') {
-        const selector = new DiscoLongListSelector(
-          'SECTIONS',
-          [
-            { title: 'Language', separator: 'General' },
-            { title: 'Wi-Fi', separator: 'Connectivity' },
-            { title: 'About phone', separator: 'About' }
-          ],
-          {
-            mode: 'custom',
-            separatorField: 'separator',
-            separators: ['General', 'Connectivity', 'About']
-          }
-        );
-
-        selector.open().then((separator) => {
-          if (separator) {
-            console.log('Long list selector (custom) selected:', separator);
           }
         });
       }
