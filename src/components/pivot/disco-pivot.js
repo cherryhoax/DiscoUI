@@ -54,7 +54,11 @@ class DiscoPivotPage extends DiscoPage {
       const appTitle = this.shadowRoot?.querySelector('.app-title');
       const headerStrip = this.shadowRoot?.getElementById('headerStrip');
       const viewport = this._getViewport();
+      const activeIndex = this._getActivePivotIndex(viewport);
+      const activeItem = this._getActivePivotItem(viewport);
       const animationItems = [];
+
+      this._setPivotItemVisibility([activeIndex]);
 
       if (appTitle) {
         animationItems.push({ target: appTitle, run: () => DiscoAnimations.animationSet.page.in(appTitle, options) });
@@ -62,8 +66,9 @@ class DiscoPivotPage extends DiscoPage {
       if (headerStrip) {
         animationItems.push({ target: headerStrip, run: () => DiscoAnimations.animationSet.page.in(headerStrip, options) });
       }
-      if (viewport) {
-        animationItems.push({ target: viewport, run: () => DiscoAnimations.animationSet.page.in(viewport, options) });
+      if (activeItem) {
+        const contentAnimations = this._collectActiveContentAnimations(activeItem, options, 'in');
+        animationItems.push(...contentAnimations);
       }
 
       await DiscoAnimations.animateAll(animationItems);
@@ -82,7 +87,11 @@ class DiscoPivotPage extends DiscoPage {
       const appTitle = this.shadowRoot?.querySelector('.app-title');
       const headerStrip = this.shadowRoot?.getElementById('headerStrip');
       const viewport = this._getViewport();
+      const activeIndex = this._getActivePivotIndex(viewport);
+      const activeItem = this._getActivePivotItem(viewport);
       const animationItems = [];
+
+      this._setPivotItemVisibility([activeIndex]);
 
       if (appTitle) {
         animationItems.push({ target: appTitle, run: () => DiscoAnimations.animationSet.page.out(appTitle, options) });
@@ -90,14 +99,92 @@ class DiscoPivotPage extends DiscoPage {
       if (headerStrip) {
         animationItems.push({ target: headerStrip, run: () => DiscoAnimations.animationSet.page.out(headerStrip, options) });
       }
-      if (viewport) {
-        animationItems.push({ target: viewport, run: () => DiscoAnimations.animationSet.page.out(viewport, options) });
+      if (activeItem) {
+        const contentAnimations = this._collectActiveContentAnimations(activeItem, options, 'out');
+        animationItems.push(...contentAnimations);
       }
 
       await DiscoAnimations.animateAll(animationItems);
     } finally {
-      //this._setAnimationOverflow(false);
+      this._setAnimationOverflow(false);
     }
+  }
+
+  /**
+   * @param {HTMLElement | null} viewport
+   * @returns {number}
+   */
+  _getActivePivotIndex(viewport) {
+    if (!(viewport instanceof HTMLElement)) return 0;
+    const pivotItems = /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
+    if (!pivotItems.length) return 0;
+    const span = typeof this.getPageSpan === 'function'
+      ? this.getPageSpan(viewport)
+      : (viewport.clientWidth || 1);
+    const safeSpan = span > 0 ? span : 1;
+    const raw = Math.round((viewport.scrollLeft || 0) / safeSpan);
+    return ((raw % pivotItems.length) + pivotItems.length) % pivotItems.length;
+  }
+
+  /**
+   * @param {HTMLElement | null} viewport
+   * @returns {HTMLElement | null}
+   */
+  _getActivePivotItem(viewport) {
+    const pivotItems = /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
+    if (!pivotItems.length) return null;
+    const index = this._getActivePivotIndex(viewport);
+    return pivotItems[index] || null;
+  }
+
+  /**
+   * @param {number[]} indices
+   * @returns {void}
+   */
+  _setPivotItemVisibility(indices) {
+    const pivotItems = /** @type {HTMLElement[]} */ (Array.from(this.querySelectorAll('disco-pivot-item')));
+    const count = pivotItems.length;
+    if (!count) return;
+    const visible = new Set(indices.map((value) => ((value % count) + count) % count));
+
+    pivotItems.forEach((item, index) => {
+      item.style.visibility = visible.has(index) ? 'visible' : 'hidden';
+      item.style.opacity = visible.has(index) ? '1' : '0';
+      item.style.transition = 'none';
+    });
+  }
+
+  /**
+   * @param {HTMLElement} pivotItem
+   * @param {DiscoPageAnimationOptions} options
+   * @param {'in' | 'out'} direction
+   * @returns {Array<{ target: Element, run: () => Promise<void> }>}
+   */
+  _collectActiveContentAnimations(pivotItem, options, direction) {
+    const contentChildren = Array.from(pivotItem.children)
+      .filter((child) => child instanceof HTMLElement);
+
+    return contentChildren.map((child) => {
+      if (child.tagName === 'DISCO-LIST-VIEW') {
+        const listRoot = child.shadowRoot;
+        const listItems = listRoot
+          ? Array.from(listRoot.querySelectorAll('disco-list-header-item, disco-list-item, disco-list-view-item, [data-list-index]'))
+          : [];
+        return {
+          target: child,
+          run: () => direction === 'in'
+            ? DiscoAnimations.animationSet.list.in(listItems, options)
+            : DiscoAnimations.animationSet.list.out(listItems, options)
+        };
+      }
+
+      return {
+        target: child,
+        run: () => direction === 'in'
+          ? DiscoAnimations.animationSet.page.in(child, options)
+          : DiscoAnimations.animationSet.page.out(child, options)
+      };
+    });
   }
 
   /**
@@ -315,46 +402,15 @@ class DiscoPivotPage extends DiscoPage {
     let isSnapping = false;
     let snapTargetIndex = null;
 
-    const showAllItems = () => {
-      const itemElements = items();
-      itemElements.forEach((el) => {
-        el.style.visibility = 'visible';
-        el.style.opacity = '1';
-        el.style.transition = 'none';
-      });
-    };
-
     const setVisibleItems = (indices) => {
-      if (this._isAnimating) {
-        showAllItems();
-        return;
-      }
-      const itemElements = items();
-      const count = itemElements.length;
-      if (count === 0) return;
-      const set = new Set(indices.map(i => ((i % count) + count) % count));
-        
-      itemElements.forEach((el, i) => {
-        if (set.has(i)) {
-          el.style.visibility = 'visible';
-          el.style.opacity = '1';
-          el.style.transition = 'none';
-        } else {
-          el.style.visibility = 'visible';
-          el.style.opacity = '0';
-          el.style.transition = 'none';
-        }
-      });
+      this._setPivotItemVisibility(indices);
     };
 
     // Initialize visibility
     requestAnimationFrame(() => {
-      if (this._isAnimating) {
-        showAllItems();
-      } else {
-        setVisibleItems([0]);
-      }
-      this._emitActiveItem(0);
+      const initialIndex = this._getActivePivotIndex(viewport);
+      setVisibleItems([initialIndex]);
+      this._emitActiveItem(initialIndex);
         // Trigger initial header measurement/scroll
         if (items().length > 0) {
           updateHeaders(true); 
@@ -444,7 +500,7 @@ class DiscoPivotPage extends DiscoPage {
     viewport.addEventListener('pointerdown', (e) => {
       if (isFromNestedFlipView(e)) return;
       if (this._isAnimating) {
-        showAllItems();
+        setVisibleItems([this._getActivePivotIndex(viewport)]);
         return;
       }
         // User interaction starts
@@ -491,7 +547,7 @@ class DiscoPivotPage extends DiscoPage {
     viewport.addEventListener('disco-snap-target', async (e) => {
       if (isFromNestedFlipView(e)) return;
       if (this._isAnimating) {
-        showAllItems();
+        setVisibleItems([this._getActivePivotIndex(viewport)]);
         return;
       }
         const detail = /** @type {{ index: number, targetX?: number }} */ ((/** @type {CustomEvent} */(e)).detail || { index: 0 });
@@ -506,8 +562,7 @@ class DiscoPivotPage extends DiscoPage {
           this._emitActiveItem(normalizedTarget);
         }
         
-        // Show BOTH the previous (dragStart) and the new Target during animation
-        setVisibleItems([dragStartIndex, normalizedTarget]);
+        setVisibleItems([dragStartIndex]);
         
         // Force header update (including opacity) on snap
         updateHeaders(true);
@@ -578,6 +633,8 @@ class DiscoPivotPage extends DiscoPage {
             prevItem.style.opacity = '0';
           }
           targetItem.style.opacity = '1';
+          } else {
+            setVisibleItems([normalizedTarget]);
           }
         }
         
@@ -626,7 +683,7 @@ class DiscoPivotPage extends DiscoPage {
     viewport.addEventListener('scroll', (e) => {
       if (isFromNestedFlipView(e)) return;
       if (this._isAnimating) {
-        showAllItems();
+        setVisibleItems([this._getActivePivotIndex(viewport)]);
         return;
       }
            updateHeaders(false);

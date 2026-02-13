@@ -1,3 +1,5 @@
+@use '../ui-elements/disco-ui-element.scss' as ui;
+
 :host {
   flex: 0 0 100%;
   height: 100%;
@@ -16,12 +18,16 @@
 .pivot-item-content {
   height: 100%;
   width: 100%;
+  min-height: 0;
+
+  @include ui.disco-fill-slotted-scrollables;
 }
 
 .pivot-item-scrollview,
 .pivot-item-plain-content {
   height: 100%;
   width: 100%;
+  min-height: 0;
   display: block;
 }
 
