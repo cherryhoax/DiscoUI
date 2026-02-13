@@ -1,6 +1,6 @@
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import comboBoxStyles from './disco-combo-box.scss';
-import '../checkbox/disco-combo-box-item.js';
+import './disco-combo-box-item.js';
 
 /**
  * A Metro-style combo box control.

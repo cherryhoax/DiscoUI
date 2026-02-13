@@ -19,8 +19,8 @@
   color: var(--disco-foreground);
   overflow: hidden;
   text-transform: lowercase;
-  transition: transform 0.25s var(--disco-ease-out, ease-out),
-    height 0.2s var(--disco-ease-out, ease-out);
+  transition: transform 0.25s var(--disco-ease-in-out-cubic),
+    height 0.25s var(--disco-ease-in-out-cubic);
 }
 
 :host([open]) .combo,
@@ -37,7 +37,7 @@
 .items {
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s var(--disco-ease-out, ease-out);
+  transition: transform 0.25s var(--disco-ease-in-out-cubic);
   transform-style: preserve-3d;
 }
 

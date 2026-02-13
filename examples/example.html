@@ -12,14 +12,282 @@
 
 <body>
     <disco-frame id="componentsFrame">
-        <disco-single-page id="componentsHome" app-title="DISCO UI" header="components">
-            <disco-list-view id="componentsList" selection-mode="none" item-click-enabled>
-                <template disco-list-template>
-                    <div class="item-title" data-bind="Title"></div>
-                    <div class="item-description" data-bind="Description"></div>
-                </template>
-            </disco-list-view>
-        </disco-single-page>
+        <disco-pivot-page id="componentsHome" app-title="DISCO UI">
+            <disco-pivot-item header="components">
+                <disco-list-view id="componentsList" selection-mode="none" item-click-enabled>
+                    <template disco-list-template>
+                        <div class="item-title" data-bind="Title"></div>
+                        <div class="item-description" data-bind="Description"></div>
+                    </template>
+                </disco-list-view>
+            </disco-pivot-item>
+            <disco-pivot-item header="easings">
+                <style>
+                    .easing-scroll {
+                        height: calc(100vh - 140px);
+                        width: 100%;
+                    }
+
+                    .easing-stack {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 12px;
+                        padding: 8px 0 20px;
+                    }
+
+                    .easing-row {
+                        display: grid;
+                        grid-template-columns: repeat(3, minmax(0, 1fr));
+                        gap: 10px;
+                    }
+
+                    .easing-card {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+                        margin-bottom: 20px;
+                    }
+
+                    .easing-label {
+                        font-size: 20px;
+                        opacity: 0.75;
+                        text-transform: lowercase;
+                    }
+
+                    .easing-preview {
+                        height: 30px;
+                        position: relative;
+                        overflow: hidden;
+                        border: 1px solid var(--disco-border-color, rgba(255, 255, 255, 0.22));
+                    }
+
+                    .easing-dot {
+                        position: absolute;
+                        width: 20px;
+                        height: 20px;
+                        top: 5px;
+                        left: 5px;
+                        background: var(--disco-accent, #d80073);
+                        animation: easing-shift 1.25s var(--ease-preview) infinite, easing-opacity 1.25s ease-in-out infinite;
+                    }
+
+                    @keyframes easing-shift {
+                        0% {
+                            left: 5px;
+                        }
+
+                        10% {
+                            left: 5px;
+                        }
+
+                        75% {
+                            left: calc(100% - 25px);
+                        }
+
+                        100% {
+                            left: calc(100% - 25px);
+                        }
+                    }
+                    @keyframes easing-opacity {
+                        0% {
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        90% {
+                            opacity: 1;
+                        }
+                        100% {
+                            opacity: 0;
+                        }
+                    }
+
+                </style>
+                <div class="easing-stack">
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in)">
+                            <div class="easing-label">ease / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out)">
+                            <div class="easing-label">ease / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out)">
+                            <div class="easing-label">ease / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-quad)">
+                            <div class="easing-label">quad / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-quad)">
+                            <div class="easing-label">quad / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-quad)">
+                            <div class="easing-label">quad / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-cubic)">
+                            <div class="easing-label">cubic / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-cubic)">
+                            <div class="easing-label">cubic / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-cubic)">
+                            <div class="easing-label">cubic / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-quart)">
+                            <div class="easing-label">quart / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-quart)">
+                            <div class="easing-label">quart / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-quart)">
+                            <div class="easing-label">quart / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-quint)">
+                            <div class="easing-label">quint / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-quint)">
+                            <div class="easing-label">quint / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-quint)">
+                            <div class="easing-label">quint / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-sine)">
+                            <div class="easing-label">sine / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-sine)">
+                            <div class="easing-label">sine / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-sine)">
+                            <div class="easing-label">sine / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-expo)">
+                            <div class="easing-label">expo / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-expo)">
+                            <div class="easing-label">expo / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-expo)">
+                            <div class="easing-label">expo / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-circ)">
+                            <div class="easing-label">circ / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-circ)">
+                            <div class="easing-label">circ / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-circ)">
+                            <div class="easing-label">circ / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="easing-row">
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-back)">
+                            <div class="easing-label">back / in</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-out-back)">
+                            <div class="easing-label">back / out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                        <div class="easing-card" style="--ease-preview: var(--disco-ease-in-out-back)">
+                            <div class="easing-label">back / in-out</div>
+                            <div class="easing-preview">
+                                <div class="easing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </disco-pivot-item>
+        </disco-pivot-page>
         <disco-pivot-page id="componentsPivot" app-title="DISCO UI">
             <disco-pivot-item header="Overview">
                 <div class="item-title">Pivot</div>
