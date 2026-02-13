@@ -542,6 +542,11 @@ class DiscoListView extends DiscoScrollView {
 
     if (!this._groupSelector) {
       this._groupSelector = new DiscoLongListSelector('GROUPS', [], { mode: this.groupStyle || 'auto' });
+      this._groupSelector.addEventListener('separatorselect', (event) => {
+        const selectedKey = event?.detail?.key;
+        if (!selectedKey) return;
+        this._scrollToGroup(selectedKey);
+      });
     }
 
     if (this.groupStyle === 'custom') {
@@ -567,10 +572,17 @@ class DiscoListView extends DiscoScrollView {
    * @param {string} key
    */
   _scrollToGroup(key) {
-    const element = Array.from(this._list?.querySelectorAll('disco-list-header-item') || []).find((node) =>
-      node instanceof HTMLElement
-      && node.dataset.groupKey === key
-    );
+    const raw = String(key ?? '').trim();
+    if (!raw) return;
+    const candidates = [raw, raw.toLocaleUpperCase('en')];
+    if (raw === '#') candidates.push('0-9');
+
+    const element = Array.from(this._list?.querySelectorAll('disco-list-header-item') || []).find((node) => {
+      if (!(node instanceof HTMLElement)) return false;
+      const groupKey = String(node.dataset.groupKey || '').trim();
+      const groupLabel = String(node.dataset.groupLabel || '').trim();
+      return candidates.includes(groupKey) || candidates.includes(groupLabel);
+    });
     if (!(element instanceof HTMLElement)) return;
 
     this.scrollTo(0, element.offsetTop, false);

@@ -8,8 +8,8 @@ import DiscoAnimations from '../animations/disco-animations.js';
  * - Fullscreen, on top of everything.
  * - Supports AppBar.
  * - Has app-title and header like SinglePage.
- * - Animates In: 'slide-up' or 'flip'.
- * - Animates Out: 'slide-down' (reverse of slide-up) or reverse flip.
+ * - Animates In: 'slide-up', 'flip', or none.
+ * - Animates Out: 'slide-down' (reverse of slide-up), reverse flip, or none.
  * - Manages history state (push on show, back to close).
  * - Suppresses background page animate-out when shown.
  * @extends DiscoPage
@@ -24,7 +24,7 @@ class DiscoPickerBox extends DiscoPage {
         this.appTitle = appTitle;
         this.header = header;
         this._flipCount = 5; // Default flip count
-        this._animationType = 'flip'; // 'slide-up' | 'flip'
+        this._animationType = 'flip'; // 'slide-up' | 'flip' | 'none'
 
         this.attachShadow({ mode: 'open' });
         this.loadStyle(pickerBoxCss, this.shadowRoot);
@@ -50,7 +50,13 @@ class DiscoPickerBox extends DiscoPage {
             if (this._appTitleEl) this._appTitleEl.textContent = this.header;
         }
         else if (name === 'animation') {
-            this._animationType = (newValue === 'flip') ? 'flip' : 'slide-up';
+            if (newValue === 'flip') {
+                this._animationType = 'flip';
+            } else if (newValue === 'none') {
+                this._animationType = 'none';
+            } else {
+                this._animationType = 'slide-up';
+            }
         }
         else if (name === 'flip-count') {
             const val = parseInt(newValue, 10);
@@ -112,9 +118,13 @@ class DiscoPickerBox extends DiscoPage {
         // the background page naturally stays put (and we are an overlay).
 
         if (this._animationType === 'flip') {
-            await this._animateInFlip();
-        } else {
-            await this._animateInSlideUp();
+            await DiscoAnimations.animationSet.pickerBox.inFlip(this);
+        } else if (this._animationType === 'slide-up') {
+            await DiscoAnimations.animationSet.pickerBox.inSlide(this);
+        } else if (this._root) {
+            this._root.style.visibility = 'visible';
+            this._root.style.opacity = '1';
+            this._root.style.transform = 'none';
         }
     }
 
@@ -137,9 +147,9 @@ class DiscoPickerBox extends DiscoPage {
         this._isClosing = true;
 
         if (this._animationType === 'flip') {
-            await this._animateOutFlip();
-        } else {
-            await this._animateOutSlideUp();
+            await DiscoAnimations.animationSet.pickerBox.outFlip(this);
+        } else if (this._animationType === 'slide-up') {
+            await DiscoAnimations.animationSet.pickerBox.outSlide(this);
         }
 
         this.remove();
@@ -196,197 +206,6 @@ class DiscoPickerBox extends DiscoPage {
                 bar.setAttribute('slot', 'footer');
             }
         });
-    }
-
-    async _animateInSlideUp() {
-        // Standard slide up from 100vh
-        const keyframes = [
-            { transform: 'translateY(100vh)', opacity: 1 },
-            { transform: 'translateY(0)', opacity: 1 }
-        ];
-        const opts = { duration: 300, easing: DiscoAnimations.easeOutQuint, fill: 'forwards' };
-        await DiscoAnimations.animate(this._root, keyframes, opts).finished;
-    }
-
-    async _animateOutSlideUp() {
-        const keyframes = [
-            { transform: 'translateY(0)', opacity: 1 },
-            { transform: 'translateY(100vh)', opacity: 1 }
-        ];
-        const opts = { duration: 150, easing: DiscoAnimations.easeInQuint, fill: 'forwards' };
-        await DiscoAnimations.animate(this._root, keyframes, opts).finished;
-    }
-
-    // --- FLIP ANIMATION ---
-
-    async _animateInFlip() {
-        if (!this._root) return;
-
-        const contentSource = this._getFlipClone();
-        contentSource.style.visibility = 'visible';
-
-        this._root.style.visibility = 'hidden';
-
-        const count = this._flipCount;
-        const strips = [];
-        const contentHeight = this._root.clientHeight || window.innerHeight;
-        const sliceHeight = contentHeight / count;
-
-        const animContainer = document.createElement('div');
-        animContainer.style.position = 'absolute';
-        animContainer.style.inset = '0';
-        animContainer.style.width = '100%';
-        animContainer.style.height = '100%';
-        animContainer.style.overflow = 'hidden';
-        animContainer.style.zIndex = '9999';
-        animContainer.style.perspective = '1000px';
-        animContainer.style.pointerEvents = 'none';
-        animContainer.style.display = 'flex';
-        animContainer.style.flexDirection = 'column';
-        this._container.appendChild(animContainer);
-
-        const getNodesForSlot = (name) => {
-            const selector = name ? `slot[name="${name}"]` : 'slot:not([name])';
-            const realSlot = this._root.querySelector(selector);
-            return realSlot ? realSlot.assignedNodes({ flatten: true }) : [];
-        };
-
-        for (let i = 0; i < count; i++) {
-            const strip = document.createElement('div');
-            strip.className = 'flip-strip';
-            strip.style.height = `${sliceHeight}px`;
-
-            strip.style.transform = 'rotateX(90deg)';
-            strip.style.opacity = '0';
-
-            const content = contentSource.cloneNode(true);
-            content.classList.add('flip-strip-content');
-            content.style.visibility = 'visible';
-            content.style.height = `${contentHeight}px`;
-            content.style.top = `-${i * sliceHeight}px`;
-
-            const slots = Array.from(content.querySelectorAll('slot'));
-            slots.forEach((slotEl) => {
-                const slotName = slotEl.name || null;
-                const realNodes = getNodesForSlot(slotName);
-                if (realNodes.length > 0) {
-                    const frag = document.createDocumentFragment();
-                    realNodes.forEach((node) => frag.appendChild(node.cloneNode(true)));
-                    slotEl.replaceWith(frag);
-                } else {
-                    slotEl.remove();
-                }
-            });
-
-            strip.appendChild(content);
-            animContainer.appendChild(strip);
-            strips.push(strip);
-        }
-
-        const stagger = 200 / count;
-        const promises = strips.map((strip, i) => {
-            const delay = i * stagger;
-            return DiscoAnimations.animate(strip, [
-                { transform: 'rotateX(90deg)', opacity: 1 },
-                { transform: 'rotateX(0deg)', opacity: 1 }
-            ], {
-                duration: 100,
-                delay,
-                easing: 'ease-out',
-                fill: 'forwards'
-            }).finished;
-        });
-
-        await Promise.all(promises);
-        animContainer.remove();
-        this._root.style.visibility = '';
-    }
-
-    async _animateOutFlip() {
-        if (!this._root) return;
-
-        const contentSource = this._getFlipClone();
-        contentSource.style.visibility = 'visible';
-
-        this._root.style.visibility = 'hidden';
-
-        const count = this._flipCount;
-        const strips = [];
-        const contentHeight = this._root.clientHeight || window.innerHeight;
-        const sliceHeight = contentHeight / count;
-
-        const animContainer = document.createElement('div');
-        animContainer.style.position = 'absolute';
-        animContainer.style.inset = '0';
-        animContainer.style.width = '100%';
-        animContainer.style.height = '100%';
-        animContainer.style.overflow = 'hidden';
-        animContainer.style.zIndex = '9999';
-        animContainer.style.perspective = '1000px';
-        animContainer.style.pointerEvents = 'none';
-        animContainer.style.display = 'flex';
-        animContainer.style.flexDirection = 'column';
-        this._container.appendChild(animContainer);
-
-        const getNodesForSlot = (name) => {
-            const selector = name ? `slot[name="${name}"]` : 'slot:not([name])';
-            const realSlot = this._root.querySelector(selector);
-            return realSlot ? realSlot.assignedNodes({ flatten: true }) : [];
-        };
-
-        for (let i = 0; i < count; i++) {
-            const strip = document.createElement('div');
-            strip.className = 'flip-strip';
-            strip.style.height = `${sliceHeight}px`;
-
-            strip.style.transform = 'rotateX(0deg)';
-            strip.style.opacity = '1';
-
-            const content = contentSource.cloneNode(true);
-            content.classList.add('flip-strip-content');
-            content.style.visibility = 'visible';
-            content.style.height = `${contentHeight}px`;
-            content.style.top = `-${i * sliceHeight}px`;
-
-            const slots = Array.from(content.querySelectorAll('slot'));
-            slots.forEach((slotEl) => {
-                const slotName = slotEl.name || null;
-                const realNodes = getNodesForSlot(slotName);
-                if (realNodes.length > 0) {
-                    const frag = document.createDocumentFragment();
-                    realNodes.forEach((node) => frag.appendChild(node.cloneNode(true)));
-                    slotEl.replaceWith(frag);
-                } else {
-                    slotEl.remove();
-                }
-            });
-
-            strip.appendChild(content);
-            animContainer.appendChild(strip);
-            strips.push(strip);
-        }
-
-        const stagger = 200 / count;
-        const promises = strips.map((strip, i) => new Promise((resolve) => {
-            const delay = i * stagger;
-            (async () => {
-                await DiscoAnimations.animate(strip, [
-                    { transform: 'rotateX(0deg)' },
-                    { transform: 'rotateX(-90deg)' }
-                ], {
-                    duration: 100,
-                    delay,
-                    easing: 'ease-in',
-                    fill: 'forwards'
-                }).finished;
-                strip.style.visibility = 'hidden';
-                strip.style.opacity = '0';
-                resolve();
-            })();
-        }));
-
-        await Promise.all(promises);
-        animContainer.remove();
     }
 
     _getFlipClone() {

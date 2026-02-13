@@ -401,6 +401,295 @@ const animationSet = {
 
             await DiscoAnimations.animateAll(animationItems);
         }
+    },
+    pickerBox: {
+        /**
+         * @param {{ _root?: HTMLElement }} host
+         * @returns {Promise<void>}
+         */
+        inSlide: async (host) => {
+            const root = host?._root;
+            if (!(root instanceof Element)) return;
+            const keyframes = [
+                { transform: 'translateY(100vh)', opacity: 1 },
+                { transform: 'translateY(0)', opacity: 1 }
+            ];
+            const opts = { duration: 300, easing: DiscoAnimations.easeOutQuint, fill: 'forwards' };
+            await DiscoAnimations.animate(root, keyframes, opts).finished;
+        },
+
+        /**
+         * @param {{ _root?: HTMLElement }} host
+         * @returns {Promise<void>}
+         */
+        outSlide: async (host) => {
+            const root = host?._root;
+            if (!(root instanceof Element)) return;
+            const keyframes = [
+                { transform: 'translateY(0)', opacity: 1 },
+                { transform: 'translateY(100vh)', opacity: 1 }
+            ];
+            const opts = { duration: 150, easing: DiscoAnimations.easeInQuint, fill: 'forwards' };
+            await DiscoAnimations.animate(root, keyframes, opts).finished;
+        },
+
+        /**
+         * @param {{ _root?: HTMLElement, _container?: HTMLElement, _flipCount?: number, _getFlipClone?: () => HTMLElement }} host
+         * @returns {Promise<void>}
+         */
+        inFlip: async (host) => {
+            const root = host?._root;
+            const container = host?._container;
+            if (!(root instanceof HTMLElement) || !(container instanceof HTMLElement)) return;
+
+            const contentSource = (typeof host?._getFlipClone === 'function' ? host._getFlipClone() : root.cloneNode(true));
+            if (!(contentSource instanceof HTMLElement)) return;
+            contentSource.style.visibility = 'visible';
+
+            root.style.visibility = 'hidden';
+
+            const count = host?._flipCount || 5;
+            const strips = [];
+            const contentHeight = root.clientHeight || window.innerHeight;
+            const sliceHeight = contentHeight / count;
+
+            const animContainer = document.createElement('div');
+            animContainer.style.position = 'absolute';
+            animContainer.style.inset = '0';
+            animContainer.style.width = '100%';
+            animContainer.style.height = '100%';
+            animContainer.style.overflow = 'hidden';
+            animContainer.style.zIndex = '9999';
+            animContainer.style.perspective = '1000px';
+            animContainer.style.pointerEvents = 'none';
+            animContainer.style.display = 'flex';
+            animContainer.style.flexDirection = 'column';
+            container.appendChild(animContainer);
+
+            const getNodesForSlot = (name) => {
+                const selector = name ? `slot[name="${name}"]` : 'slot:not([name])';
+                const realSlot = root.querySelector(selector);
+                return realSlot ? realSlot.assignedNodes({ flatten: true }) : [];
+            };
+
+            for (let i = 0; i < count; i++) {
+                const strip = document.createElement('div');
+                strip.className = 'flip-strip';
+                strip.style.height = `${sliceHeight}px`;
+                strip.style.transform = 'rotateX(90deg)';
+                strip.style.opacity = '0';
+
+                const content = contentSource.cloneNode(true);
+                if (!(content instanceof HTMLElement)) continue;
+                content.classList.add('flip-strip-content');
+                content.style.visibility = 'visible';
+                content.style.height = `${contentHeight}px`;
+                content.style.top = `-${i * sliceHeight}px`;
+
+                const slots = Array.from(content.querySelectorAll('slot'));
+                slots.forEach((slotEl) => {
+                    const slotName = slotEl.name || null;
+                    const realNodes = getNodesForSlot(slotName);
+                    if (realNodes.length > 0) {
+                        const frag = document.createDocumentFragment();
+                        realNodes.forEach((node) => frag.appendChild(node.cloneNode(true)));
+                        slotEl.replaceWith(frag);
+                    } else {
+                        slotEl.remove();
+                    }
+                });
+
+                strip.appendChild(content);
+                animContainer.appendChild(strip);
+                strips.push(strip);
+            }
+
+            const stagger = 200 / count;
+            const promises = strips.map((strip, i) => {
+                const delay = i * stagger;
+                return DiscoAnimations.animate(strip, [
+                    { transform: 'rotateX(90deg)', opacity: 1 },
+                    { transform: 'rotateX(0deg)', opacity: 1 }
+                ], {
+                    duration: 100,
+                    delay,
+                    easing: 'ease-out',
+                    fill: 'forwards'
+                }).finished;
+            });
+
+            await Promise.all(promises);
+            animContainer.remove();
+            root.style.visibility = '';
+        },
+
+        /**
+         * @param {{ _root?: HTMLElement, _container?: HTMLElement, _flipCount?: number, _getFlipClone?: () => HTMLElement }} host
+         * @returns {Promise<void>}
+         */
+        outFlip: async (host) => {
+            const root = host?._root;
+            const container = host?._container;
+            if (!(root instanceof HTMLElement) || !(container instanceof HTMLElement)) return;
+
+            const contentSource = (typeof host?._getFlipClone === 'function' ? host._getFlipClone() : root.cloneNode(true));
+            if (!(contentSource instanceof HTMLElement)) return;
+            contentSource.style.visibility = 'visible';
+
+            root.style.visibility = 'hidden';
+
+            const count = host?._flipCount || 5;
+            const strips = [];
+            const contentHeight = root.clientHeight || window.innerHeight;
+            const sliceHeight = contentHeight / count;
+
+            const animContainer = document.createElement('div');
+            animContainer.style.position = 'absolute';
+            animContainer.style.inset = '0';
+            animContainer.style.width = '100%';
+            animContainer.style.height = '100%';
+            animContainer.style.overflow = 'hidden';
+            animContainer.style.zIndex = '9999';
+            animContainer.style.perspective = '1000px';
+            animContainer.style.pointerEvents = 'none';
+            animContainer.style.display = 'flex';
+            animContainer.style.flexDirection = 'column';
+            container.appendChild(animContainer);
+
+            const getNodesForSlot = (name) => {
+                const selector = name ? `slot[name="${name}"]` : 'slot:not([name])';
+                const realSlot = root.querySelector(selector);
+                return realSlot ? realSlot.assignedNodes({ flatten: true }) : [];
+            };
+
+            for (let i = 0; i < count; i++) {
+                const strip = document.createElement('div');
+                strip.className = 'flip-strip';
+                strip.style.height = `${sliceHeight}px`;
+                strip.style.transform = 'rotateX(0deg)';
+                strip.style.opacity = '1';
+
+                const content = contentSource.cloneNode(true);
+                if (!(content instanceof HTMLElement)) continue;
+                content.classList.add('flip-strip-content');
+                content.style.visibility = 'visible';
+                content.style.height = `${contentHeight}px`;
+                content.style.top = `-${i * sliceHeight}px`;
+
+                const slots = Array.from(content.querySelectorAll('slot'));
+                slots.forEach((slotEl) => {
+                    const slotName = slotEl.name || null;
+                    const realNodes = getNodesForSlot(slotName);
+                    if (realNodes.length > 0) {
+                        const frag = document.createDocumentFragment();
+                        realNodes.forEach((node) => frag.appendChild(node.cloneNode(true)));
+                        slotEl.replaceWith(frag);
+                    } else {
+                        slotEl.remove();
+                    }
+                });
+
+                strip.appendChild(content);
+                animContainer.appendChild(strip);
+                strips.push(strip);
+            }
+
+            const stagger = 200 / count;
+            const promises = strips.map((strip, i) => new Promise((resolve) => {
+                const delay = i * stagger;
+                (async () => {
+                    await DiscoAnimations.animate(strip, [
+                        { transform: 'rotateX(0deg)' },
+                        { transform: 'rotateX(-90deg)' }
+                    ], {
+                        duration: 100,
+                        delay,
+                        easing: 'ease-in',
+                        fill: 'forwards'
+                    }).finished;
+                    strip.style.visibility = 'hidden';
+                    strip.style.opacity = '0';
+                    resolve();
+                })();
+            }));
+
+            await Promise.all(promises);
+            animContainer.remove();
+        }
+    },
+    longListSelector: {
+        /**
+         * @param {Element[]} targets
+         * @returns {Promise<void>}
+         */
+        in: async (targets) => {
+            const items = Array.isArray(targets) ? targets.filter((target) => target instanceof Element) : [];
+            const animationItems = items.map((target, index) => {
+                const rowIndex = target instanceof HTMLElement
+                    ? Number(target.dataset.rowIndex ?? target.style.getPropertyValue('--row-index') ?? 0)
+                    : index;
+                return {
+                target,
+                delay: rowIndex * 20,
+                run: async () => {
+                    const animation = DiscoAnimations.animate(
+                        target,
+                        [
+                            { opacity: 1, transform: 'rotateX(90deg)' },
+                            { opacity: 1, transform: 'rotateX(0deg)' }
+                        ],
+                        {
+                            duration: 100,
+                            easing: DiscoAnimations.easeOutQuart,
+                            fill: 'both'
+                        }
+                    );
+                    await animation.finished;
+                    resetAnimation(target);
+                }
+                };
+            });
+
+            await DiscoAnimations.animateAll(animationItems, true);
+        },
+
+        /**
+         * @param {Element[]} targets
+         * @returns {Promise<void>}
+         */
+        out: async (targets) => {
+            const items = Array.isArray(targets) ? targets.filter((target) => target instanceof Element) : [];
+            const animationItems = items.map((target, index) => {
+                const rowIndex = target instanceof HTMLElement
+                    ? Number(target.dataset.rowIndex ?? target.style.getPropertyValue('--row-index') ?? 0)
+                    : index;
+                return {
+                target,
+                delay: rowIndex * 20,
+                run: async () => {
+                    const animation = DiscoAnimations.animate(
+                        target,
+                        [
+                            { opacity: 1, transform: 'rotateX(0deg)' },
+                            { opacity: 1, transform: 'rotateX(-90deg)' }
+                        ],
+                        {
+                            duration: 100,
+                            easing: DiscoAnimations.easeInQuad,
+                            fill: 'both'
+                        }
+                    );
+                    await animation.finished;
+                    if (target instanceof HTMLElement) {
+                        target.style.visibility = 'hidden';
+                        target.style.opacity = '0';
+                    }
+                }
+                };
+            });
+
+            await DiscoAnimations.animateAll(animationItems);
+        }
     }
 }
 
