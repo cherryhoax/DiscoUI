@@ -6,8 +6,10 @@ export type DiscoListItemClickDetail = {
   data?: unknown;
 };
 
+export type DiscoListRecord = Record<string, unknown>;
+
 export default class DiscoListView extends DiscoScrollView {
-  items: unknown[];
+  items: Array<unknown | DiscoListRecord>;
   itemClickEnabled: boolean;
   selectionMode: string;
 }

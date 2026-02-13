@@ -22,6 +22,7 @@ class DiscoListView extends DiscoScrollView {
     }
 
     this._items = [];
+    this._itemProxyCache = new WeakMap();
     this._list = document.createElement('div');
     this._list.className = 'list';
 
@@ -49,8 +50,53 @@ class DiscoListView extends DiscoScrollView {
    * @param {unknown[]} value
    */
   set items(value) {
-    this._items = Array.isArray(value) ? value : [];
+    const normalized = Array.isArray(value) ? value : [];
+    this._items = normalized.map((item, index) => this._observeItem(item, index));
     this._renderDynamic();
+  }
+
+  /**
+   * @param {unknown} item
+   * @param {number} index
+   * @returns {unknown}
+   */
+  _observeItem(item, index) {
+    if (!item || typeof item !== 'object') {
+      return item;
+    }
+
+    const cached = this._itemProxyCache.get(item);
+    if (cached) {
+      return cached;
+    }
+
+    const proxy = new Proxy(item, {
+      set: (target, prop, nextValue) => {
+        target[prop] = nextValue;
+        if (typeof prop === 'string') {
+          this._updateDynamicBinding(index, prop, nextValue);
+        }
+        return true;
+      }
+    });
+
+    this._itemProxyCache.set(item, proxy);
+    return proxy;
+  }
+
+  /**
+   * @param {number} index
+   * @param {string} field
+   * @param {unknown} value
+   * @returns {void}
+   */
+  _updateDynamicBinding(index, field, value) {
+    if (!this._list) return;
+    const listItem = this._list.querySelector(`[data-list-index="${index}"]`);
+    if (!(listItem instanceof HTMLElement)) return;
+    const node = listItem.querySelector(`[data-bind="${field}"]`);
+    if (!(node instanceof HTMLElement)) return;
+    node.textContent = value != null ? String(value) : '';
   }
 
   /**

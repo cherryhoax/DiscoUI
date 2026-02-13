@@ -13,12 +13,12 @@
   font-weight: 300;
 }
 
-.item ::slotted(div.setting-title) {
+.item ::slotted(div.item-title) {
   //font-size: 26px;
   //line-height: 1.2;
 }
 
-.item ::slotted(div.setting-description) {
+.item ::slotted(div.item-description) {
   //font-size: 18px;
   opacity: 0.5;
   //line-height: 1.2;

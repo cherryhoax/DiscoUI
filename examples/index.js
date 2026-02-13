@@ -220,8 +220,10 @@ const launchDemo = async () => {
       if (id === 'toggle-theme') {
         const nextTheme = getTheme() === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('disco-theme', nextTheme);
-        listItems[0].Description = `current theme: ${nextTheme}`;
-        list.items = [...listItems];
+        const updatedDescription = `current theme: ${nextTheme}`;
+        if (list.items[0] && typeof list.items[0] === 'object') {
+          list.items[0].Description = updatedDescription;
+        }
       }
       if (id === 'pivot') {
         frame.navigate(pivotPage);
