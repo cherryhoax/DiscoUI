@@ -181,6 +181,11 @@ class DiscoDatePicker extends DiscoLoopingSelector {
 
   _applyFormat() {
     this._formatSpec = this._parseFormat(this._format);
+    const reserveSecondarySpace = Boolean(
+      this._formatSpec.weekdayStyle
+      || (this._formatSpec.monthNameStyle && this._formatSpec.monthNumberDigits > 0)
+    );
+    this.toggleAttribute('data-reserve-secondary-space', reserveSecondarySpace);
 
     if (this._monthColumn) {
       this._monthColumn.toggleAttribute('data-hidden', !this._formatSpec.hasMonth);
@@ -292,9 +297,7 @@ class DiscoDatePicker extends DiscoLoopingSelector {
 
   _parseFormat(format) {
     const safeFormat = typeof format === 'string' ? format : 'dd MMMM yyyy';
-    // User requested MMMM to render short month names (e.g. "Jan" instead of "January")
-    // effectively overriding the standard meaning of MMMM for the view.
-    const hasMonthName = /MMMM/.test(safeFormat) ? 'short' : (/MMM/.test(safeFormat) ? 'short' : null);
+    const hasMonthName = /MMMM/.test(safeFormat) ? 'long' : (/MMM/.test(safeFormat) ? 'short' : null);
     const hasMonthNumber = /(?:^|[^M])MM(?!M)/.test(safeFormat) || /(?:^|[^M])M(?!M)/.test(safeFormat);
     const hasDayNumber = /(?:^|[^d])dd(?!d)/.test(safeFormat) || /(?:^|[^d])d(?!d)/.test(safeFormat);
     const hasYear = /yyyy/.test(safeFormat) ? 'numeric' : (/yy/.test(safeFormat) ? '2-digit' : null);
@@ -460,7 +463,11 @@ class DiscoDatePicker extends DiscoLoopingSelector {
 
     const secondary = document.createElement('div');
     secondary.className = 'date-picker-secondary';
-    secondary.textContent = secondaryText || '';
+    const hasSecondaryText = Boolean(secondaryText);
+    const reserveSecondarySpace = this.hasAttribute('data-reserve-secondary-space');
+    secondary.textContent = hasSecondaryText
+      ? secondaryText
+      : (reserveSecondarySpace ? '\u00A0' : '');
 
     item.appendChild(primary);
     item.appendChild(secondary);

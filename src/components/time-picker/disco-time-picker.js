@@ -375,7 +375,9 @@ class DiscoTimePicker extends DiscoLoopingSelector {
     const end = this._formatSpec.is12Hour ? 12 : 23;
 
     for (let hour = start; hour <= end; hour += 1) {
-      const text = String(hour).padStart(2, '0');
+      const text = this._formatSpec.is12Hour
+        ? String(hour)
+        : String(hour).padStart(2, '0');
       const item = this._createItem(text, '');
       item.dataset.index = String(items.length);
       item.dataset.value = String(hour);

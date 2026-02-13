@@ -8,10 +8,16 @@
     --time-picker-tile-height: var(--time-picker-tile-width);
 }
 
+.time-picker-item {
+    align-items: start;
+    justify-content: end;
+    padding: 7px 7px;
+}
+
 .time-picker-primary {
-    font-size: 30px;
+    font-size: 55px;
 }
 
 .time-picker-secondary {
-    font-size: 12px;
+    display: none;
 }
