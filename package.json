@@ -17,7 +17,7 @@
     "watch": "npx vite",
     "types": "npx tsc -p tsconfig.types.json",
     "start": "npm run dev",
-    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
     "test": "npm run test:unit",
     "test:unit": "npx vitest run",
     "test:unit:watch": "npx vitest",
