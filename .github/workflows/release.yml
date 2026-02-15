@@ -48,17 +48,11 @@ jobs:
         with:
           name: DiscoUI v${{ steps.get_version.outputs.VERSION }}
           body: |
-            ## DiscoUI Release v${{ steps.get_version.outputs.VERSION }}
-            
-            **Published to NPM:** https://www.npmjs.com/package/discoui
-            
-            ### Installation
             ```bash
-            npm install discoui@${{ steps.get_version.outputs.VERSION }}
+            npm install @cherryhoax/discoui@${{ steps.get_version.outputs.VERSION }}
             ```
             
-            ### Changes
-            See the [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+            **NPM:** https://www.npmjs.com/package/@cherryhoax/discoui
           files: |
             discoui-${{ github.ref_name }}.zip
           draft: false
