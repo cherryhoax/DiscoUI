@@ -37,6 +37,10 @@
   ],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cherryhoax/DiscoUI.git"
+  },
   "dependencies": {
     "@fontsource/open-sans": "^5.2.7",
     "@olton/metroui": "^5.1.20",
