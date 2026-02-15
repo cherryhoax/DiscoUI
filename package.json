@@ -1,6 +1,6 @@
 {
   "name": "@cherryhoax/discoui",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Custom elements with vanilla JS, Shadow DOM, and SCSS",
   "main": "dist/discoui.mjs",
   "types": "src/index.d.ts",
