@@ -542,11 +542,6 @@ class DiscoListView extends DiscoScrollView {
 
     if (!this._groupSelector) {
       this._groupSelector = new DiscoLongListSelector('GROUPS', [], { mode: this.groupStyle || 'auto' });
-      this._groupSelector.addEventListener('separatorselect', (event) => {
-        const selectedKey = event?.detail?.key;
-        if (!selectedKey) return;
-        this._scrollToGroup(selectedKey);
-      });
     }
 
     if (this.groupStyle === 'custom') {
@@ -564,7 +559,9 @@ class DiscoListView extends DiscoScrollView {
 
     this._groupSelector.open().then((selected) => {
       if (!selected) return;
-      this._scrollToGroup(selected);
+      requestAnimationFrame(() => {
+        this._scrollToGroup(selected);
+      });
     });
   }
 
@@ -577,6 +574,24 @@ class DiscoListView extends DiscoScrollView {
     const candidates = [raw, raw.toLocaleUpperCase('en')];
     if (raw === '#') candidates.push('0-9');
 
+    const selectedEntry = (this._groupEntries || []).find((entry) =>
+      entry
+      && (candidates.includes(String(entry.key || '').trim())
+        || candidates.includes(String(entry.label || '').trim()))
+    );
+
+    const targetIndex = selectedEntry?.index;
+    if (Number.isFinite(targetIndex)) {
+      const firstItem = this._list?.querySelector(`[data-list-index="${targetIndex}"]`);
+      if (firstItem instanceof HTMLElement) {
+        const hostRect = this.getBoundingClientRect();
+        const targetRect = firstItem.getBoundingClientRect();
+        const nextTop = this.scrollTop + (targetRect.top - hostRect.top);
+        this.scrollTo(0, Math.max(0, nextTop), false);
+        return;
+      }
+    }
+
     const element = Array.from(this._list?.querySelectorAll('disco-list-header-item') || []).find((node) => {
       if (!(node instanceof HTMLElement)) return false;
       const groupKey = String(node.dataset.groupKey || '').trim();
@@ -585,7 +600,10 @@ class DiscoListView extends DiscoScrollView {
     });
     if (!(element instanceof HTMLElement)) return;
 
-    this.scrollTo(0, element.offsetTop, false);
+    const hostRect = this.getBoundingClientRect();
+    const targetRect = element.getBoundingClientRect();
+    const nextTop = this.scrollTop + (targetRect.top - hostRect.top);
+    this.scrollTo(0, Math.max(0, nextTop), false);
   }
 }
 

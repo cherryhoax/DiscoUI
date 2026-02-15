@@ -302,7 +302,7 @@ class DiscoLongListSelector extends DiscoPickerBox {
         });
     }
 
-    _selectEntry(entry, index) {
+    async _selectEntry(entry, index) {
         const detail = {
             key: entry.key,
             label: entry.label,
@@ -315,8 +315,8 @@ class DiscoLongListSelector extends DiscoPickerBox {
         }));
 
         this._skipResolveOnClose = true;
+        await this.close();
         this._resolveOnce(entry.key);
-        this.close();
     }
 
     _resolveOnce(value) {
