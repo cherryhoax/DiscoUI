@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.1
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create dist archive
+        run: zip -r discoui-${{ github.ref_name }}.zip dist
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: DiscoUI v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## DiscoUI Release v${{ steps.get_version.outputs.VERSION }}
+            
+            **Published to NPM:** https://www.npmjs.com/package/discoui
+            
+            ### Installation
+            ```bash
+            npm install discoui@${{ steps.get_version.outputs.VERSION }}
+            ```
+            
+            ### Changes
+            See the [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+          files: |
+            discoui-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false
