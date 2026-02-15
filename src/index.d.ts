@@ -6,7 +6,7 @@ export { default as DiscoButton } from './components/buttons/disco-button.js';
 export { default as DiscoProgressBar } from './components/progress-bar/disco-progress-bar.js';
 export { default as DiscoCheckbox } from './components/checkbox/disco-checkbox.js';
 export { default as DiscoComboBox } from './components/combo-box/disco-combo-box.js';
-export { default as DiscoComboBoxItem } from './components/checkbox/disco-combo-box-item.js';
+export { default as DiscoComboBoxItem } from './components/combo-box/disco-combo-box-item.js';
 export { default as DiscoUIElement } from './components/ui-elements/disco-ui-element.js';
 export { default as DiscoScrollView } from './components/scroll-view/disco-scroll-view.js';
 export { default as DiscoPivot } from './components/pivot/index.js';
