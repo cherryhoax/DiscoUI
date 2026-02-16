@@ -32,6 +32,12 @@ class DiscoProgressBar extends DiscoUIElement {
     this._track.appendChild(this._dots);
     this.shadowRoot.appendChild(this._track);
     this._pendingSync = false;
+    this._lastIndeterminate = this.indeterminate;
+    this._stopAfterCycle = false;
+    this._stopPromise = null;
+    this._resolveStopPromise = null;
+    this._stopTimeout = null;
+    this._onDotsIteration = this._onDotsIteration.bind(this);
   }
 
   connectedCallback() {
@@ -43,6 +49,17 @@ class DiscoProgressBar extends DiscoUIElement {
       this._syncAria();
       this._syncFill();
     }
+
+    this._dots.addEventListener('animationiteration', this._onDotsIteration);
+    if (this.indeterminate) {
+      this._resetIndeterminateAnimations();
+    }
+  }
+
+  disconnectedCallback() {
+    this._dots.removeEventListener('animationiteration', this._onDotsIteration);
+    this._clearStopTimeout();
+    this._resolvePendingStop();
   }
 
   static get observedAttributes() {
@@ -115,10 +132,116 @@ class DiscoProgressBar extends DiscoUIElement {
   attributeChangedCallback(_name, _oldValue, _newValue) {
     if (!this.isConnected) {
       this._pendingSync = true;
+      this._lastIndeterminate = this.indeterminate;
       return;
     }
+
+    const isIndeterminate = this.indeterminate;
+    if (!this._lastIndeterminate && isIndeterminate) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+      this._resetIndeterminateAnimations();
+    }
+
+    if (this._lastIndeterminate && !isIndeterminate) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+    }
+
+    this._lastIndeterminate = isIndeterminate;
     this._syncAria();
     this._syncFill();
+  }
+
+  startIndeterminate() {
+    this._stopAfterCycle = false;
+    this._clearStopTimeout();
+    this._resolvePendingStop();
+
+    if (!this.indeterminate) {
+      this.setAttribute('indeterminate', '');
+      return;
+    }
+  }
+
+  stopIndeterminate(options = {}) {
+    const graceful = options.graceful !== false;
+
+    if (!this.indeterminate) {
+      return Promise.resolve();
+    }
+
+    if (!graceful) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+      this.removeAttribute('indeterminate');
+      return Promise.resolve();
+    }
+
+    if (this._stopPromise) {
+      return this._stopPromise;
+    }
+
+    this._stopAfterCycle = true;
+    this._stopPromise = new Promise((resolve) => {
+      this._resolveStopPromise = resolve;
+    });
+
+    this._stopTimeout = window.setTimeout(() => {
+      this._finishGracefulStop();
+    }, 3200);
+
+    return this._stopPromise;
+  }
+
+  _onDotsIteration() {
+    if (!this._stopAfterCycle) return;
+    this._finishGracefulStop();
+  }
+
+  _finishGracefulStop() {
+    if (!this.indeterminate) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+      return;
+    }
+
+    this._stopAfterCycle = false;
+    this._clearStopTimeout();
+    this.removeAttribute('indeterminate');
+    this._resolvePendingStop();
+  }
+
+  _resetIndeterminateAnimations() {
+    const animatedElements = [this._dots, ...Array.from(this._dots.children)];
+    animatedElements.forEach((element) => {
+      element.style.animation = 'none';
+    });
+    this._dots.offsetWidth;
+    animatedElements.forEach((element) => {
+      element.style.removeProperty('animation');
+    });
+  }
+
+  _clearStopTimeout() {
+    if (this._stopTimeout == null) return;
+    window.clearTimeout(this._stopTimeout);
+    this._stopTimeout = null;
+  }
+
+  _resolvePendingStop() {
+    if (!this._resolveStopPromise) {
+      this._stopPromise = null;
+      return;
+    }
+    const resolve = this._resolveStopPromise;
+    this._resolveStopPromise = null;
+    this._stopPromise = null;
+    resolve();
   }
 
   _syncFill() {

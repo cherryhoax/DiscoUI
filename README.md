@@ -81,7 +81,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoHub](docs/components/hub.md) | Panoramic layout with parallax header |
 | | DiscoHyperlink | Displays a hyperlink inline |
 | | DiscoHyperlinkButton | Button that displays a hyperlink |
-| | DiscoImage | Displays an image |
+| ✅ | [DiscoImage](docs/components/image.md) | Image with loading progress bar and fade transitions |
 | ✅ | [DiscoListView / DiscoListItem](docs/components/list-view.md) | Virtualized list for long lists |
 | ✅ | [DiscoLongListSelector](docs/components/long-list-selector.md) | Jump list for grouped list views |
 | | DiscoMediaElement | Audio/video playback |

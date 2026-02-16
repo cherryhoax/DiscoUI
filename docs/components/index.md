@@ -6,6 +6,7 @@
 - [App Delegate (DiscoAppDelegate)](app-delegate.md)
 - [Pivot (disco-pivot-page)](pivot.md)
 - [Hub (disco-hub)](hub.md)
+- [Image (disco-image)](image.md)
 - [App Bar (disco-app-bar)](app-bar.md)
 - [List View (disco-list-view)](list-view.md)
 - [Long List Selector (disco-long-list-selector)](long-list-selector.md)

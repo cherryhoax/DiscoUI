@@ -5,6 +5,8 @@ export default class DiscoProgressRing extends DiscoUIElement {
 	value: number;
 	max: number;
 	colorMode: 'accent' | 'foreground';
+	startIndeterminate(): void;
+	stopIndeterminate(options?: { graceful?: boolean }): Promise<void>;
 }
 
 export type DiscoProgressRingElement = DiscoProgressRing;

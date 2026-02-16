@@ -39,6 +39,18 @@ class DiscoProgressRing extends DiscoUIElement {
     this.shadowRoot.appendChild(this._loader);
     this.shadowRoot.appendChild(this._ring);
     this.setAttribute('role', 'progressbar');
+    this._stopAfterCycle = false;
+    this._stopPromise = null;
+    this._resolveStopPromise = null;
+    this._stopTimeout = null;
+    this._lastIndeterminate = this.indeterminate;
+    this._onCircleIteration = this._onCircleIteration.bind(this);
+
+    const firstCircle = this._loader.querySelector('.circle');
+    if (firstCircle) {
+      firstCircle.addEventListener('animationiteration', this._onCircleIteration);
+    }
+
     if (!this.hasAttribute('indeterminate') && !this.hasAttribute('value')) {
       this.setAttribute('indeterminate', '');
     }
@@ -93,7 +105,121 @@ class DiscoProgressRing extends DiscoUIElement {
   }
 
   attributeChangedCallback() {
+    const isIndeterminate = this.indeterminate;
+    if (!this._lastIndeterminate && isIndeterminate) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+      this._resetIndeterminateAnimations();
+    }
+
+    if (this._lastIndeterminate && !isIndeterminate) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+    }
+
+    this._lastIndeterminate = isIndeterminate;
     this._syncState();
+  }
+
+  disconnectedCallback() {
+    this._clearStopTimeout();
+    this._resolvePendingStop();
+
+    const firstCircle = this._loader?.querySelector('.circle');
+    if (firstCircle) {
+      firstCircle.removeEventListener('animationiteration', this._onCircleIteration);
+    }
+  }
+
+  startIndeterminate() {
+    this._stopAfterCycle = false;
+    this._clearStopTimeout();
+    this._resolvePendingStop();
+
+    if (!this.indeterminate) {
+      this.setAttribute('indeterminate', '');
+      return;
+    }
+  }
+
+  stopIndeterminate(options = {}) {
+    const graceful = options.graceful !== false;
+
+    if (!this.indeterminate) {
+      return Promise.resolve();
+    }
+
+    if (!graceful) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+      this.removeAttribute('indeterminate');
+      return Promise.resolve();
+    }
+
+    if (this._stopPromise) {
+      return this._stopPromise;
+    }
+
+    this._stopAfterCycle = true;
+    this._stopPromise = new Promise((resolve) => {
+      this._resolveStopPromise = resolve;
+    });
+
+    this._stopTimeout = window.setTimeout(() => {
+      this._finishGracefulStop();
+    }, 5700);
+
+    return this._stopPromise;
+  }
+
+  _onCircleIteration() {
+    if (!this._stopAfterCycle) return;
+    this._finishGracefulStop();
+  }
+
+  _finishGracefulStop() {
+    if (!this.indeterminate) {
+      this._stopAfterCycle = false;
+      this._clearStopTimeout();
+      this._resolvePendingStop();
+      return;
+    }
+
+    this._stopAfterCycle = false;
+    this._clearStopTimeout();
+    this.removeAttribute('indeterminate');
+    this._resolvePendingStop();
+  }
+
+  _resetIndeterminateAnimations() {
+    const circles = Array.from(this._loader.querySelectorAll('.circle'));
+    circles.forEach((circle) => {
+      circle.style.animation = 'none';
+    });
+    this._loader.offsetWidth;
+    circles.forEach((circle) => {
+      circle.style.removeProperty('animation');
+    });
+  }
+
+  _clearStopTimeout() {
+    if (this._stopTimeout == null) return;
+    window.clearTimeout(this._stopTimeout);
+    this._stopTimeout = null;
+  }
+
+  _resolvePendingStop() {
+    if (!this._resolveStopPromise) {
+      this._stopPromise = null;
+      return;
+    }
+    const resolve = this._resolveStopPromise;
+    this._resolveStopPromise = null;
+    this._stopPromise = null;
+    resolve();
   }
 
   _syncState() {

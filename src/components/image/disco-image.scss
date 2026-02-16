@@ -1,0 +1,42 @@
+:host {
+  display: inline-block;
+  width: 200px;
+  aspect-ratio: 1 / 1;
+  background: var(--disco-background-secondary);
+  overflow: hidden;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--disco-background-secondary);
+}
+
+.image-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+}
+
+.image-layer.active {
+  opacity: 1;
+}
+
+.loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2;
+  display: none;
+}
+
+.loading-bar.visible {
+  display: block;
+}

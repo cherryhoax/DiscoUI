@@ -32,6 +32,11 @@ Displays the progress of a task in a circular ring.
 - `color-mode`: `accent` (default) or `foreground`.
 - `foreground`: Boolean alias for foreground color mode.
 
+## Methods
+
+- `startIndeterminate()`: Starts indeterminate animation from the beginning.
+- `stopIndeterminate({ graceful: true })`: Stops after current animation cycle finishes.
+
 ## Styling
 
 - `--disco-progress-ring-size`: Ring size (default `40px`).

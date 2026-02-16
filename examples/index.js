@@ -36,6 +36,7 @@ const launchDemo = async () => {
   const toggleButtonPage = document.getElementById('componentsToggleButton');
   const dialogPage = document.getElementById('componentsDialog');
   const messageDialogPage = document.getElementById('componentsMessageDialog');
+  const imagePage = document.getElementById('componentsImage');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const groupStyleList = document.getElementById('groupStyleList');
@@ -135,6 +136,7 @@ const launchDemo = async () => {
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
       { id: 'slider', Title: 'Slider', Description: '' },
       { id: 'dialog', Title: 'Dialog', Description: '' },
+      { id: 'image', Title: 'Image', Description: '' },
       { id: 'messagedialog', Title: 'Message Dialog', Description: '' },
       { id: 'togglebutton', Title: 'Toggle Button', Description: '' },
       { id: 'toggleswitch', Title: 'Toggle Switch', Description: '' },
@@ -250,6 +252,9 @@ const launchDemo = async () => {
       }
       if (id === 'dialog') {
         frame.navigate(dialogPage);
+      }
+      if (id === 'image') {
+        frame.navigate(imagePage);
       }
       if (id === 'messagedialog') {
         frame.navigate(messageDialogPage);
@@ -410,6 +415,18 @@ const launchDemo = async () => {
       const result = await dialog.open();
       messageDialogResult.textContent = `Result: ${result == null ? 'cancel' : String(result)}`;
     });
+  }
+
+  const demoImage = document.getElementById('demoImage');
+  if (demoImage) {
+    const nextRandomImage = () => {
+      const randomInt = Math.floor(Math.random() * 1_000_000);
+      demoImage.setAttribute('src', `https://picsum.photos/200?random=${randomInt}`);
+      demoImage.setAttribute('fit', 'cover');
+    };
+
+    demoImage.addEventListener('disco-press', nextRandomImage);
+    demoImage.addEventListener('click', nextRandomImage);
   }
 
   if (groupStyleList) {

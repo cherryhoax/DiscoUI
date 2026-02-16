@@ -25,3 +25,8 @@ Displays a repeating animation (for unknown durations).
 - `value` (number): Current value.
 - `max` (number): Maximum value (default 100).
 - `indeterminate` (boolean): Activates the "dots" animation mode.
+
+## Methods
+
+- `startIndeterminate()`: Starts indeterminate animation from the beginning.
+- `stopIndeterminate({ graceful: true })`: Stops after current animation cycle finishes.
