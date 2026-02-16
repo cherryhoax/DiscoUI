@@ -7,6 +7,7 @@ export { default as DiscoButton } from './components/buttons/disco-button.js';
 export { default as DiscoProgressBar } from './components/progress-bar/disco-progress-bar.js';
 export { default as DiscoProgressRing } from './components/progress-ring/disco-progress-ring.js';
 export { default as DiscoCheckbox } from './components/checkbox/disco-checkbox.js';
+export { default as DiscoRadioButton } from './components/radio-button/disco-radio-button.js';
 export { default as DiscoComboBox } from './components/combo-box/disco-combo-box.js';
 export { default as DiscoComboBoxItem } from './components/combo-box/disco-combo-box-item.js';
 export { default as DiscoSlider } from './components/slider/disco-slider.js';

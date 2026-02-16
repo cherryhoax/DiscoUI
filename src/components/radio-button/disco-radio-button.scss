@@ -1,0 +1,71 @@
+@use '../ui-elements/disco-ui-element.scss' as ui;
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--disco-foreground);
+  font-size: 21px;
+}
+
+:host(:not([disabled])) .wrapper {
+  @include ui.disco-tilt;
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--disco-foreground);
+  background-color: var(--disco-background);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.circle::after {
+  content: '';
+  width: 15px;
+  height: 15px;
+  background: var(--disco-foreground);
+  opacity: 0;
+  border-radius: 50%;
+}
+
+.input:checked + .circle::after {
+  opacity: 1;
+}
+
+:host(:not([disabled])) .wrapper[data-pressed] {
+  .circle,
+  .input + .circle {
+    background-color: var(--disco-accent);
+
+    &::after {
+      background: #fff;
+    }
+  }
+}
+
+:host([disabled]) .wrapper {
+  opacity: 0.5;
+}
+
+.text {
+  display: inline-flex;
+  align-items: center;
+}

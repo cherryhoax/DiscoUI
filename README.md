@@ -91,7 +91,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoProgressRing](docs/components/progress-ring.md) | Circular indeterminate progress indicator |
 | ✅ | [DiscoProgressBar](docs/components/progress.md) | Indeterminate/determinate progress indicator |
 | ✅ | [DiscoPasswordBox](docs/components/password-box.md) | Password input |
-| | DiscoRadioButton | Radio button input |
+| ✅ | [DiscoRadioButton](docs/components/radio-button.md) | Radio button input |
 | ✅ | [DiscoScrollView](docs/components/scroll-view.md) | Scrollable content area |
 | ✅ | [DiscoSlider](docs/components/slider.md) | Slider input control |
 | ✅ | [DiscoLoopingSelector](docs/components/looping-selector.md) | Base class for wheel/column pickers |

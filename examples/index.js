@@ -25,6 +25,7 @@ const launchDemo = async () => {
   const appBarPage = document.getElementById('componentsAppBar');
   const groupStylePage = document.getElementById('componentsGroupStyle');
   const checkboxPage = document.getElementById('componentsCheckbox');
+  const radioButtonPage = document.getElementById('componentsRadioButton');
   const progressPage = document.getElementById('componentsProgress');
   const progressRingPage = document.getElementById('componentsProgressRing');
   const comboBoxPage = document.getElementById('componentsComboBox');
@@ -133,6 +134,7 @@ const launchDemo = async () => {
       { id: 'progress', Title: 'Progress Bar', Description: '' },
       { id: 'progressring', Title: 'Progress Ring', Description: '' },
       { id: 'checkbox', Title: 'Checkbox', Description: '' },
+      { id: 'radiobutton', Title: 'Radio Button', Description: '' },
       { id: 'textbox', Title: 'Text Box', Description: '' },
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
       { id: 'slider', Title: 'Slider', Description: '' },
@@ -236,6 +238,9 @@ const launchDemo = async () => {
       }
       if (id === 'checkbox') {
         frame.navigate(checkboxPage);
+      }
+      if (id === 'radiobutton') {
+        frame.navigate(radioButtonPage);
       }
       if (id === 'combobox') {
         frame.navigate(comboBoxPage);

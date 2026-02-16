@@ -22,6 +22,7 @@
 - [Time Span Picker (disco-timespan-picker)](timespan-picker.md)
 - [Button (disco-button)](button.md)
 - [Checkbox (disco-checkbox)](checkbox.md)
+- [Radio Button (disco-radio-button)](radio-button.md)
 - [Combo Box (disco-combo-box)](combo-box.md)
 - [Text Box (disco-text-box)](text-box.md)
 - [Password Box (disco-password-box)](password-box.md)
