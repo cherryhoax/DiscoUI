@@ -2,6 +2,8 @@
 
 Displays an on/off toggle state as a button.
 
+<img src="../../assets/components/toggle-button.webp" alt="DiscoToggleButton" style="max-width: 480px; width: 100%;" />
+
 ## Usage
 
 ```html
