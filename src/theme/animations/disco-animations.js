@@ -1,6 +1,6 @@
 import animationsCss from './disco-animations.scss';
 import bspline from 'b-spline';
-import { DiscoAppDelegate } from '../app/disco-app.js';
+import { DiscoAppDelegate } from '../../components/app/disco-app.js';
 
 if (typeof document !== 'undefined') {
     const style = document.createElement('style');

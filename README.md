@@ -75,17 +75,16 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | | DiscoContextMenu | Contextual menu / right-click menu |
 | ✅ | [DiscoDatePicker](docs/components/date-picker.md) | Date picker input |
 | ✅ | [DiscoFlipView](docs/components/flip-view.md) | Displays a collection of items one at a time |
-| | DiscoFlyout | Displays a non-modal popup |
+| ✅ | [DiscoFlyout](docs/components/flyout.md) | Fullscreen flyout modal with flip/slide animations |
 | ✅ | [DiscoFrame](docs/components/frame.md) | Top-level frame handling navigation, theme, and transitions |
 | ✅ | [DiscoHub](docs/components/hub.md) | Panoramic layout with parallax header |
 | | DiscoHyperlink | Displays a hyperlink inline |
 | | DiscoHyperlinkButton | Button that displays a hyperlink |
 | | DiscoImage | Displays an image |
 | ✅ | [DiscoListView / DiscoListItem](docs/components/list-view.md) | Virtualized list for long lists |
-| | DiscoLongListSelector | Multi-item selector for very long lists |
+| ✅ | [DiscoLongListSelector](docs/components/long-list-selector.md) | Jump list for grouped list views |
 | | DiscoMediaElement | Audio/video playback |
 | ✅ | [DiscoPage](docs/components/page.md) | Base page component for content and transitions (used by variants) |
-| ✅ | [DiscoPickerBox](docs/components/picker-box.md) | Fullscreen picker modal with flip/slide animations |
 | ✅ | [DiscoPivot / DiscoPivotPage](docs/components/pivot.md) | Pivot navigation (pivot page and pivot items) |
 | ✅ | [DiscoProgressRing](docs/components/progress-ring.md) | Circular indeterminate progress indicator |
 | ✅ | [DiscoProgressBar](docs/components/progress.md) | Indeterminate/determinate progress indicator |

@@ -3,7 +3,7 @@
 
 Base class for wheel/column picker modals (used by date/time/duration pickers).
 
-`DiscoLoopingSelector` extends `DiscoPickerBox` and provides shared column behavior:
+`DiscoLoopingSelector` extends `DiscoFlyout` and provides shared column behavior:
 
 - Active column expand/collapse
 - Scroll/snap commit handling

@@ -1,6 +1,6 @@
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import pageStyles from './disco-page.scss';
-import DiscoAnimations from '../animations/disco-animations.js';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 
 /**
  * Base page class for Disco UI frames.

@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
+import { DISCO_COLORS, DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -18,6 +18,7 @@ const launchDemo = async () => {
   window.frame = frame;
   const homePage = document.getElementById('componentsHome');
   const homeEasingsItem = document.getElementById('componentsHomeEasings');
+  const homeColorsList = document.getElementById('componentsHomeColorsList');
   window.homePage = homePage;
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');
@@ -425,6 +426,32 @@ const launchDemo = async () => {
         homeEasingsItem.removeAttribute('data-easing-active');
       }
     });
+  }
+
+  if (homeColorsList) {
+    const fragment = document.createDocumentFragment();
+    DISCO_COLORS.forEach((color) => {
+      const row = document.createElement('div');
+      row.className = 'color-row';
+
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch';
+      swatch.style.background = color.hex;
+
+      const name = document.createElement('div');
+      name.className = 'color-name';
+      name.textContent = color.name;
+
+      const hex = document.createElement('div');
+      hex.className = 'color-hex';
+      hex.textContent = color.hex;
+
+      row.appendChild(swatch);
+      row.appendChild(name);
+      row.appendChild(hex);
+      fragment.appendChild(row);
+    });
+    homeColorsList.replaceChildren(fragment);
   }
 
   app.launch(frame);

@@ -1,4 +1,4 @@
-import type DiscoPickerBox from '../picker-box/disco-picker-box.js';
+import type DiscoPickerBox from '../flyout/disco-flyout.js';
 
 export interface DiscoDatePickerOptions {
   min?: Date;

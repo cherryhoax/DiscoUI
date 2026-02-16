@@ -1,6 +1,6 @@
 import DiscoPage from '../page/disco-page.js';
 import pivotPageCss from './disco-pivot.scss';
-import DiscoAnimations from '../animations/disco-animations.js';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 import '../flip-view/disco-flip-view.js';
 
 /**

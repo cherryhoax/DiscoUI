@@ -1,3 +1,4 @@
+export { DISCO_COLORS, discoColorsByName } from './theme/colors/disco-colors.js';
 export { default as DiscoApp, DiscoAppDelegate } from './components/app/disco-app.js';
 export { default as DiscoFrame } from './components/frame/disco-frame.js';
 export { default as DiscoSplash } from './components/splash/disco-splash.js';
@@ -14,13 +15,13 @@ export { default as DiscoToggleSwitch } from './components/toggle-switch/disco-t
 export { default as DiscoUIElement } from './components/ui-elements/disco-ui-element.js';
 export { default as DiscoScrollView } from './components/scroll-view/disco-scroll-view.js';
 export { default as DiscoPivot } from './components/pivot/index.js';
-export { default as DiscoPickerBox } from './components/picker-box/disco-picker-box.js';
+export { default as DiscoPickerBox } from './components/flyout/disco-flyout.js';
 export { default as DiscoLoopingSelector } from './components/looping-selector/disco-looping-selector.js';
 export { default as DiscoDatePicker } from './components/date-picker/disco-date-picker.js';
 export { default as DiscoTimePicker } from './components/time-picker/disco-time-picker.js';
 export { default as DiscoTimeSpanPicker } from './components/timespan-picker/disco-timespan-picker.js';
 export { default as DiscoLongListSelector } from './components/long-list-selector/disco-long-list-selector.js';
-export { default as DiscoAnimations } from './components/animations/disco-animations.js';
+export { default as DiscoAnimations } from './theme/animations/disco-animations.js';
 export { default as DiscoList } from './components/list-view/index.js';
 export { default as DiscoHub } from './components/hub/index.js';
 export { default as DiscoAppBar } from './components/app-bar/disco-app-bar.js';

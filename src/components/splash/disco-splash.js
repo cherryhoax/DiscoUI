@@ -1,6 +1,6 @@
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import splashCss from './disco-splash.scss';
-import DiscoAnimations from '../animations/disco-animations.js';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 import '../progress-bar/disco-progress-bar.js';
 
 /**

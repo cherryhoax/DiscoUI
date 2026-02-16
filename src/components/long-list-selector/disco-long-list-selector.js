@@ -1,6 +1,6 @@
-import DiscoPickerBox from '../picker-box/disco-picker-box.js';
+import DiscoPickerBox from '../flyout/disco-flyout.js';
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
-import DiscoAnimations from '../animations/disco-animations.js';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 import longListSelectorCss from './disco-long-list-selector.scss';
 import '../scroll-view/disco-scroll-view.js';
 

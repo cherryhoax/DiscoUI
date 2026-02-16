@@ -1,6 +1,6 @@
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import frameStyles from './disco-frame.scss';
-import DiscoAnimations from '../animations/disco-animations.js';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 
 /**
  * Frame container for Disco UI pages. Manages navigation history and page transitions.
@@ -117,7 +117,7 @@ class DiscoFrame extends DiscoUIElement {
   _findActiveOverlay() {
     if (typeof document === 'undefined') return null;
     const overlays = document.body?.querySelectorAll(
-      'disco-picker-box, disco-looping-selector, disco-date-picker, disco-time-picker, disco-timespan-picker, disco-message-box'
+      'disco-flyout, disco-looping-selector, disco-date-picker, disco-time-picker, disco-timespan-picker, disco-message-box'
     ) || [];
     if (!overlays.length) return null;
     return /** @type {HTMLElement} */ (overlays[overlays.length - 1]);

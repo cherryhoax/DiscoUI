@@ -1,4 +1,4 @@
-import DiscoPickerBox from '../picker-box/disco-picker-box.js';
+import DiscoPickerBox from '../flyout/disco-flyout.js';
 import DiscoFlipView from '../flip-view/disco-flip-view.js';
 import loopingSelectorCss from './disco-looping-selector.scss';
 

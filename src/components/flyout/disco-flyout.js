@@ -1,9 +1,9 @@
 import DiscoPage from '../page/disco-page.js';
-import pickerBoxCss from './disco-picker-box.scss';
-import DiscoAnimations from '../animations/disco-animations.js';
+import pickerBoxCss from './disco-flyout.scss';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 
 /**
- * A fullscreen "picker-box" modal.
+ * A fullscreen "flyout" modal.
  * Concepts:
  * - Fullscreen, on top of everything.
  * - Supports AppBar.
@@ -217,6 +217,6 @@ class DiscoPickerBox extends DiscoPage {
     }
 }
 
-customElements.define('disco-picker-box', DiscoPickerBox);
+customElements.define('disco-flyout', DiscoPickerBox);
 
 export default DiscoPickerBox;

@@ -1,6 +1,6 @@
 import DiscoPage from '../page/disco-page.js';
 import singlePageCss from './disco-single-page.scss';
-import DiscoAnimations from '../animations/disco-animations.js';
+import DiscoAnimations from '../../theme/animations/disco-animations.js';
 import '../scroll-view/disco-scroll-view.js';
 
 /**

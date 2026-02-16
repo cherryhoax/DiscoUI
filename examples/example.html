@@ -292,6 +292,48 @@
                     </div>
                 </div>
             </disco-pivot-item>
+            <disco-pivot-item id="componentsHomeColors" header="colors">
+                <style>
+                    .color-scroll {
+                        height: calc(100vh - 140px);
+                        width: 100%;
+                    }
+
+                    .color-stack {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+                        padding: 8px 0 20px;
+                    }
+
+                    .color-row {
+                        display: grid;
+                        grid-template-columns: 28px minmax(0, 1fr) auto;
+                        align-items: center;
+                        gap: 10px;
+                        min-height: 36px;
+                    }
+
+                    .color-swatch {
+                        width: 20px;
+                        height: 20px;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                    }
+
+                    .color-name {
+                        font-size: 20px;
+                        text-transform: lowercase;
+                    }
+
+                    .color-hex {
+                        font-size: 18px;
+                        opacity: 0.8;
+                    }
+                </style>
+                <disco-scroll-view class="color-scroll" direction="vertical">
+                    <div id="componentsHomeColorsList" class="color-stack"></div>
+                </disco-scroll-view>
+            </disco-pivot-item>
         </disco-pivot-page>
         <disco-pivot-page id="componentsPivot" app-title="DISCO UI">
             <disco-pivot-item header="Overview">
