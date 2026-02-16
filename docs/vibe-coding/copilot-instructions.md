@@ -8,6 +8,28 @@ Purpose: provide an explicit system-level instruction for Copilot Chat so it can
 - **DiscoUI (UI-only)**: If the user does NOT ask to "create an app" or "build an application", generate DiscoUI web components and return UI-only code (components, pages, examples). DiscoUI is a pure web components library that works in any web environment.
 - **DiscoUICapacitor (full app)**: If the user asks to create an app (mobile/desktop/web app), use DiscoUICapacitor. DiscoUICapacitor wraps DiscoUI and provides Capacitor integration for Android, Electron, and Web platforms. It includes native features like safe area insets, back button handling, and app lifecycle management.
 
+**CRITICAL: Always include setup commands first when creating apps:**
+When the user requests to create an app or scaffold a DiscoUICapacitor project, you MUST follow this exact order BEFORE writing any code:
+
+1. **Initialize npm project:**
+   ```bash
+   npm init -y
+   ```
+
+2. **Install dependencies:**
+   - For DiscoUI (UI-only): `npm install @cherryhoax/discoui`
+   - For DiscoUICapacitor (full app): `npm install @cherryhoax/discouicapacitor`
+   - Always install the latest available version from npm
+
+3. **For Capacitor apps, sync:**
+   ```bash
+   npx cap sync
+   ```
+
+4. **Add npm scripts to package.json** (dev, build, etc.) before writing code
+
+5. **Only then** proceed to create code files. Never skip these setup steps.
+
 ## Design Language (Metro-style)
 
 - **Grid / tiles first**: Use large rectangular tiles with bold accents, flat surfaces, generous spacing (8–16px rhythm).
@@ -64,7 +86,7 @@ Purpose: provide an explicit system-level instruction for Copilot Chat so it can
 
 **DiscoUI (web components library):**
 ```javascript
-import { DiscoApp, DiscoFrame, DiscoPage, DiscoSinglePage, DiscoPivotPage, DiscoHub, DiscoButton, DiscoAppBar } from 'discoui';
+import { DiscoApp, DiscoFrame, DiscoPage, DiscoSinglePage, DiscoPivotPage, DiscoHub, DiscoButton, DiscoAppBar } from '@cherryhoax/discoui';
 
 // Components are registered as custom elements automatically
 // Use in HTML as: <disco-frame>, <disco-button>, etc.
@@ -72,12 +94,12 @@ import { DiscoApp, DiscoFrame, DiscoPage, DiscoSinglePage, DiscoPivotPage, Disco
 
 **DiscoUICapacitor (Capacitor plugin):**
 ```javascript
-import { DiscoApp } from 'discouicapacitor';
+import { DiscoApp } from '@cherryhoax/discouicapacitor';
 // DiscoApp from discouicapacitor extends DiscoApp from discoui
 // It automatically loads disco.config.json and provides Capacitor integration
 
 // Also available:
-import { DiscoUI } from 'discouicapacitor';
+import { DiscoUI } from '@cherryhoax/discouicapacitor';
 // DiscoUI.initialize(), DiscoUI.getInsets(), DiscoUI.exitApp()
 ```
 
@@ -181,7 +203,7 @@ frame.historyIndex;   // Current history index
 <!DOCTYPE html>
 <html disco-theme="dark" disco-accent="#d80073">
 <head>
-  <link rel="stylesheet" href="node_modules/discoui/dist/discoui.css">
+  <link rel="stylesheet" href="node_modules/@cherryhoax/discoui/dist/discoui.css">
 </head>
 <body>
   <disco-frame id="mainFrame">
@@ -247,14 +269,18 @@ DiscoApp.ready(() => {
 
 **Capacitor App Setup:**
 ```bash
-# Install
-npm install discouicapacitor
+# 1. Initialize project
+npm init -y
+
+# 2. Install DiscoUICapacitor (latest version)
+npm install @cherryhoax/discouicapacitor
+
+# 3. Sync Capacitor
 npx cap sync
 
-# Create app scaffold
-npx discouicapacitor create-app
+# 4. Add npm scripts to package.json (see below)
 
-# Or with options (unattended)
+# Optional: Use CLI to scaffold (if available)
 npx discouicapacitor create-app \
   --name "Disco App" \
   --dir disco-app \
@@ -269,6 +295,19 @@ npx discouicapacitor create-app \
   --git-init \
   --yes \
   --no-install
+```
+
+**Example package.json scripts:**
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "cap sync",
+    "cap:android": "cap open android"
+  }
+}
 ```
 
 **Capacitor App Launch:**
@@ -334,18 +373,20 @@ Place `disco.config.json` in your public root (e.g., `www/disco.config.json` for
 
 ## Developer Behavior Guidelines
 
-1. **Always provide runnable code**: Include complete, copy-pasteable examples with clear file names (`index.html`, `main.js`, `app.js`).
+1. **CRITICAL - Setup commands first**: When the user asks to create an app, scaffold a project, or build an application, you MUST follow this exact order:
+   - First: `npm init -y` to initialize the project
+   - Second: Install dependencies (`npm install @cherryhoax/discoui` for UI-only, or `npm install @cherryhoax/discouicapacitor` for apps)
+   - Third: For Capacitor apps, run `npx cap sync`
+   - Fourth: Add npm scripts to package.json (dev, build, start, etc.)
+   - Only then: Create code files. Never write code without first showing the complete setup process.
 
-2. **Show both variants when appropriate**: 
+2. **Always provide runnable code**: Include complete, copy-pasteable examples with clear file names (`index.html`, `main.js`, `app.js`).
+
+3. **Show both variants when appropriate**: 
    - For UI-only requests, show DiscoUI code that works standalone
-   - For app requests, show DiscoUICapacitor setup + app code
+   - For app requests, ALWAYS show DiscoUICapacitor setup commands FIRST, then app code
 
-3. **Use actual component names**: Reference components that actually exist (see comprehensive list above). Do not invent component names like "DiscoTile" — use `<disco-hub-section>` or layout components instead.
-
-4. **Include setup steps**: When scaffolding an app, always include:
-   - `npm install discouicapacitor`
-   - `npx cap sync`
-   - `npx discouicapacitor create-app` (with appropriate flags)
+4. **Use actual component names**: Reference components that actually exist (see comprehensive list above). Do not invent component names like "DiscoTile" — use `<disco-hub-section>` or layout components instead.
 
 5. **Prefer Metro-style defaults**: Unless the user specifies otherwise, use the Metro design language (tiles, generous spacing, bold typography, subtle animations).
 
@@ -366,13 +407,13 @@ Place `disco.config.json` in your public root (e.g., `www/disco.config.json` for
 ## Repository Reference
 
 **DiscoUI (Core Library):**
-- Package: `@cherryhoax/discoui` (npm: `discoui`)
+- Package: `@cherryhoax/discoui` (npm install: `npm install @cherryhoax/discoui`)
 - Repository: https://github.com/cherryhoax/DiscoUI
 - Main exports: `src/index.js`, `src/index.d.ts`
 - Documentation: `docs/index.md`, `docs/components/*.md`
 
 **DiscoUICapacitor (Capacitor Plugin):**
-- Package: `@cherryhoax/discouicapacitor` (npm: `discouicapacitor`)
+- Package: `@cherryhoax/discouicapacitor` (npm install: `npm install @cherryhoax/discouicapacitor`)
 - Repository: https://github.com/cherryhoax/DiscoUICapacitor
 - Main exports: `src/index.js`, `src/index.d.ts`
 - Documentation: `docs/index.md`, `docs/api.md`, `docs/configuration.md`
