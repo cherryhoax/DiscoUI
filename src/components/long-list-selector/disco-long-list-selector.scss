@@ -86,7 +86,7 @@
     transform-origin: center center;
     transform-style: preserve-3d;
     background-color: var(--disco-accent);
-    transition: transform calc(0.25s * var(--animation-duration-scale, 1)) calc(0.25s * var(--animation-duration-scale, 1)) ease-out;
+    transition: transform 0.25s 0.25s ease-out;
     text-transform: lowercase;
 }
 

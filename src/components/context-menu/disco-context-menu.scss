@@ -1,0 +1,171 @@
+@use '../ui-elements/disco-ui-element.scss' as ui;
+
+:host {
+    position: fixed;
+    inset: 0;
+    z-index: 1300;
+    display: block;
+    pointer-events: auto;
+}
+
+.context-root {
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+}
+
+.context-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(calc(255 * var(--disco-theme, 0)) calc(255 * var(--disco-theme, 0)) calc(255 * var(--disco-theme, 0)) / 0.45);
+    opacity: 0;
+    transition: opacity .2s ease-in;
+}
+
+.context-anchor-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.context-anchor-clone {
+    @include ui.disco-tilt;
+    position: fixed;
+    box-sizing: border-box;
+    pointer-events: none;
+    transform-origin: 50% 50%;
+    opacity: 0;
+    transition: transform .25s ease-out, opacity .25s ease-out;
+    z-index: 1;
+}
+
+.context-menu {
+    @include ui.disco-tilt;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    max-width: 100vw;
+    box-sizing: border-box;
+    perspective: var(--disco-perspective);
+    background: var(--disco-background);
+    color: var(--disco-foreground);
+    box-shadow: inset 0 0 0 3px var(--disco-foreground);
+    overflow: hidden;
+    height: var(--menu-collapsed-height, 48px);
+    transform-origin: 50% 0%;
+    transition:
+        height .2s ease-in,
+        transform .25s ease-out;
+    z-index: 2;
+    padding: var(--menu-padding, 12px);
+
+    &::after {
+        position: absolute;
+        content: "";
+        display: block;
+        width: 100%;
+        height: 2px;
+        left: 0;
+        top: 0;
+        background: var(--disco-foreground);
+        transform-origin: var(--pointerX, 50%) 0%;
+        opacity: 0;
+    }
+}
+
+.context-menu-item {
+    @include ui.disco-tilt;
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: calc(100% - 20px);
+    height: var(--menu-item-height-collapsed, 48px);
+    font-size: var(--menu-font-size, 30px);
+    text-transform: lowercase;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    padding: var(--menu-item-padding, 12px);
+    transition:
+        opacity .05s linear,
+        transform .25s ease-out,
+        height .2s ease-in,
+        margin-top .2s ease-in;
+    font-weight: 350;
+}
+
+
+.context-menu-item,
+.context-menu-item span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.context-root.pressing .context-backdrop,
+.context-root.open .context-backdrop {
+    opacity: 1;
+}
+
+.context-root.pressing .context-anchor-clone,
+.context-root.open .context-anchor-clone {
+    opacity: 1;
+}
+
+.context-root.pressing .context-anchor-clone {
+    transform: scale(1.02);
+}
+
+.context-root.pressing .context-menu {
+    background-color: transparent;
+    color: transparent;
+    box-shadow: none;
+}
+
+.context-root.pressing .context-menu::after {
+    opacity: 1;
+    animation: disco-context-menu-line .23s ease-in;
+}
+
+.context-root.open .context-menu {
+    height: var(--menu-expanded-height, 112px);
+    background-color: var(--disco-foreground);
+    color: var(--disco-background);
+}
+
+.context-root.open-up.open .context-menu {
+    transform: translateY(calc(var(--menu-collapsed-height, 48px) - var(--menu-expanded-height, 112px)));
+}
+
+.context-root.open .context-menu-item {
+    pointer-events: auto;
+    height: var(--menu-item-height-open, 56px);
+    opacity: 1;
+}
+
+.context-root.closing .context-backdrop {
+    opacity: 0;
+}
+
+.context-root.closing .context-anchor-clone {
+    opacity: 0;
+    transform: scale(0.99);
+}
+
+.context-root.closing .context-menu {
+    height: var(--menu-collapsed-height, 48px);
+}
+
+@keyframes disco-context-menu-line {
+    0% {
+        transform: scaleX(0);
+    }
+
+    100% {
+        transform: scaleX(1);
+    }
+}

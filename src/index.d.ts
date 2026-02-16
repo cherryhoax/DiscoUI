@@ -17,6 +17,7 @@ export { default as DiscoUIElement } from './components/ui-elements/disco-ui-ele
 export { default as DiscoScrollView } from './components/scroll-view/disco-scroll-view.js';
 export { default as DiscoPivot } from './components/pivot/index.js';
 export { default as DiscoPickerBox } from './components/flyout/disco-flyout.js';
+export { default as DiscoContextMenu } from './components/context-menu/disco-context-menu.js';
 export { default as DiscoDialog } from './components/dialog/disco-dialog.js';
 export { default as DiscoMessageDialog } from './components/message-dialog/disco-message-dialog.js';
 export { default as DiscoLoopingSelector } from './components/looping-selector/disco-looping-selector.js';

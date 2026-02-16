@@ -14,6 +14,7 @@
 - [Scroll View (disco-scroll-view)](scroll-view.md)
 - [Flip View (disco-flip-view)](flip-view.md)
 - [Flyout (disco-flyout)](flyout.md)
+- [Context Menu (disco-context-menu)](context-menu.md)
 - [Looping Selector (disco-looping-selector)](looping-selector.md)
 - [Dialog (disco-dialog)](dialog.md)
 - [Message Dialog (disco-message-dialog)](message-dialog.md)

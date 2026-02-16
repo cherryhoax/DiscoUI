@@ -72,7 +72,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoButton](docs/components/button.md) | Button control |
 | ✅ | [DiscoCheckbox](docs/components/checkbox.md) | Checkbox input |
 | ✅ | [DiscoComboBox](docs/components/combo-box.md) | Combo box input |
-| | DiscoContextMenu | Contextual menu / right-click menu |
+| ✅ | [DiscoContextMenu](docs/components/context-menu.md) | Contextual menu / right-click menu |
 | ✅ | [DiscoDatePicker](docs/components/date-picker.md) | Date picker input |
 | ✅ | [DiscoDialog](docs/components/dialog.md) | Programmatic dialog with backdrop and flipped panel |
 | ✅ | [DiscoFlipView](docs/components/flip-view.md) | Displays a collection of items one at a time |

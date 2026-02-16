@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DISCO_COLORS, DiscoApp, DiscoDatePicker, DiscoDialog, DiscoMessageDialog, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
+import { DISCO_COLORS, DiscoApp, DiscoContextMenu, DiscoDatePicker, DiscoDialog, DiscoMessageDialog, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -37,6 +37,7 @@ const launchDemo = async () => {
   const toggleButtonPage = document.getElementById('componentsToggleButton');
   const dialogPage = document.getElementById('componentsDialog');
   const messageDialogPage = document.getElementById('componentsMessageDialog');
+  const contextMenuPage = document.getElementById('componentsContextMenu');
   const imagePage = document.getElementById('componentsImage');
   const mediaElementPage = document.getElementById('componentsMediaElement');
   const scrollViewPage = document.getElementById('componentsScrollView');
@@ -139,6 +140,7 @@ const launchDemo = async () => {
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
       { id: 'slider', Title: 'Slider', Description: '' },
       { id: 'dialog', Title: 'Dialog', Description: '' },
+      { id: 'contextmenu', Title: 'Context Menu', Description: '' },
       { id: 'image', Title: 'Image', Description: '' },
       { id: 'mediaelement', Title: 'Media Element', Description: '' },
       { id: 'messagedialog', Title: 'Message Dialog', Description: '' },
@@ -262,6 +264,9 @@ const launchDemo = async () => {
       }
       if (id === 'image') {
         frame.navigate(imagePage);
+      }
+      if (id === 'contextmenu') {
+        frame.navigate(contextMenuPage);
       }
       if (id === 'messagedialog') {
         frame.navigate(messageDialogPage);
@@ -425,6 +430,86 @@ const launchDemo = async () => {
       const result = await dialog.open();
       messageDialogResult.textContent = `Result: ${result == null ? 'cancel' : String(result)}`;
     });
+  }
+
+  const contextMenuDemoList = document.getElementById('contextMenuDemoList');
+  const contextMenuResult = document.getElementById('contextMenuResult');
+  if (contextMenuDemoList) {
+    contextMenuDemoList.items = [
+      { id: 'mail', Title: 'Mail', Description: 'inbox, accounts, notifications' },
+      { id: 'music', Title: 'Music', Description: 'albums, playlists, favorites' },
+      { id: 'weather', Title: 'Weather', Description: 'forecast and locations' },
+      { id: 'photos', Title: 'Photos', Description: 'memories and camera roll' }
+    ];
+
+    let cleanupBindings = [];
+    let internalListObserver = null;
+    const refreshBindings = () => {
+      cleanupBindings.forEach((unbind) => unbind());
+      cleanupBindings = [];
+
+      const dynamicItems = Array.from(
+        contextMenuDemoList.shadowRoot?.querySelectorAll('.list disco-list-item') || []
+      );
+      const staticItems = Array.from(contextMenuDemoList.querySelectorAll('disco-list-item'));
+      const items = [...new Set([...dynamicItems, ...staticItems])];
+
+      items.forEach((itemEl) => {
+        const unbind = DiscoContextMenu.bind(
+          itemEl,
+          () => {
+            const titleEl = itemEl.querySelector('[data-bind="Title"], .item-title');
+            const title = titleEl?.textContent?.trim() || 'app';
+            return [
+              {
+                id: 'pin',
+                label: 'add to start',
+                value: `Pinned ${title}`,
+                action: () => {
+                  if (contextMenuResult) contextMenuResult.textContent = `Result: Pinned ${title}`;
+                  return `Pinned ${title}`;
+                }
+              },
+              {
+                id: 'uninstall',
+                label: 'uninstall',
+                value: `Uninstalled ${title}`,
+                danger: true,
+                action: () => {
+                  if (contextMenuResult) contextMenuResult.textContent = `Result: Uninstalled ${title}`;
+                  return `Uninstalled ${title}`;
+                }
+              },
+              {
+                id: 'details',
+                label: 'app details',
+                value: `Opened details for ${title}`,
+                action: () => {
+                  if (contextMenuResult) contextMenuResult.textContent = `Result: Opened details for ${title}`;
+                  return `Opened details for ${title}`;
+                }
+              }
+            ];
+          },
+          { trigger: 'longpress' }
+        );
+        cleanupBindings.push(unbind);
+      });
+    };
+
+    const observeInternalList = () => {
+      if (internalListObserver) {
+        internalListObserver.disconnect();
+        internalListObserver = null;
+      }
+      const internalList = contextMenuDemoList.shadowRoot?.querySelector('.list');
+      if (!internalList) return;
+      internalListObserver = new MutationObserver(() => refreshBindings());
+      internalListObserver.observe(internalList, { childList: true, subtree: true });
+    };
+
+    observeInternalList();
+    refreshBindings();
   }
 
   const demoImage = document.getElementById('demoImage');
