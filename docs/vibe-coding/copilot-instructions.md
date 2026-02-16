@@ -8,27 +8,22 @@ Purpose: provide an explicit system-level instruction for Copilot Chat so it can
 - **DiscoUI (UI-only)**: If the user does NOT ask to "create an app" or "build an application", generate DiscoUI web components and return UI-only code (components, pages, examples). DiscoUI is a pure web components library that works in any web environment.
 - **DiscoUICapacitor (full app)**: If the user asks to create an app (mobile/desktop/web app), use DiscoUICapacitor. DiscoUICapacitor wraps DiscoUI and provides Capacitor integration for Android, Electron, and Web platforms. It includes native features like safe area insets, back button handling, and app lifecycle management.
 
-**CRITICAL: Always include setup commands first when creating apps:**
-When the user requests to create an app or scaffold a DiscoUICapacitor project, you MUST follow this exact order BEFORE writing any code:
+**CRITICAL: For Capacitor apps, always use `dui create-app` — do not override with manual setup.**
 
-1. **Initialize npm project:**
-   ```bash
-   npm init -y
-   ```
+When the user requests to create an app or scaffold a DiscoUICapacitor project:
 
-2. **Install dependencies:**
-   - For DiscoUI (UI-only): `npm install @cherryhoax/discoui`
-   - For DiscoUICapacitor (full app): `npm install @cherryhoax/discouicapacitor`
-   - Always install the latest available version from npm
+**Capacitor app (required flow):**
+1. Install CLI globally: `npm install -g @cherryhoax/discouicapacitor`
+2. Run the scaffold: `dui create-app` (with desired flags, e.g. `--name`, `--dir`, `--theme`, `--yes`)
+3. Then add or adjust npm scripts in the created project
+4. Only then write or modify code inside the scaffolded app
 
-3. **For Capacitor apps, sync:**
-   ```bash
-   npx cap sync
-   ```
+Do **not** use `npm init -y` + `npm install @cherryhoax/discouicapacitor` as the primary path for new Capacitor apps — that would bypass the official scaffold. Use manual install only when the user explicitly asks for a custom setup without the CLI.
 
-4. **Add npm scripts to package.json** (dev, build, etc.) before writing code
-
-5. **Only then** proceed to create code files. Never skip these setup steps.
+**DiscoUI-only (no Capacitor):**
+1. `npm init -y`
+2. `npm install @cherryhoax/discoui`
+3. Add npm scripts, then write code
 
 ## Design Language (Metro-style)
 
@@ -267,21 +262,13 @@ DiscoApp.ready(() => {
 </disco-single-page>
 ```
 
-**Capacitor App Setup:**
+**Capacitor App Setup (use this flow — do not replace with manual npm init):**
 ```bash
-# 1. Initialize project
-npm init -y
+# 1. Install CLI tool globally
+npm install -g @cherryhoax/discouicapacitor
 
-# 2. Install DiscoUICapacitor (latest version)
-npm install @cherryhoax/discouicapacitor
-
-# 3. Sync Capacitor
-npx cap sync
-
-# 4. Add npm scripts to package.json (see below)
-
-# Optional: Use CLI to scaffold (if available)
-npx discouicapacitor create-app \
+# 2. Create app scaffold (required — do not skip for manual setup)
+dui create-app \
   --name "Disco App" \
   --dir disco-app \
   --app-id com.disco.app \
@@ -293,8 +280,12 @@ npx discouicapacitor create-app \
   --signing \
   --apk-action \
   --git-init \
-  --yes \
-  --no-install
+  --yes
+
+# 3. Enter the created app
+cd disco-app
+
+# 4. Add or adjust npm scripts in package.json, then write code
 ```
 
 **Example package.json scripts:**
@@ -373,12 +364,7 @@ Place `disco.config.json` in your public root (e.g., `www/disco.config.json` for
 
 ## Developer Behavior Guidelines
 
-1. **CRITICAL - Setup commands first**: When the user asks to create an app, scaffold a project, or build an application, you MUST follow this exact order:
-   - First: `npm init -y` to initialize the project
-   - Second: Install dependencies (`npm install @cherryhoax/discoui` for UI-only, or `npm install @cherryhoax/discouicapacitor` for apps)
-   - Third: For Capacitor apps, run `npx cap sync`
-   - Fourth: Add npm scripts to package.json (dev, build, start, etc.)
-   - Only then: Create code files. Never write code without first showing the complete setup process.
+1. **CRITICAL - Capacitor apps use `dui create-app`**: When the user asks to create a Capacitor app, you MUST use the CLI flow. Do not suggest manual `npm init` + `npm install` instead. Order: (1) `npm install -g @cherryhoax/discouicapacitor`, (2) `dui create-app` with flags, (3) `cd` into created dir, (4) add npm scripts if needed, (5) then write or edit code. For DiscoUI-only projects: `npm init -y`, then `npm install @cherryhoax/discoui`, then scripts, then code.
 
 2. **Always provide runnable code**: Include complete, copy-pasteable examples with clear file names (`index.html`, `main.js`, `app.js`).
 
