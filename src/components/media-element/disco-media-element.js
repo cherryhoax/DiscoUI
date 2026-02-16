@@ -1,5 +1,6 @@
 import DiscoUIElement from '../ui-elements/disco-ui-element.js';
 import mediaElementStyles from './disco-media-element.scss';
+import metroIcons from '@olton/metroui/lib/icons.css?inline';
 import '../slider/disco-slider.js';
 import '../progress-bar/disco-progress-bar.js';
 
@@ -11,6 +12,7 @@ class DiscoMediaElement extends DiscoUIElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this.loadStyle(metroIcons, this.shadowRoot);
     this.loadStyle(mediaElementStyles, this.shadowRoot);
 
     this._root = document.createElement('div');
@@ -54,6 +56,21 @@ class DiscoMediaElement extends DiscoUIElement {
     this._volumeButton.type = 'button';
     this._volumeButton.setAttribute('aria-label', 'Volume');
 
+    this._fullscreenButton = document.createElement('button');
+    this._fullscreenButton.className = 'icon-button fullscreen-toggle-button';
+    this._fullscreenButton.type = 'button';
+    this._fullscreenButton.setAttribute('aria-label', 'Enter fullscreen');
+
+    this._skipPreviousButton = document.createElement('button');
+    this._skipPreviousButton.className = 'icon-button skip-previous-button';
+    this._skipPreviousButton.type = 'button';
+    this._skipPreviousButton.setAttribute('aria-label', 'Skip previous');
+
+    this._skipNextButton = document.createElement('button');
+    this._skipNextButton.className = 'icon-button skip-next-button';
+    this._skipNextButton.type = 'button';
+    this._skipNextButton.setAttribute('aria-label', 'Skip next');
+
     this._volumeFlyout = document.createElement('div');
     this._volumeFlyout.className = 'volume-flyout';
     ['pointerdown', 'click', 'touchstart', 'mousedown'].forEach((eventName) => {
@@ -91,9 +108,10 @@ class DiscoMediaElement extends DiscoUIElement {
     this._audio = document.createElement('audio');
     this._audio.preload = 'metadata';
 
-    this._controls.append(this._playButton, this._seek, this._time, this._volumeButton);
     this._root.append(this._loadingBar, this._surface, this._controls);
     this.shadowRoot.append(this._root, this._audio);
+
+    this._mountNormalControlsLayout();
 
     this._applyVolumeFlyoutPortalStyle();
 
@@ -109,11 +127,13 @@ class DiscoMediaElement extends DiscoUIElement {
     this._volumeFlyoutAnimationToken = 0;
     this._lastSyncedSrc = null;
     this._lastSyncedKind = null;
+    this._isFullscreenUi = false;
 
     this._onDocumentPointerDown = this._onDocumentPointerDown.bind(this);
     this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
     this._onSurfaceClick = this._onSurfaceClick.bind(this);
     this._onWindowResize = this._onWindowResize.bind(this);
+    this._onFullscreenChange = this._onFullscreenChange.bind(this);
 
     this._surface.addEventListener('click', this._onSurfaceClick);
 
@@ -131,6 +151,23 @@ class DiscoMediaElement extends DiscoUIElement {
       } else {
         this._setVolumeFlyoutOpen(true);
       }
+    });
+
+    this._fullscreenButton.addEventListener('click', () => {
+      this._toggleFullscreen();
+    });
+
+    this._skipNextButton.addEventListener('click', () => {
+      this._stopPlaybackAndExitFullscreen();
+    });
+
+    this._skipPreviousButton.addEventListener('click', () => {
+      const rewindThresholdSeconds = 3;
+      if (this._activeMedia.currentTime > rewindThresholdSeconds) {
+        this._activeMedia.currentTime = 0;
+        return;
+      }
+      this._stopPlaybackAndExitFullscreen();
     });
 
     this._seek.addEventListener('input', () => {
@@ -164,19 +201,23 @@ class DiscoMediaElement extends DiscoUIElement {
     this._audio.volume = 1;
     this._video.volume = 1;
     this._syncPlayIcon();
+    this._syncFullscreenIcon();
     this._syncVolume();
   }
 
   connectedCallback() {
     this._syncFromAttributes();
+    document.addEventListener('fullscreenchange', this._onFullscreenChange);
     document.addEventListener('pointerdown', this._onDocumentPointerDown, true);
     document.addEventListener('keydown', this._onDocumentKeyDown);
+    this._updateFullscreenUiState();
   }
 
   disconnectedCallback() {
     this._setVolumeFlyoutOpen(false, { skipHistory: true });
     this._volumeSlider.removeEventListener('pointerdown', this._onVolumePointerDown);
     this._removeVolumePointerTracking();
+    document.removeEventListener('fullscreenchange', this._onFullscreenChange);
     if (document.body.contains(this._volumeFlyout)) {
       this._volumeFlyout.remove();
     }
@@ -439,10 +480,17 @@ class DiscoMediaElement extends DiscoUIElement {
 
   _syncPlayIcon() {
     const paused = this._activeMedia.paused || this._activeMedia.ended;
-    this._playButton.innerHTML = paused
-      ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>'
-      : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"></path></svg>';
+    this._setButtonIcon(this._playButton, paused ? 'mif-play' : 'mif-pause');
     this._playButton.setAttribute('aria-label', paused ? 'Play' : 'Pause');
+
+    this._setButtonIcon(this._skipPreviousButton, 'mif-first');
+    this._setButtonIcon(this._skipNextButton, 'mif-last');
+  }
+
+  _syncFullscreenIcon() {
+    const isFullscreen = this._isElementFullscreen();
+    this._setButtonIcon(this._fullscreenButton, 'mif-enlarge2');
+    this._fullscreenButton.setAttribute('aria-label', isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
   }
 
   _syncVolume() {
@@ -451,9 +499,22 @@ class DiscoMediaElement extends DiscoUIElement {
     this._volumeSlider.value = String(percent);
     this._volumePercent.textContent = `${percent}%`;
 
-    this._volumeButton.innerHTML = media.muted
-      ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l5 5V5L7 10H3z"></path><path d="M14.5 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>'
-      : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l5 5V5L7 10H3z"></path><path d="M14 9a4 4 0 010 6m2-8a7 7 0 010 10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>';
+    let volumeIcon = 'mif-volume-high';
+    if (percent <= 0 || media.muted) volumeIcon = 'mif-volume-mute';
+    else if (percent <= 33) volumeIcon = 'mif-volume-low';
+    else if (percent <= 66) volumeIcon = 'mif-volume-medium';
+    this._setButtonIcon(this._volumeButton, volumeIcon);
+  }
+
+  _setButtonIcon(button, mifClass) {
+    if (!button) return;
+    const existing = button.firstElementChild;
+    if (existing && existing.classList.contains(mifClass)) return;
+    button.innerHTML = '';
+    const icon = document.createElement('span');
+    icon.className = mifClass;
+    icon.setAttribute('aria-hidden', 'true');
+    button.appendChild(icon);
   }
 
   _applyVolumeFromSlider() {
@@ -596,9 +657,12 @@ class DiscoMediaElement extends DiscoUIElement {
     const fromPopState = Boolean(options.fromPopState);
     const skipHistory = Boolean(options.skipHistory);
     const shouldOpen = Boolean(next);
+    const useInlineFlyout = this._isElementFullscreen();
 
     if (shouldOpen === this._volumeOpen) {
-      if (shouldOpen) this._positionVolumeFlyoutPortal();
+      if (shouldOpen) {
+        this._syncVolumeFlyoutHostForCurrentMode();
+      }
       return;
     }
 
@@ -608,11 +672,20 @@ class DiscoMediaElement extends DiscoUIElement {
 
     if (shouldOpen) {
       this._volumeFlyout.getAnimations().forEach((animation) => animation.cancel());
-      if (!document.body.contains(this._volumeFlyout)) {
-        document.body.appendChild(this._volumeFlyout);
+      if (useInlineFlyout) {
+        this._applyVolumeFlyoutInlineStyle();
+        if (this._volumeFlyout.parentNode !== this._controls) {
+          this._controls.appendChild(this._volumeFlyout);
+        }
+      } else {
+        this._applyVolumeFlyoutPortalStyle();
+        if (!document.body.contains(this._volumeFlyout)) {
+          document.body.appendChild(this._volumeFlyout);
+        }
+        this._positionVolumeFlyoutPortal();
       }
+
       this._volumeFlyout.style.display = 'flex';
-      this._positionVolumeFlyoutPortal();
       this._volumeFlyout.animate(
         [
           { opacity: 0, transform: 'translateY(8px)' },
@@ -625,7 +698,9 @@ class DiscoMediaElement extends DiscoUIElement {
         }
       );
 
-      window.addEventListener('resize', this._onWindowResize);
+      if (!useInlineFlyout) {
+        window.addEventListener('resize', this._onWindowResize);
+      }
 
       if (!skipHistory) {
         window.history.pushState({ mediaVolumeFlyoutId: Math.random().toString(36) }, '', window.location.href);
@@ -643,7 +718,7 @@ class DiscoMediaElement extends DiscoUIElement {
 
     const finalizeClose = () => {
       if (animationToken !== this._volumeFlyoutAnimationToken || this._volumeOpen) return;
-      if (document.body.contains(this._volumeFlyout)) {
+      if (this._volumeFlyout.parentNode) {
         this._volumeFlyout.remove();
       }
       this._volumeFlyout.style.display = 'none';
@@ -652,7 +727,7 @@ class DiscoMediaElement extends DiscoUIElement {
       this._volumeFlyout.style.visibility = 'visible';
     };
 
-    if (document.body.contains(this._volumeFlyout)) {
+    if (this._volumeFlyout.parentNode) {
       this._volumeFlyout.getAnimations().forEach((animation) => animation.cancel());
       const outAnimation = this._volumeFlyout.animate(
         [
@@ -683,6 +758,88 @@ class DiscoMediaElement extends DiscoUIElement {
 
     if (fromPopState || skipHistory) {
       this._volumeFlyoutPushedState = false;
+    }
+  }
+
+  _mountNormalControlsLayout() {
+    this._controls.replaceChildren(
+      this._playButton,
+      this._seek,
+      this._time,
+      this._volumeButton,
+      this._fullscreenButton
+    );
+  }
+
+  _mountFullscreenControlsLayout() {
+    const topButtons = document.createElement('div');
+    topButtons.className = 'fullscreen-top-buttons';
+    topButtons.append(this._skipPreviousButton, this._playButton, this._skipNextButton);
+
+    const sliderRow = document.createElement('div');
+    sliderRow.className = 'fullscreen-slider-row';
+    sliderRow.append(this._seek);
+
+    const bottomRow = document.createElement('div');
+    bottomRow.className = 'fullscreen-bottom-row';
+    const rightActions = document.createElement('div');
+    rightActions.className = 'fullscreen-bottom-actions';
+    rightActions.append(this._volumeButton, this._fullscreenButton);
+    bottomRow.append(this._time, rightActions);
+
+    this._controls.replaceChildren(topButtons, sliderRow, bottomRow);
+  }
+
+  _isElementFullscreen() {
+    const fullscreenElement = document.fullscreenElement;
+    if (!fullscreenElement) return false;
+    return fullscreenElement === this || fullscreenElement === this._root || this.contains(fullscreenElement);
+  }
+
+  _updateFullscreenUiState() {
+    const isFullscreen = this._isElementFullscreen();
+    if (isFullscreen !== this._isFullscreenUi) {
+      this._isFullscreenUi = isFullscreen;
+      if (isFullscreen) {
+        this._mountFullscreenControlsLayout();
+      } else {
+        this._mountNormalControlsLayout();
+      }
+    }
+    this._root.classList.toggle('is-fullscreen-ui', isFullscreen);
+    this._syncFullscreenIcon();
+  }
+
+  _onFullscreenChange() {
+    this._updateFullscreenUiState();
+    this._syncVolumeFlyoutHostForCurrentMode();
+  }
+
+  async _toggleFullscreen() {
+    try {
+      if (this._isElementFullscreen()) {
+        await document.exitFullscreen();
+        return;
+      }
+      if (typeof this.requestFullscreen === 'function') {
+        await this.requestFullscreen();
+      }
+    } catch (_error) {
+    }
+  }
+
+  async _stopPlaybackAndExitFullscreen() {
+    this.pause();
+    try {
+      this._activeMedia.currentTime = 0;
+    } catch (_error) {
+    }
+    this._setLoadingBarVisible(false);
+    if (this._isElementFullscreen()) {
+      try {
+        await document.exitFullscreen();
+      } catch (_error) {
+      }
     }
   }
 
@@ -739,6 +896,48 @@ class DiscoMediaElement extends DiscoUIElement {
     this._volumeFlyout.style.zIndex = '10000';
   }
 
+  _applyVolumeFlyoutInlineStyle() {
+    this._volumeFlyout.style.position = 'absolute';
+    this._volumeFlyout.style.right = '8px';
+    this._volumeFlyout.style.bottom = 'calc(100% + 8px)';
+    this._volumeFlyout.style.left = 'auto';
+    this._volumeFlyout.style.top = 'auto';
+    this._volumeFlyout.style.width = '72px';
+    this._volumeFlyout.style.minHeight = '180px';
+    this._volumeFlyout.style.padding = '10px';
+    this._volumeFlyout.style.flexDirection = 'column';
+    this._volumeFlyout.style.alignItems = 'center';
+    this._volumeFlyout.style.justifyContent = 'flex-end';
+    this._volumeFlyout.style.gap = '8px';
+    this._volumeFlyout.style.border = '3px solid #000';
+    this._volumeFlyout.style.background = '#fff';
+    this._volumeFlyout.style.color = '#000';
+    this._volumeFlyout.style.boxSizing = 'border-box';
+    this._volumeFlyout.style.zIndex = '4';
+    this._volumeFlyout.style.visibility = 'visible';
+  }
+
+  _syncVolumeFlyoutHostForCurrentMode() {
+    if (!this._volumeOpen) return;
+
+    const useInlineFlyout = this._isElementFullscreen();
+    if (useInlineFlyout) {
+      window.removeEventListener('resize', this._onWindowResize);
+      this._applyVolumeFlyoutInlineStyle();
+      if (this._volumeFlyout.parentNode !== this._controls) {
+        this._controls.appendChild(this._volumeFlyout);
+      }
+      return;
+    }
+
+    this._applyVolumeFlyoutPortalStyle();
+    if (!document.body.contains(this._volumeFlyout)) {
+      document.body.appendChild(this._volumeFlyout);
+    }
+    this._positionVolumeFlyoutPortal();
+    window.addEventListener('resize', this._onWindowResize);
+  }
+
   _positionVolumeFlyoutPortal() {
     if (!this._volumeButton) return;
 
@@ -748,16 +947,14 @@ class DiscoMediaElement extends DiscoUIElement {
     this._volumeFlyout.style.top = '0px';
 
     const flyoutRect = this._volumeFlyout.getBoundingClientRect();
-    const gap = 8;
+    const flyoutHeight = 180;
+    const gap = 10;
     const minInset = 8;
 
-    let left = triggerRect.right - flyoutRect.width;
+    let left = triggerRect.left + (triggerRect.width / 2) - (flyoutRect.width / 2);
     left = Math.max(minInset, Math.min(left, window.innerWidth - flyoutRect.width - minInset));
 
-    let top = triggerRect.top - flyoutRect.height - gap;
-    if (top < minInset) {
-      top = triggerRect.bottom + gap;
-    }
+    let top = triggerRect.top - (flyoutHeight + gap);
     top = Math.max(minInset, Math.min(top, window.innerHeight - flyoutRect.height - minInset));
 
     this._volumeFlyout.style.left = `${left}px`;

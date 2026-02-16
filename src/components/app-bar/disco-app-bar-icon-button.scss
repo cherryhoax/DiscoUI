@@ -1,4 +1,5 @@
 @use '../ui-elements/disco-ui-element.scss' as ui;
+@use '../../theme/icons/disco-icons.scss' as icons;
 
 :host {
     display: inline-block;
@@ -39,37 +40,7 @@
     outline: none;
     transform-style: preserve-3d;
 
-    /* Icon styling - target the span which will have mif-* classes */
-    span[class*="mif-"] {
-        font-size: 1.2em;
-        /* Scales relative to the button's font-size */
-        line-height: 1;
-        /* Ensure exact centering */
-        display: inline-block;
-        /* Helps with vertical alignment consistency */
-
-        /* Optical adjustments (Visual Corrections) for specific icons */
-        /* Base size is ~20px, adjustments are relative (em) */
-
-        &.mif-search {
-            font-size: 1.5em;
-            transform: scaleX(-1);
-        }
-
-        &.mif-plus {
-            font-size: 2em;
-        }
-
-        &.mif-done {
-            font-size: 1.6em;
-            font-weight: bold;
-        }
-
-        &.mif-cancel {
-            font-weight: bold;
-            font-size: .9em;
-        }
-    }
+    @include icons.disco-mif-icon-pack(1.2em);
 
     .wrapper[data-pressed] & {
         background-color: var(--disco-accent, #0078d7);

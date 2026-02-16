@@ -12,7 +12,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "dev": "npx vite",
+    "dev": "npx vite --host",
     "build": "npx vite build",
     "watch": "npx vite",
     "types": "npx tsc -p tsconfig.types.json",

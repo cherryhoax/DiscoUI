@@ -1,0 +1,31 @@
+@mixin disco-mif-icon-pack($base-size: 1.2em) {
+    span[class*="mif-"] {
+        font-size: $base-size;
+        line-height: 1;
+        display: inline-block;
+
+        &.mif-search {
+            font-size: 1.5em;
+            transform: scaleX(-1);
+        }
+
+        &.mif-plus {
+            font-size: 2em;
+        }
+
+        &.mif-done {
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+
+        &.mif-cancel {
+            font-weight: bold;
+            font-size: .9em;
+        }
+
+        &.mif-play,
+        &.mif-pause {
+            font-size: 2em;
+        }
+    }
+}
