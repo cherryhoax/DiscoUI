@@ -37,6 +37,7 @@ const launchDemo = async () => {
   const dialogPage = document.getElementById('componentsDialog');
   const messageDialogPage = document.getElementById('componentsMessageDialog');
   const imagePage = document.getElementById('componentsImage');
+  const mediaElementPage = document.getElementById('componentsMediaElement');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const groupStyleList = document.getElementById('groupStyleList');
@@ -137,6 +138,7 @@ const launchDemo = async () => {
       { id: 'slider', Title: 'Slider', Description: '' },
       { id: 'dialog', Title: 'Dialog', Description: '' },
       { id: 'image', Title: 'Image', Description: '' },
+      { id: 'mediaelement', Title: 'Media Element', Description: '' },
       { id: 'messagedialog', Title: 'Message Dialog', Description: '' },
       { id: 'togglebutton', Title: 'Toggle Button', Description: '' },
       { id: 'toggleswitch', Title: 'Toggle Switch', Description: '' },
@@ -258,6 +260,9 @@ const launchDemo = async () => {
       }
       if (id === 'messagedialog') {
         frame.navigate(messageDialogPage);
+      }
+      if (id === 'mediaelement') {
+        frame.navigate(mediaElementPage);
       }
       if (id === 'togglebutton') {
         frame.navigate(toggleButtonPage);

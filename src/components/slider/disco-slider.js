@@ -12,8 +12,6 @@ class DiscoSlider extends DiscoUIElement {
     this._input.className = 'slider';
     this.shadowRoot.appendChild(this._input);
 
-    this.setAttribute('role', 'slider');
-
     this._input.addEventListener('input', () => {
       this.setAttribute('value', this._input.value);
       this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
@@ -24,6 +22,11 @@ class DiscoSlider extends DiscoUIElement {
       this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
     });
 
+  }
+
+  connectedCallback() {
+    if (super.connectedCallback) super.connectedCallback();
+    this.setAttribute('role', 'slider');
     this._syncFromAttributes();
   }
 

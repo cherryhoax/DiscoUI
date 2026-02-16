@@ -93,21 +93,24 @@
                             left: calc(100% - 25px);
                         }
                     }
+
                     @keyframes easing-opacity {
                         0% {
                             opacity: 0;
                         }
+
                         10% {
                             opacity: 1;
                         }
+
                         90% {
                             opacity: 1;
                         }
+
                         100% {
                             opacity: 0;
                         }
                     }
-
                 </style>
                 <div class="easing-stack">
                     <div class="easing-row">
@@ -397,7 +400,8 @@
 
         <disco-pivot-page id="componentsGroupStyle" app-title="DISCO UI">
             <disco-pivot-item header="letters">
-                <disco-list-view id="groupStyleList" selection-mode="none" item-click-enabled group-style="auto" group-label-field="Title">
+                <disco-list-view id="groupStyleList" selection-mode="none" item-click-enabled group-style="auto"
+                    group-label-field="Title">
                     <template disco-list-template>
                         <div class="item-title" data-bind="Title"></div>
                         <div class="item-description" data-bind="Description"></div>
@@ -406,7 +410,8 @@
             </disco-pivot-item>
 
             <disco-pivot-item header="custom">
-                <disco-list-view id="groupStyleSettingsList" selection-mode="none" item-click-enabled group-style="custom" group-field="separator">
+                <disco-list-view id="groupStyleSettingsList" selection-mode="none" item-click-enabled
+                    group-style="custom" group-field="separator">
                     <template disco-list-template>
                         <div class="item-title" data-bind="Title"></div>
                         <div class="item-description" data-bind="Description"></div>
@@ -637,8 +642,22 @@
         </disco-single-page>
         <disco-single-page id="componentsImage" app-title="DISCO UI" header="image">
             <div style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
-                <disco-image id="demoImage" src="https://picsum.photos/200?random=1" fit="cover" style="width:320px; height:180px; cursor:pointer;"></disco-image>
+                <disco-image id="demoImage" src="https://picsum.photos/200?random=1" fit="cover"
+                    style="width:320px; height:180px; cursor:pointer;"></disco-image>
                 <div style="font-size:20px; opacity:.8;">Tap image to load next random one</div>
+            </div>
+        </disco-single-page>
+        <disco-single-page id="componentsMediaElement" app-title="DISCO UI" header="media-element">
+            <div
+                style="display:flex; flex-direction:column; gap:12px; align-items:flex-start; width:100%; max-width:420px;">
+                <div
+                    style="font-size:16px; font-weight:700; text-transform: uppercase; opacity:.95; color:var(--disco-accent);">
+                    Warning: This demo can play loud audio. Start with low device volume.</div>
+                <div style="font-size:24px; opacity:.9;">Audio Sample</div>
+                <disco-media-element src="https://www.w3schools.com/html/horse.mp3"></disco-media-element>
+                <div style="font-size:24px; opacity:.9; margin-top:8px;">Video Sample</div>
+                <disco-media-element kind="video"
+                    src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4"></disco-media-element>
             </div>
         </disco-single-page>
         <disco-pivot-page id="componentsScrollView" app-title="DISCO UI">

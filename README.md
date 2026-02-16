@@ -84,7 +84,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoImage](docs/components/image.md) | Image with loading progress bar and fade transitions |
 | ✅ | [DiscoListView / DiscoListItem](docs/components/list-view.md) | Virtualized list for long lists |
 | ✅ | [DiscoLongListSelector](docs/components/long-list-selector.md) | Jump list for grouped list views |
-| | DiscoMediaElement | Audio/video playback |
+| ✅ | [DiscoMediaElement](docs/components/media-element.md) | Audio media playback with custom controls and volume flyout |
 | ✅ | [DiscoMessageDialog](docs/components/message-dialog.md) | Programmatic message dialog with text and actions |
 | ✅ | [DiscoPage](docs/components/page.md) | Base page component for content and transitions (used by variants) |
 | ✅ | [DiscoPivot / DiscoPivotPage](docs/components/pivot.md) | Pivot navigation (pivot page and pivot items) |

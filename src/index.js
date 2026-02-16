@@ -32,6 +32,7 @@ export { default as DiscoAnimations } from './theme/animations/disco-animations.
 export { default as DiscoList } from './components/list-view/index.js';
 export { default as DiscoHub } from './components/hub/index.js';
 export { default as DiscoImage } from './components/image/disco-image.js';
+export { default as DiscoMediaElement } from './components/media-element/disco-media-element.js';
 export { default as DiscoAppBar } from './components/app-bar/disco-app-bar.js';
 export { default as DiscoAppBarIconButton } from './components/app-bar/disco-app-bar-icon-button.js';
 export { default as DiscoAppBarMenuItem } from './components/app-bar/disco-app-bar-menu-item.js';

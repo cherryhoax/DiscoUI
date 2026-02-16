@@ -1,6 +1,7 @@
 :host {
   display: block;
   width: 100%;
+  touch-action: none;
 }
 
 .slider {
@@ -8,6 +9,7 @@
   --flow-metro-range-input: true;
   -webkit-appearance: none;
   appearance: none;
+  touch-action: none;
   width: 100%;
   height: 12px;
   --percentage: 0%;
@@ -15,8 +17,8 @@
   outline: none;
   background: linear-gradient(
     90deg,
-    var(--disco-accent, var(--accent-color)) var(--percentage),
-    var(--disco-background-tertiary, var(--metro-elevated, rgba(255, 255, 255, 0.2))) var(--percentage)
+    var(--disco-accent) var(--percentage),
+    var(--disco-background-tertiary) var(--percentage)
   );
 }
 
@@ -28,8 +30,9 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  background: linear-gradient(-90deg, var(--disco-background, var(--metro-background)) 2px, transparent 2px);
+  background: linear-gradient(-90deg, var(--disco-background) 2px, transparent 2px);
   background-size: var(--step) 100%;
+  opacity: var(--disco-slider-step-overlay-opacity, 1);
 }
 
 .slider::-webkit-slider-thumb {
@@ -38,7 +41,7 @@
   appearance: none;
   width: 12px;
   height: 24px;
-  background: var(--disco-foreground, var(--metro-foreground));
+  background: var(--disco-foreground);
   z-index: 10;
   border: 0;
 }
@@ -47,7 +50,7 @@
   position: relative;
   width: 12px;
   height: 24px;
-  background: var(--disco-foreground, var(--metro-foreground));
+  background: var(--disco-foreground);
   z-index: 10;
   border: 0;
   border-radius: 0;
