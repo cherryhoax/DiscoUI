@@ -25,6 +25,7 @@ const launchDemo = async () => {
   const groupStylePage = document.getElementById('componentsGroupStyle');
   const checkboxPage = document.getElementById('componentsCheckbox');
   const progressPage = document.getElementById('componentsProgress');
+  const progressRingPage = document.getElementById('componentsProgressRing');
   const comboBoxPage = document.getElementById('componentsComboBox');
   const buttonPage = document.getElementById('componentsButton');
   const textBoxPage = document.getElementById('componentsTextBox');
@@ -124,6 +125,7 @@ const launchDemo = async () => {
       { id: 'appbar', Title: 'App Bar', Description: '' },
       { id: 'groupstyle', Title: 'Group Style (Sticky Header)', Description: '' },
       { id: 'progress', Title: 'Progress Bar', Description: '' },
+      { id: 'progressring', Title: 'Progress Ring', Description: '' },
       { id: 'checkbox', Title: 'Checkbox', Description: '' },
       { id: 'textbox', Title: 'Text Box', Description: '' },
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
@@ -218,6 +220,9 @@ const launchDemo = async () => {
       if (id === 'progress') {
         frame.navigate(progressPage);
       }
+      if (id === 'progressring') {
+        frame.navigate(progressRingPage);
+      }
       if (id === 'checkbox') {
         frame.navigate(checkboxPage);
       }
@@ -299,6 +304,9 @@ const launchDemo = async () => {
   const inc = document.getElementById('incProgress');
   const toggle = document.getElementById('toggleIndeterminate');
   const det = document.getElementById('progressDeterminate');
+  const incRing = document.getElementById('incProgressRing');
+  const toggleRing = document.getElementById('toggleRingIndeterminate');
+  const detRing = document.getElementById('progressRingDeterminate');
   if (inc && det) {
     inc.addEventListener('click', () => {
       const current = Number(det.getAttribute('value') || 0);
@@ -310,6 +318,19 @@ const launchDemo = async () => {
     toggle.addEventListener('click', () => {
       if (det.hasAttribute('indeterminate')) det.removeAttribute('indeterminate');
       else det.setAttribute('indeterminate', '');
+    });
+  }
+  if (incRing && detRing) {
+    incRing.addEventListener('click', () => {
+      const current = Number(detRing.getAttribute('value') || 0);
+      const max = Number(detRing.getAttribute('max') || 100);
+      detRing.setAttribute('value', String(Math.min(max, current + 10)));
+    });
+  }
+  if (toggleRing && detRing) {
+    toggleRing.addEventListener('click', () => {
+      if (detRing.hasAttribute('indeterminate')) detRing.removeAttribute('indeterminate');
+      else detRing.setAttribute('indeterminate', '');
     });
   }
 

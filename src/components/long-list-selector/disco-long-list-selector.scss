@@ -76,7 +76,7 @@
     box-shadow: none;
     padding: 8px 10px;
     font-size: 46px;
-    font-weight: 500;
+    font-weight: 400;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
@@ -85,8 +85,8 @@
     transform-origin: center center;
     transform-style: preserve-3d;
     background-color: var(--disco-accent);
-    transition:
-        transform calc(0.25s * var(--animation-duration-scale, 1)) calc(0.25s * var(--animation-duration-scale, 1)) ease-out;
+    transition: transform calc(0.25s * var(--animation-duration-scale, 1)) calc(0.25s * var(--animation-duration-scale, 1)) ease-out;
+    text-transform: lowercase;
 }
 
 .long-list-selector-tile.disabled {

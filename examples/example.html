@@ -526,6 +526,16 @@
                 <disco-progress-bar id="progressIndeterminate" indeterminate></disco-progress-bar>
             </div>
         </disco-single-page>
+        <disco-single-page id="componentsProgressRing" app-title="DISCO UI" header="progress-ring">
+            <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+                <disco-progress-ring id="progressRingDeterminate" value="25" max="100"></disco-progress-ring>
+                <div style="display:flex; gap:8px;">
+                    <disco-button id="incProgressRing">Advance</disco-button>
+                    <disco-button id="toggleRingIndeterminate">Toggle Indeterminate</disco-button>
+                </div>
+                <disco-progress-ring id="progressRingIndeterminate" indeterminate></disco-progress-ring>
+            </div>
+        </disco-single-page>
         <disco-single-page id="componentsComboBox" app-title="DISCO UI" header="combo-box">
             <disco-combo-box style="width: 100%;">
                 <disco-combo-box-item value="1">Visual Studio 2013</disco-combo-box-item>

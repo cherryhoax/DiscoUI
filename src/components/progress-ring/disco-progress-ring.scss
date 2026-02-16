@@ -1,0 +1,130 @@
+:host {
+  display: inline-block;
+  width: var(--disco-progress-ring-size, 62px);
+  height: var(--disco-progress-ring-size, 62px);
+  --disco-progress-ring-color: var(--disco-accent);
+}
+
+.loader {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-track,
+.ring-value {
+  fill: none;
+  stroke-width: 4;
+}
+
+.ring-track {
+  stroke: var(--disco-background-secondary);
+}
+
+.ring-value {
+  stroke: var(--disco-progress-ring-color);
+  transition: stroke-dashoffset 160ms ease-out;
+}
+
+.circle {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: rotate(225deg);
+  animation-name: disco-progress-ring-orbit;
+  animation-duration: 5.5s;
+  animation-iteration-count: infinite;
+}
+
+.circle::after {
+  content: '';
+  position: absolute;
+  width: clamp(8px, calc(8px + (var(--disco-progress-ring-size, 52px) - 100px) * 1000), 10px);
+  height: clamp(8px, calc(8px + (var(--disco-progress-ring-size, 52px) - 100px) * 1000), 10px);
+  border-radius: 50%;
+  background: var(--disco-progress-ring-color);
+}
+
+.circle:nth-child(2) {
+  animation-delay: 240ms;
+}
+
+.circle:nth-child(3) {
+  animation-delay: 480ms;
+}
+
+.circle:nth-child(4) {
+  animation-delay: 720ms;
+}
+
+.circle:nth-child(5) {
+  animation-delay: 960ms;
+}
+
+:host([indeterminate]) .loader {
+  display: block;
+  transform: scale(0.64);
+  transform-origin: center;
+}
+
+:host([indeterminate]) .ring {
+  display: none;
+}
+
+:host(:not([indeterminate])) .loader {
+  display: none;
+}
+
+:host(:not([indeterminate])) .ring {
+  display: block;
+}
+
+@keyframes disco-progress-ring-orbit {
+  0% {
+    transform: rotate(225deg);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+
+  7% {
+    transform: rotate(345deg);
+    animation-timing-function: linear;
+  }
+
+  30% {
+    transform: rotate(455deg);
+    animation-timing-function: ease-in-out;
+  }
+
+  39% {
+    transform: rotate(690deg);
+    animation-timing-function: linear;
+  }
+
+  70% {
+    transform: rotate(815deg);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+
+  75% {
+    transform: rotate(945deg);
+    animation-timing-function: ease-out;
+  }
+
+  76% {
+    transform: rotate(945deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: rotate(945deg);
+    opacity: 0;
+  }
+}

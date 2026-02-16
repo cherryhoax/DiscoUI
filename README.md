@@ -87,7 +87,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoPage](docs/components/page.md) | Base page component for content and transitions (used by variants) |
 | ✅ | [DiscoPickerBox](docs/components/picker-box.md) | Fullscreen picker modal with flip/slide animations |
 | ✅ | [DiscoPivot / DiscoPivotPage](docs/components/pivot.md) | Pivot navigation (pivot page and pivot items) |
-| | DiscoProgressRing | Circular indeterminate/determinate progress indicator |
+| ✅ | [DiscoProgressRing](docs/components/progress-ring.md) | Circular indeterminate progress indicator |
 | ✅ | [DiscoProgressBar](docs/components/progress.md) | Indeterminate/determinate progress indicator |
 | ✅ | [DiscoPasswordBox](docs/components/password-box.md) | Password input |
 | | DiscoRadioButton | Radio button input |
