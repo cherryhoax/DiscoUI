@@ -28,7 +28,8 @@
 .long-list-selector-backdrop {
     position: absolute;
     inset: 0;
-    background: rgb(0 0 0 / 0.5);
+    background: var(--disco-background);
+    opacity: .6;
 }
 
 .long-list-selector-panel {
@@ -90,8 +91,8 @@
 }
 
 .long-list-selector-tile.disabled {
-    background: var(--disco-background-tertiary, rgba(255, 255, 255, 0.15));
-    color: var(--disco-foreground-secondary, rgba(255, 255, 255, 0.5));
+    background: var(--disco-background-secondary);
+    color: rgb(calc(255 - 89 * var(--disco-theme)) calc(255 - 89 * var(--disco-theme)) calc(255 - 89 * var(--disco-theme)));
     cursor: default;
 }
 
