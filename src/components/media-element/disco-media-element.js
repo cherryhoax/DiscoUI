@@ -6,7 +6,7 @@ import '../progress-bar/disco-progress-bar.js';
 
 class DiscoMediaElement extends DiscoUIElement {
   static get observedAttributes() {
-    return ['src', 'autoplay', 'loop', 'muted', 'kind'];
+    return ['src', 'autoplay', 'loop', 'muted', 'kind', 'artwork'];
   }
 
   constructor() {
@@ -26,7 +26,18 @@ class DiscoMediaElement extends DiscoUIElement {
     this._video.preload = 'metadata';
     this._video.playsInline = true;
 
-    this._surface.appendChild(this._video);
+    this._audioArtwork = document.createElement('img');
+    this._audioArtwork.className = 'audio-artwork';
+    this._audioArtwork.alt = 'Album artwork';
+
+    this._audioPlaceholder = document.createElement('div');
+    this._audioPlaceholder.className = 'audio-placeholder';
+    const audioPlaceholderIcon = document.createElement('span');
+    audioPlaceholderIcon.className = 'mif-file-music';
+    audioPlaceholderIcon.setAttribute('aria-hidden', 'true');
+    this._audioPlaceholder.appendChild(audioPlaceholderIcon);
+
+    this._surface.append(this._video, this._audioArtwork, this._audioPlaceholder);
 
     this._controls = document.createElement('div');
     this._controls.className = 'controls';
@@ -266,6 +277,18 @@ class DiscoMediaElement extends DiscoUIElement {
     this.setAttribute('kind', String(value));
   }
 
+  get artwork() {
+    return this.getAttribute('artwork') || '';
+  }
+
+  set artwork(value) {
+    if (value == null || value === '') {
+      this.removeAttribute('artwork');
+      return;
+    }
+    this.setAttribute('artwork', String(value));
+  }
+
   play() {
     return this._activeMedia.play();
   }
@@ -313,6 +336,7 @@ class DiscoMediaElement extends DiscoUIElement {
     this._video.muted = this.muted;
     this._syncPlayIcon();
     this._syncVolume();
+    this._syncAudioFullscreenSurface();
   }
 
   _bindMediaEvents(media) {
@@ -458,6 +482,7 @@ class DiscoMediaElement extends DiscoUIElement {
       this._clearControlsAutoHide();
       this._setControlsHidden(false);
     }
+    this._syncAudioFullscreenSurface();
     this._syncSeekBounds();
     this._syncTime();
     this._syncPlayIcon();
@@ -807,7 +832,30 @@ class DiscoMediaElement extends DiscoUIElement {
       }
     }
     this._root.classList.toggle('is-fullscreen-ui', isFullscreen);
+    this._syncAudioFullscreenSurface();
     this._syncFullscreenIcon();
+  }
+
+  _syncAudioFullscreenSurface() {
+    const shouldShowAudioSurface = this._isElementFullscreen() && this._activeMedia === this._audio;
+    this._root.classList.toggle('audio-fullscreen-surface', shouldShowAudioSurface);
+
+    if (!shouldShowAudioSurface) {
+      this._root.classList.remove('audio-has-artwork');
+      return;
+    }
+
+    const artwork = this.artwork;
+    if (artwork) {
+      if (this._audioArtwork.getAttribute('src') !== artwork) {
+        this._audioArtwork.setAttribute('src', artwork);
+      }
+      this._root.classList.add('audio-has-artwork');
+      return;
+    }
+
+    this._audioArtwork.removeAttribute('src');
+    this._root.classList.remove('audio-has-artwork');
   }
 
   _onFullscreenChange() {
@@ -947,13 +995,13 @@ class DiscoMediaElement extends DiscoUIElement {
     this._volumeFlyout.style.top = '0px';
 
     const flyoutRect = this._volumeFlyout.getBoundingClientRect();
+    const flyoutWidth = 72;
     const flyoutHeight = 180;
     const gap = 10;
     const minInset = 8;
 
-    let left = triggerRect.left + (triggerRect.width / 2) - (flyoutRect.width / 2);
-    left = Math.max(minInset, Math.min(left, window.innerWidth - flyoutRect.width - minInset));
-
+    let left = triggerRect.left + (triggerRect.width / 2) - (flyoutWidth / 2);
+    left = Math.max(minInset, Math.min(left, window.innerWidth - flyoutWidth - minInset));
     let top = triggerRect.top - (flyoutHeight + gap);
     top = Math.max(minInset, Math.min(top, window.innerHeight - flyoutRect.height - minInset));
 

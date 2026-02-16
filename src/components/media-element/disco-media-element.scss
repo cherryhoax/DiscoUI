@@ -6,11 +6,27 @@
     max-width: 420px;
 }
 
+:host(:fullscreen),
+:host(::-webkit-full-screen) {
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    background: #000;
+}
+
+:host(:fullscreen) .media-root,
+:host(::-webkit-full-screen) .media-root {
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
 .media-root {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 0;
+    height: 100%;
     background: var(--disco-background-secondary);
     color: var(--disco-foreground);
 }
@@ -26,12 +42,62 @@
     display: block;
 }
 
+.media-root.is-fullscreen-ui .media-surface {
+    height: 100%;
+    aspect-ratio: auto;
+}
+
+.media-root.audio-fullscreen-surface .media-surface {
+    display: block;
+}
+
 .video {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
     background: #000;
+}
+
+.media-root.is-video.is-fullscreen-ui .video {
+    object-fit: contain;
+}
+
+.media-root.audio-fullscreen-surface .video {
+    display: none;
+}
+
+.audio-artwork,
+.audio-placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.audio-artwork {
+    object-fit: cover;
+    display: none;
+}
+
+.audio-placeholder {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    color: rgba(255, 255, 255, 0.28);
+}
+
+.audio-placeholder span[class*="mif-"] {
+    font-size: 120px;
+}
+
+.media-root.audio-fullscreen-surface.audio-has-artwork .audio-artwork {
+    display: block;
+}
+
+.media-root.audio-fullscreen-surface:not(.audio-has-artwork) .audio-placeholder {
+    display: flex;
 }
 
 .controls {
@@ -57,6 +123,10 @@
 }
 
 .media-root.is-video.is-fullscreen-ui .controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
     height: 185px;
     min-height: 185px;
     padding: 14px 16px;
@@ -68,7 +138,29 @@
     gap: 10px;
 }
 
+.media-root.audio-fullscreen-surface.is-fullscreen-ui .controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 185px;
+    min-height: 185px;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 10px;
+}
+
 .media-root.is-video.controls-hidden .controls {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.media-root.audio-fullscreen-surface.controls-hidden .controls {
     opacity: 0;
     pointer-events: none;
 }
@@ -103,13 +195,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 16px;
+    gap: 30px;
 }
 
 .fullscreen-top-buttons .icon-button {
     width: 60px;
     height: 60px;
     border-width: 2px;
+}
+
+.fullscreen-top-buttons .icon-button:not(.play-button) {
+    font-size: 2em;
+}
+.fullscreen-top-buttons .icon-button.play-button {
+    font-size: 1.25em;
 }
 
 .fullscreen-slider-row {
