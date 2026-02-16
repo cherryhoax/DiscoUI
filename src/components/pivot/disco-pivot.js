@@ -600,9 +600,6 @@ class DiscoPivotPage extends DiscoPage {
           targetItem.style.visibility = 'visible';
           targetItem.style.opacity = '0';
 
-          // Ensure initial opacity is applied before starting animations.
-          await new Promise(requestAnimationFrame);
-
           const fadeOut = (prevItem && prevItem !== targetItem)
             ? prevItem.animate([
               { opacity: 1 },
@@ -614,6 +611,12 @@ class DiscoPivotPage extends DiscoPage {
             })
             : null;
 
+          // Wait briefly before starting entrance/fade-in animations.
+          await new Promise((resolve) => setTimeout(resolve, 50));
+
+          // Ensure initial opacity is applied before starting animations.
+          await new Promise(requestAnimationFrame);
+
           const fadeIn = targetItem.animate([
             { opacity: 0 },
             { opacity: 1 }
@@ -623,10 +626,13 @@ class DiscoPivotPage extends DiscoPage {
             fill: 'forwards'
           });
 
+          if (fadeOut) {
+            fadeOut.finished.catch(() => { });
+          }
+
           await Promise.all([
             targetItem.playEntranceAnimation(offset, duration),
-            fadeIn.finished,
-            fadeOut ? fadeOut.finished.catch(() => { }) : Promise.resolve()
+            fadeIn.finished
           ]);
 
           if (prevItem && prevItem !== targetItem) {
