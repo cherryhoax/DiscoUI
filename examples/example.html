@@ -353,14 +353,25 @@
             </disco-list-view>
         </disco-single-page>
 
-        <disco-single-page id="componentsGroupStyle" app-title="DISCO UI" header="group style list">
-            <disco-list-view id="groupStyleList" selection-mode="none" item-click-enabled group-style="auto" group-label-field="Title">
-                <template disco-list-template>
-                    <div class="item-title" data-bind="Title"></div>
-                    <div class="item-description" data-bind="Description"></div>
-                </template>
-            </disco-list-view>
-        </disco-single-page>
+        <disco-pivot-page id="componentsGroupStyle" app-title="DISCO UI">
+            <disco-pivot-item header="letters">
+                <disco-list-view id="groupStyleList" selection-mode="none" item-click-enabled group-style="auto" group-label-field="Title">
+                    <template disco-list-template>
+                        <div class="item-title" data-bind="Title"></div>
+                        <div class="item-description" data-bind="Description"></div>
+                    </template>
+                </disco-list-view>
+            </disco-pivot-item>
+
+            <disco-pivot-item header="custom">
+                <disco-list-view id="groupStyleSettingsList" selection-mode="none" item-click-enabled group-style="custom" group-field="separator">
+                    <template disco-list-template>
+                        <div class="item-title" data-bind="Title"></div>
+                        <div class="item-description" data-bind="Description"></div>
+                    </template>
+                </disco-list-view>
+            </disco-pivot-item>
+        </disco-pivot-page>
 
         <!-- Test Pages -->
 
@@ -537,6 +548,12 @@
         <disco-single-page id="componentsPasswordBox" app-title="DISCO UI" header="password-box">
             <div>
                 <disco-password-box placeholder="Password Input"></disco-password-box>
+            </div>
+        </disco-single-page>
+        <disco-single-page id="componentsSlider" app-title="DISCO UI" header="slider">
+            <div style="display:flex; flex-direction:column; gap:12px; max-width:320px;">
+                <disco-slider id="demoSlider" min="0" max="100" step="5" value="35"></disco-slider>
+                <div id="demoSliderValue" style="font-size:20px; opacity:.8;">Value: 35</div>
             </div>
         </disco-single-page>
         <disco-pivot-page id="componentsScrollView" app-title="DISCO UI">

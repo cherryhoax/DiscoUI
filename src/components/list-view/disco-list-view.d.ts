@@ -15,6 +15,7 @@ export default class DiscoListView extends DiscoScrollView {
   groupStyle: 'auto' | 'custom' | null;
   groupField: string;
   groupLabelField: string;
+  autoSorting: boolean;
 }
 
 export type DiscoListViewElement = DiscoListView;

@@ -16,7 +16,7 @@ import './disco-list-header-item.js';
  */
 class DiscoListView extends DiscoScrollView {
   static get observedAttributes() {
-    return ['group-style', 'group-field', 'group-label-field'];
+    return ['group-style', 'group-field', 'group-label-field', 'auto-sorting', 'auto-sort'];
   }
 
   constructor() {
@@ -135,6 +135,27 @@ class DiscoListView extends DiscoScrollView {
       this.removeAttribute('group-labelfield');
     } else {
       this.setAttribute('group-label-field', value);
+    }
+    this._refreshGrouping();
+    this._renderDynamic();
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  get autoSorting() {
+    return this.hasAttribute('auto-sorting') || this.hasAttribute('auto-sort');
+  }
+
+  /**
+   * @param {boolean} value
+   */
+  set autoSorting(value) {
+    if (value) {
+      this.setAttribute('auto-sorting', '');
+    } else {
+      this.removeAttribute('auto-sorting');
+      this.removeAttribute('auto-sort');
     }
     this._refreshGrouping();
     this._renderDynamic();
@@ -405,10 +426,17 @@ class DiscoListView extends DiscoScrollView {
         const groupHeader = new (customElements.get('disco-list-header-item'))();
         groupHeader.dataset.groupKey = groupMeta.key;
         groupHeader.dataset.groupLabel = groupMeta.label;
+        groupHeader.setAttribute('data-group-style', this.groupStyle || 'none');
+
+        const groupHeaderText = String(groupMeta.label || groupMeta.key || '').trim();
+        const isLetterGroup = Array.from(groupHeaderText).length === 1;
+        if (isLetterGroup) {
+          groupHeader.setAttribute('data-group-kind', 'letter');
+        }
 
         const groupHeaderLabel = document.createElement('div');
         groupHeaderLabel.className = 'group-header-label';
-        groupHeaderLabel.textContent = groupMeta.label || groupMeta.key;
+        groupHeaderLabel.textContent = groupHeaderText;
         groupHeader.appendChild(groupHeaderLabel);
 
         activeSection.appendChild(groupHeader);
@@ -419,8 +447,9 @@ class DiscoListView extends DiscoScrollView {
       return activeSection;
     };
 
-    this._items.forEach((item, index) => {
-      const groupMeta = this._resolveGroupMeta(item);
+    const renderRows = this._getRenderRows();
+
+    renderRows.forEach(({ item, index, groupMeta }) => {
       const section = ensureSectionForItem(groupMeta);
 
       const listItem = new (customElements.get('disco-list-item'))();
@@ -513,6 +542,90 @@ class DiscoListView extends DiscoScrollView {
     };
   }
 
+  /**
+   * @param {string | null | undefined} key
+   * @returns {number}
+   */
+  _getAutoGroupSortIndex(key) {
+    const value = String(key || '').trim().toLocaleUpperCase('en');
+    if (value === '0-9') return 0;
+    if (value === '&') return 27;
+    if (/^[A-Z]$/.test(value)) {
+      return value.charCodeAt(0) - 64;
+    }
+    return 28;
+  }
+
+  /**
+   * @param {unknown} item
+   * @returns {string}
+   */
+  _getItemSortLabel(item) {
+    if (!item || typeof item !== 'object') return String(item ?? '');
+    const preferred = item[this.groupLabelField];
+    if (preferred != null) return String(preferred);
+    const title = item.title;
+    if (title != null) return String(title);
+    return '';
+  }
+
+  /**
+   * @returns {Array<{ item: unknown, index: number, groupMeta: { key: string | null, label: string }, sortLabel: string }>}
+   */
+  _getRenderRows() {
+    const rows = this._items.map((item, index) => ({
+      item,
+      index,
+      groupMeta: this._resolveGroupMeta(item),
+      sortLabel: this._getItemSortLabel(item)
+    }));
+
+    if (!this.groupStyle) {
+      return rows;
+    }
+
+    if (this.groupStyle !== 'auto' && !this.autoSorting) {
+      return rows;
+    }
+
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+    const buckets = new Map();
+
+    rows.forEach((row) => {
+      const key = row.groupMeta.key || '__ungrouped__';
+      if (!buckets.has(key)) {
+        buckets.set(key, []);
+      }
+      buckets.get(key).push(row);
+    });
+
+    const keys = Array.from(buckets.keys());
+    if (this.groupStyle === 'auto') {
+      keys.sort((left, right) => {
+        const diff = this._getAutoGroupSortIndex(left) - this._getAutoGroupSortIndex(right);
+        if (diff !== 0) return diff;
+        return collator.compare(String(left), String(right));
+      });
+    }
+
+    const sortedRows = [];
+    keys.forEach((key) => {
+      const groupRows = buckets.get(key) || [];
+      if (this.autoSorting) {
+        groupRows.sort((left, right) => {
+          const byLabel = collator.compare(left.sortLabel, right.sortLabel);
+          if (byLabel !== 0) return byLabel;
+          return left.index - right.index;
+        });
+      } else {
+        groupRows.sort((left, right) => left.index - right.index);
+      }
+      sortedRows.push(...groupRows);
+    });
+
+    return sortedRows;
+  }
+
   _refreshGrouping() {
     if (!this.groupStyle || !Array.isArray(this._items) || !this._items.length) {
       this._groupEntries = [];
@@ -523,9 +636,9 @@ class DiscoListView extends DiscoScrollView {
     const seen = new Set();
     const entries = [];
     const groupIndexByKey = new Map();
+    const renderRows = this._getRenderRows();
 
-    this._items.forEach((item, index) => {
-      const meta = this._resolveGroupMeta(item);
+    renderRows.forEach(({ index, groupMeta: meta }) => {
       if (!meta.key) return;
       if (seen.has(meta.key)) return;
       seen.add(meta.key);
@@ -533,7 +646,37 @@ class DiscoListView extends DiscoScrollView {
       groupIndexByKey.set(meta.key, index);
     });
 
-    this._groupEntries = entries;
+    if (this.groupStyle === 'auto') {
+      const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+      entries.sort((left, right) => {
+        const diff = this._getAutoGroupSortIndex(left.key) - this._getAutoGroupSortIndex(right.key);
+        if (diff !== 0) return diff;
+        return collator.compare(String(left.label || left.key || ''), String(right.label || right.key || ''));
+      });
+      this._groupEntries = entries;
+      this._groupIndexByKey = groupIndexByKey;
+      return;
+    }
+
+    const regularEntries = [];
+    const specialEntries = [];
+    entries.forEach((entry) => {
+      const key = String(entry.key || '').trim().toLocaleLowerCase('en');
+      const label = String(entry.label || '').trim().toLocaleLowerCase('en');
+      const isSpecial = key === '&'
+        || label === '&'
+        || key === 'specials'
+        || label === 'specials'
+        || key.startsWith('&')
+        || label.startsWith('&');
+      if (isSpecial) {
+        specialEntries.push(entry);
+      } else {
+        regularEntries.push(entry);
+      }
+    });
+
+    this._groupEntries = [...regularEntries, ...specialEntries];
     this._groupIndexByKey = groupIndexByKey;
   }
 

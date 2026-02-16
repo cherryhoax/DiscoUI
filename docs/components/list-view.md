@@ -23,6 +23,7 @@ A scrollable list with support for item click events, selection modes, and built
 - `items` (`Array`): Array of data objects to dynamically render. (Dynamic rendering implementation detail).
 - `itemClickEnabled` (`boolean`): Toggles the `itemselect` event firing.
 - `selectionMode` (`string`): `'none'`, `'single'`, or `'multiple'` (implementation may vary).
+- `autoSorting` (`boolean`): Enables automatic sorting. In grouped mode, sorting is applied within each group.
 
 ### Events
 - `itemselect`: Fired when an item is clicked (if enabled). `event.detail` contains:
@@ -33,6 +34,9 @@ A scrollable list with support for item click events, selection modes, and built
 ## Attributes
 - `item-click-enabled`: Enables interactive click effects and events.
 - `selection-mode`: Sets the selection mode.
+- `auto-sorting`: Enables automatic sorting for dynamic items.
+
+When `group-style="auto"`, group order is always: `#`, `A`..`Z`, `&`.
 
 ## Child Components
 ### `<disco-list-item>`

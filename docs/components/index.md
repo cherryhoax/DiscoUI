@@ -20,6 +20,7 @@
 - [Combo Box (disco-combo-box)](combo-box.md)
 - [Text Box (disco-text-box)](text-box.md)
 - [Password Box (disco-password-box)](password-box.md)
+- [Slider (disco-slider)](slider.md)
 - [Progress Bar (disco-progress-bar)](progress.md)
 - [Splash (disco-splash)](splash.md)
 

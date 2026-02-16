@@ -29,9 +29,11 @@ const launchDemo = async () => {
   const buttonPage = document.getElementById('componentsButton');
   const textBoxPage = document.getElementById('componentsTextBox');
   const passwordBoxPage = document.getElementById('componentsPasswordBox');
+  const sliderPage = document.getElementById('componentsSlider');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const groupStyleList = document.getElementById('groupStyleList');
+  const groupStyleSettingsList = document.getElementById('groupStyleSettingsList');
   const comboBox = document.querySelector('#componentsComboBox disco-combo-box');
 
   // App Bar Test Pages
@@ -124,6 +126,7 @@ const launchDemo = async () => {
       { id: 'checkbox', Title: 'Checkbox', Description: '' },
       { id: 'textbox', Title: 'Text Box', Description: '' },
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
+      { id: 'slider', Title: 'Slider', Description: '' },
       { id: 'combobox', Title: 'Combo Box', Description: '' },
       { id: 'button', Title: 'Button', Description: '' },
       { id: 'scrollview', Title: 'Scroll View', Description: '' },
@@ -228,6 +231,9 @@ const launchDemo = async () => {
       if (id === 'passwordbox') {
         frame.navigate(passwordBoxPage);
       }
+      if (id === 'slider') {
+        frame.navigate(sliderPage);
+      }
       if (id === 'scrollview') {
         frame.navigate(scrollViewPage);
       }
@@ -309,6 +315,17 @@ const launchDemo = async () => {
     });
   }
 
+  const demoSlider = document.getElementById('demoSlider');
+  const demoSliderValue = document.getElementById('demoSliderValue');
+  if (demoSlider && demoSliderValue) {
+    const syncSliderValue = () => {
+      demoSliderValue.textContent = `Value: ${demoSlider.getAttribute('value') || '0'}`;
+    };
+    demoSlider.addEventListener('input', syncSliderValue);
+    demoSlider.addEventListener('change', syncSliderValue);
+    syncSliderValue();
+  }
+
   if (groupStyleList) {
     groupStyleList.items = [
       { Title: '00 Zero' },
@@ -331,6 +348,20 @@ const launchDemo = async () => {
     ];
     groupStyleList.addEventListener('separatorselect', (event) => {
       console.log('Group selector selected:', event.detail);
+    });
+  }
+
+  if (groupStyleSettingsList) {
+    groupStyleSettingsList.items = [
+      { Title: 'Wi-Fi', Description: 'Connected', separator: 'Connectivity' },
+      { Title: 'Bluetooth', Description: 'Off', separator: 'Connectivity' },
+      { Title: 'Mobile network', Description: '4G', separator: 'Connectivity' },
+      { Title: 'Update', Description: 'No updates available', separator: 'General' },
+      { Title: 'Version', Description: '1.0.0', separator: 'General' },
+      { Title: 'About', Description: 'Device information', separator: 'General' }
+    ];
+    groupStyleSettingsList.addEventListener('separatorselect', (event) => {
+      console.log('Settings group selector selected:', event.detail);
     });
   }
 

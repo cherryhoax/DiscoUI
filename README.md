@@ -92,7 +92,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoPasswordBox](docs/components/password-box.md) | Password input |
 | | DiscoRadioButton | Radio button input |
 | ✅ | [DiscoScrollView](docs/components/scroll-view.md) | Scrollable content area |
-| | DiscoSlider | Slider input control |
+| ✅ | [DiscoSlider](docs/components/slider.md) | Slider input control |
 | ✅ | [DiscoLoopingSelector](docs/components/looping-selector.md) | Base class for wheel/column pickers |
 | ✅ | [DiscoSplash](docs/components/splash.md) | Optional splash screen (modes: none, auto, manual) |
 | ✅ | [DiscoTextBox](docs/components/text-box.md) | Single-line text input |

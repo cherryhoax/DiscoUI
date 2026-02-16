@@ -28,3 +28,31 @@
 :host .item ::slotted(.group-header-label) {
     pointer-events: none;
 }
+
+:host([data-group-style='custom']) .item {
+    text-transform: lowercase;
+    font-size: 25px;
+    font-weight: 300;
+}
+
+:host([data-group-kind='letter']) {
+    margin-right: 100%;
+    transform-style: flat;
+}
+
+:host([data-group-kind='letter']) .item {
+    background: var(--disco-background);
+    box-shadow: inset 0 0 0 3px var(--disco-accent);
+    color: var(--disco-accent);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin: 5px 0;
+    width: 52px;
+    min-width: 52px;
+    min-height: 52px;
+    padding: 5px 8px;
+    box-sizing: border-box;
+    font-size: 30px;
+    font-weight: 350;
+}
