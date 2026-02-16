@@ -21,7 +21,7 @@
                     </template>
                 </disco-list-view>
             </disco-pivot-item>
-            <disco-pivot-item header="easings">
+            <disco-pivot-item id="componentsHomeEasings" header="easings">
                 <style>
                     .easing-scroll {
                         height: calc(100vh - 140px);
@@ -69,6 +69,11 @@
                         left: 5px;
                         background: var(--disco-accent, #d80073);
                         animation: easing-shift 1.25s var(--ease-preview) infinite, easing-opacity 1.25s ease-in-out infinite;
+                        animation-play-state: paused;
+                    }
+
+                    disco-pivot-item[data-easing-active] .easing-dot {
+                        animation-play-state: running;
                     }
 
                     @keyframes easing-shift {

@@ -17,6 +17,7 @@ const launchDemo = async () => {
   if (!frame) return;
   window.frame = frame;
   const homePage = document.getElementById('componentsHome');
+  const homeEasingsItem = document.getElementById('componentsHomeEasings');
   window.homePage = homePage;
   const pivotPage = document.getElementById('componentsPivot');
   const hubPage = document.getElementById('componentsHub');
@@ -330,6 +331,17 @@ const launchDemo = async () => {
     ];
     groupStyleList.addEventListener('separatorselect', (event) => {
       console.log('Group selector selected:', event.detail);
+    });
+  }
+
+  if (homePage && homeEasingsItem) {
+    homePage.addEventListener('disco-active-item-change', (event) => {
+      const activeItem = event.detail?.item;
+      if (activeItem === homeEasingsItem) {
+        homeEasingsItem.setAttribute('data-easing-active', '');
+      } else {
+        homeEasingsItem.removeAttribute('data-easing-active');
+      }
     });
   }
 
