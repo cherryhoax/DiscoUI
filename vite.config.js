@@ -43,7 +43,7 @@ export default defineConfig({
   plugins: [cssInlinePlugin(), examplesDistAliasPlugin()],
   server: {
     port: 3000,
-    open: '/examples/index.html'
+    open: '/examples/example.html'
   },
   build: {
     rollupOptions: {

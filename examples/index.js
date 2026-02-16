@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
+import { DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from '../src/index.js';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
