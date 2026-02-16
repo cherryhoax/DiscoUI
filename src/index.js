@@ -12,6 +12,7 @@ export { default as DiscoComboBoxItem } from './components/combo-box/disco-combo
 export { default as DiscoTextBox } from './components/text-box/disco-text-box.js';
 export { default as DiscoPasswordBox } from './components/password-box/disco-password-box.js';
 export { default as DiscoSlider } from './components/slider/disco-slider.js';
+export { default as DiscoToggleSwitch } from './components/toggle-switch/disco-toggle-switch.js';
 export { default as DiscoUIElement } from './components/ui-elements/disco-ui-element.js';
 export { default as DiscoScrollView } from './components/scroll-view/disco-scroll-view.js';
 export { default as DiscoPivot } from './components/pivot/index.js';

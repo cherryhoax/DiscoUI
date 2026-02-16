@@ -1,0 +1,48 @@
+:host {
+  display: inline-block;
+  --transition: 0;
+  --transition-flick: 0;
+}
+
+:host([checked]) {
+  --transition: 1;
+  --transition-flick: 0;
+}
+
+.switch {
+  background: var(--disco-background);
+  display: block;
+  position: relative;
+  width: 93px;
+  height: 38px;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 0 0 2px var(--disco-background),
+    inset 0 0 0 5px var(--disco-foreground),
+    inset 0 0 0 9px var(--disco-background);
+  background-image: linear-gradient(
+    90deg,
+    var(--disco-accent) calc(9px + (var(--transition) + var(--transition-flick)) * 75px),
+    var(--disco-background) calc(9px + (var(--transition) + var(--transition-flick)) * 75px)
+  );
+  outline: none;
+}
+
+.switch::after {
+  display: block;
+  content: '';
+  width: 20px;
+  height: 38px;
+  background: var(--disco-foreground);
+  box-shadow: 0 0 0 4px var(--disco-background);
+  position: absolute;
+  left: calc(2px + var(--transition) * 69px);
+  transform: translateX(calc(2px + var(--transition-flick) * 69px));
+  transition: transform .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+:host([disabled]) .switch {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}

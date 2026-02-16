@@ -99,7 +99,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoTimePicker](docs/components/time-picker.md) | Time picker input |
 | ✅ | [DiscoTimeSpanPicker](docs/components/timespan-picker.md) | Duration picker input |
 | | DiscoToggleButton | On/off toggle button |
-| | DiscoToggleSwitch | On/off toggle control |
+| ✅ | [DiscoToggleSwitch](docs/components/toggle-switch.md) | On/off toggle control |
 
 ...maybe more to come! (feel free to open issues/PRs for them)
 
