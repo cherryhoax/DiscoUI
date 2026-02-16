@@ -5,6 +5,7 @@ Welcome to the documentation for **DiscoUI**, a Metro-inspired mobile shell libr
 ## Sections
 
 - [Getting Started](getting-started.md)
+- [Vibe Coding](vibe-coding/index.md)
 - [Components](components/index.md)
 - [Theming](theming.md)
 - [API Reference](api/index.md)
