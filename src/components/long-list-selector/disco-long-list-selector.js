@@ -288,14 +288,11 @@ class DiscoLongListSelector extends DiscoPickerBox {
                 tile.setAttribute('aria-disabled', 'true');
                 tile.tabIndex = -1;
             } else {
-                tile.enableTilt({ skipTransformWhenHostDisabled: true });
-                tile.addEventListener('click', () => this._selectEntry(entry, index));
-                tile.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        this._selectEntry(entry, index);
-                    }
+                tile.enableTilt({
+                    skipTransformWhenHostDisabled: true,
+                    suppressNativeClickOnPress: true
                 });
+                tile.addEventListener('disco-press', () => this._selectEntry(entry, index));
             }
 
             this._grid.appendChild(tile);

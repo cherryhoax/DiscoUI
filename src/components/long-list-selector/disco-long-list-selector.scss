@@ -1,3 +1,5 @@
+@use '../ui-elements/disco-ui-element.scss' as ui;
+
 :host {
     --long-list-selector-gap: 12px;
     --long-list-selector-max-width: 500px;
@@ -50,13 +52,8 @@
 }
 
 .long-list-selector-grid {
-    --long-list-selector-auto-tile-size: min(
-        var(--long-list-selector-tile-size),
-        calc((100% - (3 * var(--long-list-selector-gap))) / 4)
-    );
     display: grid;
-    grid-template-columns: repeat(4, var(--long-list-selector-auto-tile-size));
-    justify-content: center;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--long-list-selector-gap);
     padding-bottom: 20px;
     pointer-events: none;
@@ -69,10 +66,10 @@
 
 .long-list-selector-grid.custom-mode {
     grid-template-columns: minmax(0, 1fr);
-    justify-content: stretch;
 }
 
 .long-list-selector-tile {
+    @include ui.disco-tilt;
     min-height: 0;
     aspect-ratio: 1;
     border: none;
@@ -88,7 +85,8 @@
     transform-origin: center center;
     transform-style: preserve-3d;
     background-color: var(--disco-accent);
-    transition: background-color calc(0.2s * var(--animation-duration-scale, 1));
+    transition:
+        transform calc(0.25s * var(--animation-duration-scale, 1)) calc(0.25s * var(--animation-duration-scale, 1)) ease-out;
 }
 
 .long-list-selector-tile.disabled {

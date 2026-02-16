@@ -63,7 +63,8 @@ class DiscoUIElement extends HTMLElement {
     *  margin?: number,
     *  pressDown?: number,
     *  keyPress?: boolean,
-    *  skipTransformWhenHostDisabled?: boolean
+    *  skipTransformWhenHostDisabled?: boolean,
+    *  suppressNativeClickOnPress?: boolean
     * }} [options]
    */
   enableTilt(options = {}) {
@@ -76,7 +77,8 @@ class DiscoUIElement extends HTMLElement {
       margin = 20,
       pressDown = 20,
       keyPress = true,
-      skipTransformWhenHostDisabled = false
+      skipTransformWhenHostDisabled = false,
+      suppressNativeClickOnPress = false
     } = options;
     const target =
       (selector
@@ -87,9 +89,23 @@ class DiscoUIElement extends HTMLElement {
     }
     target.setAttribute('data-tilt', '');
     let keyPressActive = false;
+    let suppressClickOnce = false;
     let startX = 0;
     let startY = 0;
     let scrollParent = null;
+
+    const emitDiscoPress = (originalEvent, source) => {
+      if (this.hasAttribute('disabled')) return;
+      this.dispatchEvent(new CustomEvent('disco-press', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          source,
+          originalEvent,
+          target
+        }
+      }));
+    };
 
     const canApplyTransform = () => !(skipTransformWhenHostDisabled && this.hasAttribute('disabled'));
 
@@ -125,8 +141,15 @@ class DiscoUIElement extends HTMLElement {
 
     };
 
-    const upHandler = () => {
+    const upHandler = (e) => {
+      const shouldEmitPress = target.hasAttribute('data-pressed') && this.canClick;
       resetTiltState();
+      if (shouldEmitPress) {
+        if (suppressNativeClickOnPress) {
+          suppressClickOnce = true;
+        }
+        emitDiscoPress(e, 'pointer');
+      }
     };
 
     const keyDownHandler = (event) => {
@@ -148,6 +171,7 @@ class DiscoUIElement extends HTMLElement {
       if (canApplyTransform()) {
         target.style.transform = `translateZ(0px)`;
       }
+      emitDiscoPress(event, 'keyboard');
     };
 
     const cancelHandler = () => {
@@ -199,6 +223,13 @@ class DiscoUIElement extends HTMLElement {
       }
     };
     const clickGuardHandler = (e) => {
+      if (suppressClickOnce) {
+        suppressClickOnce = false;
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        return;
+      }
+
       if (!this.canClick) {
         console.info('Click cancelled due to pointer move outside element.');
         e.stopImmediatePropagation();
