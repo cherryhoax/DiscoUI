@@ -50,8 +50,13 @@
 }
 
 .long-list-selector-grid {
+    --long-list-selector-auto-tile-size: min(
+        var(--long-list-selector-tile-size),
+        calc((100% - (3 * var(--long-list-selector-gap))) / 4)
+    );
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, var(--long-list-selector-auto-tile-size));
+    justify-content: center;
     gap: var(--long-list-selector-gap);
     padding-bottom: 20px;
     pointer-events: none;
@@ -64,10 +69,11 @@
 
 .long-list-selector-grid.custom-mode {
     grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
 }
 
 .long-list-selector-tile {
-    min-height: var(--long-list-selector-tile-size);
+    min-height: 0;
     aspect-ratio: 1;
     border: none;
     box-shadow: none;

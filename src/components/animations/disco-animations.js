@@ -379,7 +379,7 @@ const animationSet = {
             const animationItems = buildListAnimationQueue(targets)
                 .map((item, index) => ({
                     target: item.target,
-                    delay: index * 50,
+                    delay: index * 40,
                     run: () => animationSet.page.in(item.target, options)
                 }));
 
@@ -395,7 +395,7 @@ const animationSet = {
             const animationItems = buildListAnimationQueue(targets)
                 .map((item, index) => ({
                     target: item.target,
-                    delay: index * 50,
+                    delay: index * 40,
                     run: () => animationSet.page.out(item.target, options)
                 }));
 
