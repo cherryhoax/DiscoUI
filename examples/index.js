@@ -2,7 +2,7 @@
  * Example demo loader used by the examples page.
  */
 
-import { DISCO_COLORS, DiscoApp, DiscoDatePicker, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
+import { DISCO_COLORS, DiscoApp, DiscoDatePicker, DiscoDialog, DiscoMessageDialog, DiscoTimePicker, DiscoTimeSpanPicker } from './dist/discoui.mjs';
 const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
@@ -34,6 +34,8 @@ const launchDemo = async () => {
   const sliderPage = document.getElementById('componentsSlider');
   const toggleSwitchPage = document.getElementById('componentsToggleSwitch');
   const toggleButtonPage = document.getElementById('componentsToggleButton');
+  const dialogPage = document.getElementById('componentsDialog');
+  const messageDialogPage = document.getElementById('componentsMessageDialog');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const groupStyleList = document.getElementById('groupStyleList');
@@ -132,6 +134,8 @@ const launchDemo = async () => {
       { id: 'textbox', Title: 'Text Box', Description: '' },
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
       { id: 'slider', Title: 'Slider', Description: '' },
+      { id: 'dialog', Title: 'Dialog', Description: '' },
+      { id: 'messagedialog', Title: 'Message Dialog', Description: '' },
       { id: 'togglebutton', Title: 'Toggle Button', Description: '' },
       { id: 'toggleswitch', Title: 'Toggle Switch', Description: '' },
       { id: 'combobox', Title: 'Combo Box', Description: '' },
@@ -243,6 +247,12 @@ const launchDemo = async () => {
       }
       if (id === 'slider') {
         frame.navigate(sliderPage);
+      }
+      if (id === 'dialog') {
+        frame.navigate(dialogPage);
+      }
+      if (id === 'messagedialog') {
+        frame.navigate(messageDialogPage);
       }
       if (id === 'togglebutton') {
         frame.navigate(toggleButtonPage);
@@ -376,6 +386,30 @@ const launchDemo = async () => {
     };
     demoToggleButton.addEventListener('change', syncToggleButton);
     syncToggleButton();
+  }
+
+  const openDialogButton = document.getElementById('openDialogButton');
+  const dialogResult = document.getElementById('dialogResult');
+  if (openDialogButton && dialogResult) {
+    openDialogButton.addEventListener('click', async () => {
+      const dialog = new DiscoDialog('Simple Dialog');
+      dialog.append('This is a basic dialog shell.');
+      await dialog.open();
+      dialogResult.textContent = 'Result: closed';
+    });
+  }
+
+  const openMessageDialogButton = document.getElementById('openMessageDialogButton');
+  const messageDialogResult = document.getElementById('messageDialogResult');
+  if (openMessageDialogButton && messageDialogResult) {
+    openMessageDialogButton.addEventListener('click', async () => {
+      const dialog = new DiscoMessageDialog('Delete Item', 'This action cannot be undone.', {
+        cancel: null,
+        delete: 'delete'
+      });
+      const result = await dialog.open();
+      messageDialogResult.textContent = `Result: ${result == null ? 'cancel' : String(result)}`;
+    });
   }
 
   if (groupStyleList) {

@@ -13,6 +13,8 @@
 - [Flip View (disco-flip-view)](flip-view.md)
 - [Flyout (disco-flyout)](flyout.md)
 - [Looping Selector (disco-looping-selector)](looping-selector.md)
+- [Dialog (disco-dialog)](dialog.md)
+- [Message Dialog (disco-message-dialog)](message-dialog.md)
 - [Date Picker (disco-date-picker)](date-picker.md)
 - [Time Picker (disco-time-picker)](time-picker.md)
 - [Time Span Picker (disco-timespan-picker)](timespan-picker.md)

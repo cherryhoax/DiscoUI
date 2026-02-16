@@ -74,6 +74,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoComboBox](docs/components/combo-box.md) | Combo box input |
 | | DiscoContextMenu | Contextual menu / right-click menu |
 | ✅ | [DiscoDatePicker](docs/components/date-picker.md) | Date picker input |
+| ✅ | [DiscoDialog](docs/components/dialog.md) | Programmatic dialog with backdrop and flipped panel |
 | ✅ | [DiscoFlipView](docs/components/flip-view.md) | Displays a collection of items one at a time |
 | ✅ | [DiscoFlyout](docs/components/flyout.md) | Fullscreen flyout modal with flip/slide animations |
 | ✅ | [DiscoFrame](docs/components/frame.md) | Top-level frame handling navigation, theme, and transitions |
@@ -84,6 +85,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoListView / DiscoListItem](docs/components/list-view.md) | Virtualized list for long lists |
 | ✅ | [DiscoLongListSelector](docs/components/long-list-selector.md) | Jump list for grouped list views |
 | | DiscoMediaElement | Audio/video playback |
+| ✅ | [DiscoMessageDialog](docs/components/message-dialog.md) | Programmatic message dialog with text and actions |
 | ✅ | [DiscoPage](docs/components/page.md) | Base page component for content and transitions (used by variants) |
 | ✅ | [DiscoPivot / DiscoPivotPage](docs/components/pivot.md) | Pivot navigation (pivot page and pivot items) |
 | ✅ | [DiscoProgressRing](docs/components/progress-ring.md) | Circular indeterminate progress indicator |

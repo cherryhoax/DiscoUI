@@ -28,6 +28,24 @@
   }
 }
 
+:host([flat]) .button {
+  background-color: transparent;
+
+  &[data-pressed] {
+    background-color: var(--disco-accent);
+    color: #fff;
+  }
+}
+
+:host([block]) {
+  display: block;
+  width: 100%;
+}
+
+:host([block]) .button {
+  width: 100%;
+}
+
 .button:focus-visible {
   outline: 3px solid var(--disco-foreground);
   outline-offset: 2px;

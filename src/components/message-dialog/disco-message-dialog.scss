@@ -1,0 +1,26 @@
+.message-dialog-body {
+  margin: 0 0 30px 0;
+  font-size: 22px;
+  line-height: 1.35;
+  min-height: 18px;
+}
+
+.message-dialog-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.message-dialog-actions.inline {
+  flex-direction: row;
+  gap: 25px;
+}
+
+.message-dialog-action {
+  width: 100%;
+  min-height: 48px;
+}
+
+.message-dialog-actions.inline .message-dialog-action {
+  width: calc(50% - 12.5px);
+}
