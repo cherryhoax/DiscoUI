@@ -1,6 +1,6 @@
-# Copilot — Vibe Coding instructions for DiscoUI / DiscoUICapacitor
+# Cursor — Vibe Coding instructions for DiscoUI / DiscoUICapacitor
 
-Purpose: provide an explicit system-level instruction for Copilot Chat so it can generate UI code (DiscoUI) or scaffold apps (DiscoUICapacitor) using the project's APIs and "metro" design language.
+Purpose: provide an explicit system-level instruction for Cursor AI so it can generate UI code (DiscoUI) or scaffold apps (DiscoUICapacitor) using the project's APIs and "metro" design language.
 
 ## Primary Rules
 
@@ -386,4 +386,4 @@ Place `disco.config.json` in your public root (e.g., `www/disco.config.json` for
 
 **Important**: If you have repository access, read `src/index.d.ts` from both repositories to discover available exports, component names, and method signatures. Prefer concrete information from those files over assumptions. If you cannot access the repository, ask the user to provide the files or paste their contents.
 
--- end of copilot-instructions --
+-- end of cursor-instructions --
