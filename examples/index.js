@@ -32,6 +32,7 @@ const launchDemo = async () => {
   const passwordBoxPage = document.getElementById('componentsPasswordBox');
   const sliderPage = document.getElementById('componentsSlider');
   const toggleSwitchPage = document.getElementById('componentsToggleSwitch');
+  const toggleButtonPage = document.getElementById('componentsToggleButton');
   const scrollViewPage = document.getElementById('componentsScrollView');
   const flipViewPage = document.getElementById('componentsFlipView');
   const groupStyleList = document.getElementById('groupStyleList');
@@ -130,6 +131,7 @@ const launchDemo = async () => {
       { id: 'textbox', Title: 'Text Box', Description: '' },
       { id: 'passwordbox', Title: 'Password Box', Description: '' },
       { id: 'slider', Title: 'Slider', Description: '' },
+      { id: 'togglebutton', Title: 'Toggle Button', Description: '' },
       { id: 'toggleswitch', Title: 'Toggle Switch', Description: '' },
       { id: 'combobox', Title: 'Combo Box', Description: '' },
       { id: 'button', Title: 'Button', Description: '' },
@@ -240,6 +242,9 @@ const launchDemo = async () => {
       }
       if (id === 'slider') {
         frame.navigate(sliderPage);
+      }
+      if (id === 'togglebutton') {
+        frame.navigate(toggleButtonPage);
       }
       if (id === 'toggleswitch') {
         frame.navigate(toggleSwitchPage);
@@ -360,6 +365,16 @@ const launchDemo = async () => {
     };
     demoToggleSwitch.addEventListener('change', syncToggle);
     syncToggle();
+  }
+
+  const demoToggleButton = document.getElementById('demoToggleButton');
+  const demoToggleButtonValue = document.getElementById('demoToggleButtonValue');
+  if (demoToggleButton && demoToggleButtonValue) {
+    const syncToggleButton = () => {
+      demoToggleButtonValue.textContent = `State: ${demoToggleButton.hasAttribute('checked') ? 'on' : 'off'}`;
+    };
+    demoToggleButton.addEventListener('change', syncToggleButton);
+    syncToggleButton();
   }
 
   if (groupStyleList) {

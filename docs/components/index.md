@@ -21,6 +21,7 @@
 - [Text Box (disco-text-box)](text-box.md)
 - [Password Box (disco-password-box)](password-box.md)
 - [Slider (disco-slider)](slider.md)
+- [Toggle Button (disco-toggle-button)](toggle-button.md)
 - [Toggle Switch (disco-toggle-switch)](toggle-switch.md)
 - [Progress Ring (disco-progress-ring)](progress-ring.md)
 - [Progress Bar (disco-progress-bar)](progress.md)

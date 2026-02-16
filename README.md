@@ -98,7 +98,7 @@ Set the theme and accent color via attributes on the `<html>` tag:
 | ✅ | [DiscoTextBox](docs/components/text-box.md) | Single-line text input |
 | ✅ | [DiscoTimePicker](docs/components/time-picker.md) | Time picker input |
 | ✅ | [DiscoTimeSpanPicker](docs/components/timespan-picker.md) | Duration picker input |
-| | DiscoToggleButton | On/off toggle button |
+| ✅ | [DiscoToggleButton](docs/components/toggle-button.md) | On/off toggle button |
 | ✅ | [DiscoToggleSwitch](docs/components/toggle-switch.md) | On/off toggle control |
 
 ...maybe more to come! (feel free to open issues/PRs for them)

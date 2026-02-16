@@ -1,0 +1,20 @@
+:host .button {
+  border: none;
+  background-color: var(--disco-background-secondary);
+  color: var(--disco-foreground);
+
+  &[data-pressed] {
+    background-color: var(--disco-background-secondary);
+    color: var(--disco-foreground);
+  }
+}
+
+:host([checked]) .button {
+  background-color: var(--disco-accent);
+  color: #fff;
+
+  &[data-pressed] {
+    background-color: var(--disco-accent);
+    color: #fff;
+  }
+}
