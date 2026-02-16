@@ -15,14 +15,18 @@ class DiscoSplash extends DiscoUIElement {
     this._container = document.createElement('div');
     this.shadowRoot.appendChild(this._container);
     this._introPlayed = false;
+    this._introPromise = Promise.resolve();
     this.render();
   }
 
   connectedCallback() {
     if (this._introPlayed) return;
     this._introPlayed = true;
-    requestAnimationFrame(() => {
-      DiscoAnimations.animationSet.splash.in(this);
+    this._introPromise = new Promise((resolve) => {
+      requestAnimationFrame(resolve);
+    }).then(async () => {
+      await DiscoAnimations.animationSet.splash.in(this);
+      this.dispatchEvent(new CustomEvent('disco-splash-intro-finished', { bubbles: true, composed: true }));
     });
   }
 
@@ -68,6 +72,7 @@ class DiscoSplash extends DiscoUIElement {
   async dismiss() {
     if (!this.shadowRoot) return;
     const host = /** @type {HTMLElement} */ (this.shadowRoot.host);
+    await this._introPromise;
     await DiscoAnimations.animationSet.splash.out(host);
     host.remove();
   }

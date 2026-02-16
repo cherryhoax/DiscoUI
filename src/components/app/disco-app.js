@@ -109,11 +109,14 @@ class DiscoApp {
     this._navBarColor = config.navBarColor ?? attrNavBarColor ?? null;
 
     // Normalize splash config
-    let splashConfig = { mode: 'auto', color: null, icon: null, showProgress: true, progressColor: '#fff' };
+    const hasSplashConfig = config && Object.prototype.hasOwnProperty.call(config, 'splash');
+    let splashConfig = { mode: 'none', color: null, icon: null, showProgress: true, progressColor: '#fff' };
     if (typeof config.splash === 'string') {
       splashConfig.mode = config.splash;
     } else if (typeof config.splash === 'object' && config.splash !== null) {
       splashConfig = { ...splashConfig, ...config.splash };
+    } else if (hasSplashConfig && config.splash == null) {
+      splashConfig.mode = 'none';
     }
 
     this.splashConfig = splashConfig;

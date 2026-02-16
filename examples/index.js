@@ -7,13 +7,7 @@ const launchDemo = async () => {
   const app = new DiscoApp({
     theme: document.documentElement.getAttribute('disco-theme') || 'dark',
     accent: document.documentElement.getAttribute('disco-accent') || '#008a00',
-    font: document.documentElement.getAttribute('disco-font') || null,
-    splash: {
-      mode: 'manual',
-      color: '#008a00', // Custom dark background
-      icon: './favicon.svg',
-      showProgress: true
-    }
+    font: document.documentElement.getAttribute('disco-font') || null
   });
   app.scale = 1.025;
   app.setInsets({ top: 0, bottom: 0, left: 0, right: 0 });
@@ -340,13 +334,7 @@ const launchDemo = async () => {
   }
 
   app.launch(frame);
-
-  // Simulate manual splash loading (1s - 6s)
-  //app.setupSplash();
-  setTimeout(async () => {
-    await app.dismissSplash();
-    frame.navigate(homePage);
-  }, 1000);
+  frame.navigate(homePage);
 };
 
 DiscoApp.ready(launchDemo);

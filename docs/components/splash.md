@@ -8,6 +8,8 @@ An overlay shown during application startup.
 
 Typically initialized via `DiscoApp` options, but can be customized.
 
+By default, `DiscoApp` uses splash mode `none`. Configure `splash` explicitly to show it.
+
 ```javascript
 new DiscoApp({
     splash: {
